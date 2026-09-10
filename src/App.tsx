@@ -5,7 +5,11 @@ function App() {
 
   return (
     <div id="canvas-container">
-      <Canvas camera={{ position: [2, 0, 5] }} style={{ height: "100vh", width: "100%" }} shadows={true}>
+      <Canvas 
+        camera={{ position: [2, 0, 5] }} 
+        style={{ height: "100vh", width: "100%" }} 
+        shadows={true}
+      >
         <OrbitControls
           enableZoom={false}
           enableRotate={true}
