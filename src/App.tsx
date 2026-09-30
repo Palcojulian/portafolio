@@ -15,6 +15,7 @@ import PortaLapiceros from './components/3d-models/PortaLapiceros'
 import KeyBoard from './components/3d-models/KeyBoard'
 import Mause from './components/3d-models/Mause'
 import RoboticHand from './components/3d-models/RoboticHand'
+import HeadPhones from './components/3d-models/HeadPhones'
 
 
 const App = () => {
@@ -63,6 +64,12 @@ const App = () => {
           position={[2.1, 1.48, -0.3]}
           scale={2.5}
           rotation={[0, 0.7, 0]}
+        />
+
+        <HeadPhones
+          position={[1.5, 1.57, 0.4]}
+          scale={1.6}
+          rotation={[0, 0.7, -1.68]}
         />
 
         <PortaLapiceros
