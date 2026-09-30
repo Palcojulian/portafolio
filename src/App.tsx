@@ -1,33 +1,24 @@
-import { OrbitControls } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber'
 
-function App() {
+import { Canvas } from '@react-three/fiber'
+import DeskTable from './components/3d-models/DeskTable'
+import Controls from './components/scene-environment/Controls'
+import Light from './components/scene-environment/Light'
+import CamaraController from './components/scene-environment/CamaraController'
+import { Sky } from '@react-three/drei'
+
+
+const App = () => {
 
   return (
     <div id="canvas-container">
       <Canvas 
-        camera={{ position: [2, 0, 5] }} 
         style={{ height: "100vh", width: "100%" }} 
-        shadows={true}
       >
-        <OrbitControls
-          enableZoom={false}
-          enableRotate={true}
-          minPolarAngle={Math.PI / 2}
-          maxPolarAngle={Math.PI / 2}
-        />
-        <mesh>
-          <boxGeometry args={[2, 2, 2]}  />
-          <meshPhongMaterial color="purple" />
-        </mesh>
-        <ambientLight intensity={3} />
-        <directionalLight
-          position={[0, 5, 5]}
-          intensity={6}
-          castShadow={true}
-          color="red"
-        />
-        {/* <Environment preset="forest" background={false} /> */}
+        <Light />
+        <DeskTable position={[0,-0.5,0]} />
+        <Controls />
+        <CamaraController />
+        <Sky />
       </Canvas>
     </div>
   )
