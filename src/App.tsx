@@ -16,6 +16,7 @@ import KeyBoard from './components/3d-models/KeyBoard'
 import Mause from './components/3d-models/Mause'
 import RoboticHand from './components/3d-models/RoboticHand'
 import HeadPhones from './components/3d-models/HeadPhones'
+import Band from './components/3d-models/Band'
 
 
 const App = () => {
@@ -59,7 +60,7 @@ const App = () => {
           scale={2.4}
           rotation={[0, 0.3, 0]}
         />
-        
+
         <RoboticHand
           position={[2.1, 1.48, -0.3]}
           scale={2.5}
@@ -70,6 +71,12 @@ const App = () => {
           position={[1.5, 1.57, 0.4]}
           scale={1.6}
           rotation={[0, 0.7, -1.68]}
+        />
+
+        <Band
+          position={[-1.4, 1.535, 0.4]}
+          scale={0.5}
+          rotation={[0, 1, 1.46]}
         />
 
         <PortaLapiceros
