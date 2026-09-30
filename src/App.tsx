@@ -14,6 +14,7 @@ import Monitor from './components/3d-models/Monitor'
 import PortaLapiceros from './components/3d-models/PortaLapiceros'
 import KeyBoard from './components/3d-models/KeyBoard'
 import Mause from './components/3d-models/Mause'
+import RoboticHand from './components/3d-models/RoboticHand'
 
 
 const App = () => {
@@ -56,6 +57,12 @@ const App = () => {
           position={[0.9, 1.48, 0.38]}
           scale={2.4}
           rotation={[0, 0.3, 0]}
+        />
+        
+        <RoboticHand
+          position={[2.1, 1.48, -0.3]}
+          scale={2.5}
+          rotation={[0, 0.7, 0]}
         />
 
         <PortaLapiceros
