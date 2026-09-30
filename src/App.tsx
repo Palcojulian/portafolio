@@ -12,6 +12,8 @@ import DeskTable from './components/3d-models/DeskTable'
 import Taza from './components/3d-models/Taza'
 import Monitor from './components/3d-models/Monitor'
 import PortaLapiceros from './components/3d-models/PortaLapiceros'
+import KeyBoard from './components/3d-models/KeyBoard'
+import Mause from './components/3d-models/Mause'
 
 
 const App = () => {
@@ -29,8 +31,8 @@ const App = () => {
 
         {/* 3D Models */}
 
-        <DeskTable 
-          position={[0, -0.5, 0]} 
+        <DeskTable
+          position={[0, -0.5, 0]}
         />
 
         <Taza
@@ -42,6 +44,18 @@ const App = () => {
           position={[0, 1.43, -0.48]}
           scale={1}
           rotation={[0, 4.7, 0]}
+        />
+
+        <KeyBoard
+          position={[0, 1.55, 0.38]}
+          scale={1.7}
+          rotation={[0, 0.05, 0]}
+        />
+
+        <Mause
+          position={[0.9, 1.48, 0.38]}
+          scale={2.4}
+          rotation={[0, 0.3, 0]}
         />
 
         <PortaLapiceros
