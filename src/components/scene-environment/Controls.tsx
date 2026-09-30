@@ -11,8 +11,8 @@ const Controls = () => {
         <>
             <OrbitControls
                 target={[0, 2.5, 0]}
-                enableZoom={!true}
-                enableRotate={!true}
+                enableZoom={true}
+                enableRotate={true}
             />
         </>
 
