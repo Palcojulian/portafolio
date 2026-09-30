@@ -1,24 +1,54 @@
 
 import { Canvas } from '@react-three/fiber'
-import DeskTable from './components/3d-models/DeskTable'
+
+//Environment
 import Controls from './components/scene-environment/Controls'
 import Light from './components/scene-environment/Light'
 import CamaraController from './components/scene-environment/CamaraController'
 import { Sky } from '@react-three/drei'
+
+//3D Models
+import DeskTable from './components/3d-models/DeskTable'
+import Taza from './components/3d-models/Taza'
+import Monitor from './components/3d-models/Monitor'
+import PortaLapiceros from './components/3d-models/PortaLapiceros'
 
 
 const App = () => {
 
   return (
     <div id="canvas-container">
-      <Canvas 
-        style={{ height: "100vh", width: "100%" }} 
+      <Canvas
+        style={{ height: "100vh", width: "100%" }}
       >
+        {/* Enviroment */}
         <Light />
-        <DeskTable position={[0,-0.5,0]} />
         <Controls />
         <CamaraController />
         <Sky />
+
+        {/* 3D Models */}
+
+        <DeskTable 
+          position={[0, -0.5, 0]} 
+        />
+
+        <Taza
+          position={[-2.2, 1.48, 0.6]}
+          scale={0.6}
+        />
+
+        <Monitor
+          position={[0, 1.43, -0.48]}
+          scale={1}
+          rotation={[0, 4.7, 0]}
+        />
+
+        <PortaLapiceros
+          position={[-2, 1.48, -0.4]}
+          scale={1}
+        />
+
       </Canvas>
     </div>
   )
