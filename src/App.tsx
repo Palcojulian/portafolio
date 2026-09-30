@@ -17,6 +17,7 @@ import Mause from './components/3d-models/Mause'
 import RoboticHand from './components/3d-models/RoboticHand'
 import HeadPhones from './components/3d-models/HeadPhones'
 import Band from './components/3d-models/Band'
+import Clock from './components/3d-models/Clock'
 
 
 const App = () => {
@@ -73,9 +74,15 @@ const App = () => {
           rotation={[0, 0.7, -1.68]}
         />
 
+        <Clock
+          position={[0.7, 1.476, -0.3]}
+          scale={4}
+          rotation={[0, 0, 0]}
+        />
+
         <Band
           position={[-1.4, 1.535, 0.4]}
-          scale={0.5}
+          scale={0.45}
           rotation={[0, 1, 1.46]}
         />
 
