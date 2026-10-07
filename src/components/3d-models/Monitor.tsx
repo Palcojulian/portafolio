@@ -4,14 +4,14 @@ import type { JSX } from 'react'
 
 
 export default function Model(props: JSX.IntrinsicElements['group']) {
-    const { nodes } = useGLTF('/3d-models/monitor.glb');
+    const { nodes, materials } = useGLTF('/3d-models/monitor.glb');
     return (
         <group {...props} dispose={null}>
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.bigBaseMonitor as Mesh).geometry}
-                material={(nodes.bigBaseMonitor as Mesh).material}
+                material={materials.backMaterial}
             />
             <mesh
                 castShadow
@@ -23,37 +23,37 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.monitorBackPart as Mesh).geometry}
-                material={(nodes.monitorBackPart as Mesh).material}
+                material={materials.backMaterial}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.portsMonitor as Mesh).geometry}
-                material={(nodes.portsMonitor as Mesh).material}
+                material={materials.inPartsMaterial}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.screenMonitor as Mesh).geometry}
-                material={(nodes.screenMonitor as Mesh).material}
+                material={materials.screenMaterial}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.smallBaseMonitor as Mesh).geometry}
-                material={(nodes.smallBaseMonitor as Mesh).material}
+                material={materials.inPartsMaterial}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.squareBaseMonitor as Mesh).geometry}
-                material={(nodes.squareBaseMonitor as Mesh).material}
+                material={materials.inPartsMaterial}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.supportMonitor as Mesh).geometry}
-                material={(nodes.supportMonitor as Mesh).material}
+                material={materials.columBaseMaterial}
             />
         </group>
     )

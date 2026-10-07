@@ -13,7 +13,7 @@ const Light = () => {
         <color attach="background" args={["#000"]} />
         <directionalLight
           ref={refLight}
-          intensity={2.5}
+          intensity={5}
           color="white"
           position={[0,4,3]}
         > 
