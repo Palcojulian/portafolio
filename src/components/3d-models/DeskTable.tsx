@@ -5,7 +5,7 @@ import type { JSX } from 'react/jsx-dev-runtime'
 
 export default function Model(props: JSX.IntrinsicElements['group']) {
 
-  const { nodes } = useGLTF('/3d-models/desk-table.glb');
+  const { nodes, materials } = useGLTF('/3d-models/desk-table.glb');
 
   return (
     <group {...props} dispose={null}>
@@ -13,13 +13,13 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
         castShadow
         receiveShadow
         geometry={(nodes.estructura as Mesh).geometry} 
-        material={(nodes.estructura as Mesh).material} 
+        material={materials['base-table']}
       />
       <mesh 
         castShadow
         receiveShadow
         geometry={(nodes.table as Mesh).geometry} 
-        material={(nodes.table as Mesh).material} 
+        material={materials['option-2-table']}
       />
     </group>
   )
