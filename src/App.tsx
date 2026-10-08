@@ -64,7 +64,7 @@ const App = () => {
 
         <RoboticHand
           position={[2.1, 1.48, -0.3]}
-          scale={2.5}
+          scale={1.2}
           rotation={[0, 0.7, 0]}
         />
 
