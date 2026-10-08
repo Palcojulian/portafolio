@@ -3,26 +3,26 @@ import type { JSX } from 'react';
 import { useGLTF } from '@react-three/drei'
 
 export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes } = useGLTF('/3d-models/clock.glb');
+  const { nodes, materials } = useGLTF('/3d-models/clock.glb');
   return (
     <group {...props} dispose={null}>
       <mesh
         castShadow
         receiveShadow
         geometry={(nodes.boxClock as Mesh).geometry}
-        material={(nodes.boxClock as Mesh).material}
+        material={materials.boxMaterial}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={(nodes.screenClock as Mesh).geometry}
-        material={(nodes.screenClock as Mesh).material}
+        material={materials.screenMaterial}
       />
       <mesh
         castShadow
         receiveShadow
         geometry={(nodes.supportsClock as Mesh).geometry}
-        material={(nodes.supportsClock as Mesh).material}
+        material={materials.baseMaterial}
       />
     </group>
   )
