@@ -19,6 +19,14 @@ import HeadPhones from './components/3d-models/HeadPhones'
 import Band from './components/3d-models/Band'
 import Clock from './components/3d-models/Clock'
 import Lapiz from './components/3d-models/Lapiz'
+import {
+  amarillos,
+  azulGrisOscuro,
+  naranjaIntenso,
+  verdePetroleo,
+  rojos,
+
+} from './helpers/paleta-colores';
 
 
 const App = () => {
@@ -91,21 +99,40 @@ const App = () => {
           position={[-2, 1.48, -0.4]}
           scale={1}
         />
-        <Lapiz 
-          position={[-2, 1.48, -0.4]} 
-          scale={0.9}
+        <Lapiz
+          key={1}
+          groupProps={{
+            position: [-2, 1.48, -0.4],
+            scale: 0.9
+          }}
+          intensidad={500}
+          paleta='amarillos'
         />
-        <Lapiz 
-          position={[-1.96, 1.48, -0.4]} 
-          scale={0.9}
+        <Lapiz
+          key={2}
+          groupProps={{
+            position: [-1.96, 1.48, -0.4],
+            scale: 0.9
+          }}
+          intensidad={500}
+          paleta='rojos'
         />
-        <Lapiz 
-          position={[-2, 1.48, -0.28]} 
-          scale={0.9}
+        <Lapiz
+          key={3}
+          groupProps={{
+            position: [-2, 1.48, -0.28],
+            scale: 0.9
+          }}
+          intensidad={500}
+          paleta='azulGrisOscuro'
         />
-        <Lapiz 
-          position={[-1.96, 1.48, -0.28]} 
-          scale={0.9}
+        <Lapiz
+          groupProps={{
+            position: [-1.96, 1.48, -0.28],
+            scale: 0.9
+          }}
+          intensidad={500}
+          paleta='verdes'
         />
       </Canvas>
     </div>
