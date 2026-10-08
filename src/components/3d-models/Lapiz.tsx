@@ -1,13 +1,22 @@
-import { Mesh } from 'three'
+import { Mesh, MeshStandardMaterial } from 'three'
 import { useGLTF } from '@react-three/drei'
 import type { JSX } from 'react';
+import { paletaColores, type NombrePaleta, type IntensidadColor } from './../../helpers/paleta-colores';
+
+interface Props {
+  groupProps: JSX.IntrinsicElements['group'],
+  paleta: NombrePaleta,
+  intensidad: IntensidadColor,
+}
 
 
-
-export default function Model(props: JSX.IntrinsicElements['group']) {
+export default function Model(props: Props) {
   const { nodes, materials } = useGLTF('/3d-models/lapiz.glb');
+
+  const customMaterial = new MeshStandardMaterial({color: paletaColores[props.paleta][props.intensidad]});
+
   return (
-    <group {...props} dispose={null}>
+    <group {...props.groupProps} dispose={null}>
       <mesh
         castShadow
         receiveShadow
@@ -24,7 +33,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
         castShadow
         receiveShadow
         geometry={(nodes.cuerpoLapiz as Mesh).geometry}
-        material={materials.cuerpoLapizMaterial1}
+        material={customMaterial}
       />
       <mesh
         castShadow
