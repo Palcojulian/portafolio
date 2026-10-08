@@ -81,13 +81,13 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.ALT_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.ALTGR_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -99,7 +99,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.BACKSLASH_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -243,13 +243,13 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.CTRL2_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.CTRL_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -261,7 +261,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.DEL_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -279,7 +279,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.ENTER_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -435,13 +435,13 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.HOME2_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.HOME_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.blueKeys}
             />
             <mesh
                 castShadow
@@ -495,7 +495,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.MAY_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -513,7 +513,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.MENU_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.blueKeys}
             />
             <mesh
                 castShadow
@@ -555,25 +555,25 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.SHIFT_1_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.SHIFT_2_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.SIGNO_PREGUNTA_KEY as Mesh).geometry}
-                material={materials.plate}
+                material={materials.whiteKeys}
             />
             <mesh
                 castShadow
                 receiveShadow
                 geometry={(nodes.SPACE_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
@@ -585,7 +585,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.TAB_KEY as Mesh).geometry}
-                material={materials.grayKeys}
+                material={materials.skyKeys}
             />
             <mesh
                 castShadow
