@@ -225,7 +225,7 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
                 castShadow
                 receiveShadow
                 geometry={(nodes.BASE_TECLADO as Mesh).geometry}
-                material={materials.plate}
+                material={materials.whiteKeys}
             />
             <mesh
                 castShadow
