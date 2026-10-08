@@ -18,6 +18,7 @@ import RoboticHand from './components/3d-models/RoboticHand'
 import HeadPhones from './components/3d-models/HeadPhones'
 import Band from './components/3d-models/Band'
 import Clock from './components/3d-models/Clock'
+import Lapiz from './components/3d-models/Lapiz'
 
 
 const App = () => {
@@ -90,7 +91,22 @@ const App = () => {
           position={[-2, 1.48, -0.4]}
           scale={1}
         />
-
+        <Lapiz 
+          position={[-2, 1.48, -0.4]} 
+          scale={0.9}
+        />
+        <Lapiz 
+          position={[-1.96, 1.48, -0.4]} 
+          scale={0.9}
+        />
+        <Lapiz 
+          position={[-2, 1.48, -0.28]} 
+          scale={0.9}
+        />
+        <Lapiz 
+          position={[-1.96, 1.48, -0.28]} 
+          scale={0.9}
+        />
       </Canvas>
     </div>
   )
