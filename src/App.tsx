@@ -20,7 +20,8 @@ import Band from './components/3d-models/Band'
 import Clock from './components/3d-models/Clock'
 import Lapiz from './components/3d-models/Lapiz'
 import Lamp from './components/3d-models/Lamp'
-
+import LinkedinLogo from './components/3d-models/LinkedinLogo'
+import GitHubLogo from './components/3d-models/GitHubLogo'
 
 const App = () => {
 
@@ -134,6 +135,15 @@ const App = () => {
           rotation={[0, 5.5, 0]}
         />
 
+        <LinkedinLogo 
+          position={[1.4, 1.49, -0.3]}
+          scale={0.4}
+        />
+
+        <GitHubLogo 
+          position={[1.65, 1.49, -0.3]}
+          scale={0.45}
+        />
       </Canvas>
     </div>
   )
