@@ -19,14 +19,7 @@ import HeadPhones from './components/3d-models/HeadPhones'
 import Band from './components/3d-models/Band'
 import Clock from './components/3d-models/Clock'
 import Lapiz from './components/3d-models/Lapiz'
-import {
-  amarillos,
-  azulGrisOscuro,
-  naranjaIntenso,
-  verdePetroleo,
-  rojos,
-
-} from './helpers/paleta-colores';
+import Lamp from './components/3d-models/Lamp'
 
 
 const App = () => {
@@ -72,9 +65,9 @@ const App = () => {
         />
 
         <RoboticHand
-          position={[2.1, 1.48, -0.3]}
+          position={[-1.4, 1.48, -0.5]}
           scale={1.2}
-          rotation={[0, 0.7, 0]}
+          rotation={[0, -4.6, 0]}
         />
 
         <HeadPhones
@@ -134,6 +127,13 @@ const App = () => {
           intensidad={500}
           paleta='verdes'
         />
+
+        <Lamp
+          position={[2, 1.47, -0.3]}
+          scale={1.5}
+          rotation={[0, 5.5, 0]}
+        />
+
       </Canvas>
     </div>
   )
