@@ -6,7 +6,7 @@ import { paletaColores } from '../../helpers/paleta-colores'
 export default function Model(props: JSX.IntrinsicElements['group']) {
     const { nodes } = useGLTF('/3d-models/mausePad.glb')
     const mausePadMaterial = new MeshStandardMaterial({
-        color: paletaColores['verdePetroleo'][500]
+        color: paletaColores['azulGrisOscuro'][200]
     })
     
     return (
