@@ -24,6 +24,7 @@ import LinkedinLogo from './components/3d-models/LinkedinLogo'
 import GitHubLogo from './components/3d-models/GitHubLogo'
 import Vehicle from './components/3d-models/Vehicle'
 import MausePad from './components/3d-models/MausePad'
+import PortaVasos from './components/3d-models/PortaVasos'
 
 const App = () => {
 
@@ -45,7 +46,7 @@ const App = () => {
         />
 
         <Taza
-          position={[-2.2, 1.48, 0.6]}
+          position={[-2.2, 1.48, 0.56]}
           scale={0.6}
         />
 
@@ -148,13 +149,18 @@ const App = () => {
         />
 
         <Vehicle
-          position={[-2, 1.49, 0.3]}
+          position={[-2, 1.49, 0.2]}
           scale={0.15}
           rotation={[0, 1, 0]}
         />
         <MausePad
           position={[0.15, 1.485, 0.35]}
           scale={0.3}
+          rotation={[0, 0, 0]}
+        />
+        <PortaVasos
+          position={[-2.2, 1.485, 0.57]}
+          scale={0.7}
           rotation={[0, 0, 0]}
         />
 
