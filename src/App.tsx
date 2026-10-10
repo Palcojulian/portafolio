@@ -23,6 +23,7 @@ import Lamp from './components/3d-models/Lamp'
 import LinkedinLogo from './components/3d-models/LinkedinLogo'
 import GitHubLogo from './components/3d-models/GitHubLogo'
 import Vehicle from './components/3d-models/Vehicle'
+import MausePad from './components/3d-models/MausePad'
 
 const App = () => {
 
@@ -150,6 +151,11 @@ const App = () => {
           position={[-2, 1.49, 0.3]}
           scale={0.15}
           rotation={[0, 1, 0]}
+        />
+        <MausePad
+          position={[0.15, 1.485, 0.35]}
+          scale={0.3}
+          rotation={[0, 0, 0]}
         />
 
       </Canvas>
