@@ -13,7 +13,7 @@ Convenciones, patrones y reglas no escritas que se han establecido en el proyect
 | Componentes 3D | PascalCase + `.tsx` | `DeskTable.tsx` |
 | Componentes de escena | PascalCase + `.tsx` | `CamaraController.tsx` |
 | Componentes de environment | PascalCase + `.tsx` | `Room.tsx`, `Plant.tsx` |
-| Componentes de physics | PascalCase + `.tsx` | `PhysicsWorld.tsx`, `RigidObject.tsx` |
+| Componentes de physics | PascalCase + `.tsx` | `RigidObject.tsx` |
 | Hooks | camelCase con prefijo `use` + `.ts` | `useDragObject.ts` |
 | Helpers | kebab-case + `.ts` | `paleta-colores.ts` |
 
