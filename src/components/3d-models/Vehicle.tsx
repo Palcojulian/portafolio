@@ -1,55 +1,27 @@
-import { Mesh } from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react'
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-    const { nodes, materials } = useGLTF('/3d-models/vehicle.glb');
-    return (
-        <group {...props} dispose={null}>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh as Mesh).geometry}
-                material={materials.carMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_1 as Mesh).geometry}
-                material={materials.whiteLightMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_2 as Mesh).geometry}
-                material={materials.orangeLightMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_3 as Mesh).geometry}
-                material={materials.grayMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_4 as Mesh).geometry}
-                material={materials.rinesMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_5 as Mesh).geometry}
-                material={materials.ventanasMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.carMesh_6 as Mesh).geometry}
-                material={materials.redLightMaterial}
-            />
-        </group>
-    )
-}
+/**
+ * Vehículo decorativo. Cuerpo físico dinámico.
+ *
+ * El .glb tiene una única malla (`car`) y 7 materiales (carrocería,
+ * luces blancas, naranjas, grises, rines, ventanas, luces rojas).
+ */
+const Model = () => {
+  return (
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[-2, 1.49, 0.2]}
+      scale={0.15}
+      rotation={[0, 1, 0]}
+    >
+      <AutoGLTF url="/3d-models/vehicle.glb" />
+    </RigidObject>
+  );
+};
 
-useGLTF.preload('/3d-models/vehicle.glb')
+useGLTF.preload('/3d-models/vehicle.glb');
+
+export default Model;
