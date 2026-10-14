@@ -54,7 +54,8 @@ portafolio/
 │   │   │   ├── CamaraController.tsx       # Posiciona la cámara inicial
 │   │   │   ├── Controls.tsx               # OrbitControls (con límites de enfoque)
 │   │   │   ├── Light.tsx                  # ambient + 2 directionales con sombras
-│   │   │   └── Loader.tsx                 # Pantalla de carga con useProgress
+│   │   │   ├── Loader.tsx                 # Pantalla de carga con useProgress
+│   │   │   └── StatsOverlay.tsx           # Overlay FPS (sólo en desarrollo)
 │   │   │
 │   │   ├── environment/                   # 🆕 Environment visual (interior)
 │   │   │   ├── Floor.tsx                  # Suelo físico (dentro de <Physics>)
@@ -63,7 +64,6 @@ portafolio/
 │   │   │   └── WallDecor.tsx              # Cuadro en pared trasera
 │   │   │
 │   │   └── physics/                       # 🆕 Sistema de físicas con Rapier
-│   │       ├── PhysicsWorld.tsx           # Wrapper <Physics> con gravedad
 │   │       └── RigidObject.tsx            # HOC: convierte un modelo en RigidBody
 │   │
 │   ├── helpers/                           # Utilidades compartidas
@@ -110,7 +110,7 @@ graph TB
     Main[main.tsx] --> App[App.tsx]
     App --> Canvas[Canvas con shadows]
 
-    Canvas --> Physics[PhysicsWorld<br/>gravedad -9.81]
+    Canvas --> Physics[Physics<br/>gravedad -9.81]
     Canvas --> Env[Environment visual]
     Canvas --> Scene[Scene environment]
 
