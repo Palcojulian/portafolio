@@ -64,7 +64,15 @@ Sistema visual del proyecto.
 
 | # | Documento | Descripción |
 |---|---|---|
-| 13 | [Sistema de colores](./05-estilos/sistema-de-colores.md) | Cómo usar `helpers/paleta-colores.ts`. |
+| 15 | [Sistema de colores](./05-estilos/sistema-de-colores.md) | Cómo usar `helpers/paleta-colores.ts`. |
+
+### ⚡ 06 — Rendimiento
+
+Estrategia de optimización y métricas.
+
+| # | Documento | Descripción |
+|---|---|---|
+| 16 | [Rendimiento](./06-rendimiento.md) | Code-splitting, lazy-load, chunk sizes, cómo iterar. |
 
 ---
 
