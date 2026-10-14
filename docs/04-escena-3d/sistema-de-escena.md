@@ -106,7 +106,7 @@ Define el sistema de simulación con Rapier. Envuelve a:
 
 ### Capa de environment (`environment/`)
 
-Elementos visuales que dan contexto a la escena: paredes, alfombra, planta, cuadro. **NO incluye el suelo** (que es físico y va dentro de `<Physics>`).
+Elementos visuales que dan contexto a la escena: paredes, alfombra circular centrada bajo el escritorio, planta, cuadro. **NO incluye el suelo** (que es físico y va dentro de `<Physics>`).
 
 ### Capa de modelos (`3d-models/`)
 

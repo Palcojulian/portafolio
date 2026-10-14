@@ -10,8 +10,8 @@
  *   zona más prominente del fondo y sirve como anclaje visual.
  * - **Paredes laterales**: paredes izquierda y derecha en un tono
  *   ligeramente más oscuro, para enmarcar la escena.
- * - **Alfombra**: plano rectangular bajo el escritorio, tono oscuro,
- *   que aporta calidez y profundidad visual.
+ * - **Alfombra**: círculo bajo el escritorio, centrada en el origen.
+ *   Aporta calidez y profundidad visual.
  *
  * Todos los elementos son fijos (no responden a físicas) y están
  * ligeramente separados del escritorio para evitar z-fighting.
@@ -19,9 +19,9 @@
 const Room = () => {
   return (
     <group>
-      {/* Alfombra bajo el escritorio */}
-      <mesh receiveShadow position={[0, -0.495, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[5, 3.5]} />
+      {/* Alfombra circular bajo el escritorio, centrada */}
+      <mesh receiveShadow position={[0, -0.495, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[2.8, 64]} />
         <meshStandardMaterial color="#3a3a4a" roughness={0.95} metalness={0} />
       </mesh>
 
