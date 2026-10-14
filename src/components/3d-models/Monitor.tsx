@@ -1,62 +1,29 @@
-import { Mesh } from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react'
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
+/**
+ * Monitor. Cuerpo físico fijo: no se cae ni puede ser arrastrado.
+ *
+ * El .glb tiene 8 mallas (base, pantalla, puertos, etc.). AutoGLTF
+ * las renderiza todas. Collider `cuboid` porque la forma general es
+ * una caja.
+ */
+const Model = () => {
+  return (
+    <RigidObject
+      type="fixed"
+      colliders="cuboid"
+      position={[0, 1.43, -0.48]}
+      scale={1}
+      rotation={[0, 4.7, 0]}
+      draggable={false}
+    >
+      <AutoGLTF url="/3d-models/monitor.glb" />
+    </RigidObject>
+  );
+};
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-    const { nodes, materials } = useGLTF('/3d-models/monitor.glb');
-    return (
-        <group {...props} dispose={null}>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.bigBaseMonitor as Mesh).geometry}
-                material={materials.backMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.lineBaseMonitor as Mesh).geometry}
-                material={(nodes.lineBaseMonitor as Mesh).material}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.monitorBackPart as Mesh).geometry}
-                material={materials.backMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.portsMonitor as Mesh).geometry}
-                material={materials.inPartsMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.screenMonitor as Mesh).geometry}
-                material={materials.screenMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.smallBaseMonitor as Mesh).geometry}
-                material={materials.inPartsMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.squareBaseMonitor as Mesh).geometry}
-                material={materials.inPartsMaterial}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.supportMonitor as Mesh).geometry}
-                material={materials.columBaseMaterial}
-            />
-        </group>
-    )
-}
+useGLTF.preload('/3d-models/monitor.glb');
 
-useGLTF.preload('/3d-models/monitor.glb')
+export default Model;
