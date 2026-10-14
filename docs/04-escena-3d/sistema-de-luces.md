@@ -2,104 +2,86 @@
 
 > Inicio > 04 — Escena 3D > Sistema de luces
 
-Cómo está configurada la iluminación de la escena y por qué el estado actual tiene algunos detalles a revisar.
+Cómo está configurada la iluminación y las sombras de la escena.
 
 ## El componente `Light.tsx`
 
 ```tsx
-import { useHelper } from '@react-three/drei';
-import { DirectionalLightHelper } from "three"
 import { useRef } from 'react';
+import type { DirectionalLight } from 'three';
 
 const Light = () => {
-  const refLight = useRef<DirectionalLightHelper>(null!);
-  
-  useHelper(refLight, DirectionalLightHelper, 1, "red");
-  
+  const refLight = useRef<DirectionalLight>(null!);
+
   return (
     <>
-        <color attach="background" args={["#000"]} />
-        <directionalLight
-          ref={refLight}
-          intensity={5}
-          color="white"
-          position={[0, 4, 3]}
-        > 
-            <object3D attach="target" position={[0, 1.5, 0]} />
-        </directionalLight>
+      <ambientLight intensity={0.4} color="#ffffff" />
+
+      <directionalLight
+        ref={refLight}
+        intensity={2.5}
+        color="#ffffff"
+        position={[5, 8, 5]}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-left={-8}
+        shadow-camera-right={8}
+        shadow-camera-top={8}
+        shadow-camera-bottom={-8}
+        shadow-camera-near={0.5}
+        shadow-camera-far={30}
+        shadow-bias={-0.0005}
+      />
+
+      <directionalLight
+        intensity={0.5}
+        color="#dde8ff"
+        position={[-3, 4, -3]}
+      />
     </>
-  )
-}
+  );
+};
 
 export default Light;
 ```
 
-## Anatomía
+## Las tres luces
 
 ```mermaid
 graph TB
-    Light[Light.tsx] --> BG[color attach background<br/>fondo negro #000]
-    Light --> Dir[directionalLight<br/>intensity 5, color white<br/>position 0, 4, 3]
-    Dir --> Target[object3D target<br/>position 0, 1.5, 0]
-    Light --> Helper[useHelper<br/>DirectionalLightHelper rojo]
+    A[ambientLight<br/>intensidad 0.4<br/>color #ffffff]
+    D1[directionalLight principal<br/>intensidad 2.5<br/>position 5, 8, 5<br/>con sombras]
+    D2[directionalLight de relleno<br/>intensidad 0.5<br/>position -3, 4, -3<br/>sin sombras]
+
+    A -.rellena zonas oscuras.-> Escena
+    D1 -.ilumina desde arriba con sombras.-> Escena
+    D2 -.suaviza contraste.-> Escena
 ```
 
-### 1. `<color attach="background" args={["#000"]} />`
+### 1. `ambientLight` (luz ambiental)
 
-Establece el color de fondo de la escena a **negro**. Es independiente del `<Sky>` que aparece justo después en `App.tsx`: el `<Sky>` cubre el fondo, pero si no estuviera, verías este negro.
+- **`intensity={0.4}`** — intensidad baja pero suficiente para evitar negros absolutos.
+- **`color="#ffffff"`** — luz neutra.
 
-### 2. `<directionalLight>` principal
+Suma una cantidad constante de luz a todas las superficies, independientemente de su orientación.
 
-- **`intensity={5}`** — intensidad alta.
-- **`color="white"`** — luz blanca neutra.
-- **`position={[0, 4, 3]}`** — la luz está **arriba** (y=4) y ligeramente **detrás** (z=3). Simula un sol cenital con leve componente posterior.
+### 2. `directionalLight` principal (con sombras)
 
-### 3. `<object3D attach="target" position={[0, 1.5, 0]} />`
+- **`intensity={2.5}`** — luz fuerte, la dominante.
+- **`position={[5, 8, 5]}`** — cenital con leve desplazamiento hacia la derecha.
+- **`castShadow`** — emite sombras.
+- **`shadow-mapSize={2048, 2048}`** — mapa de sombras de 2048×2048 píxeles. Da bordes nítidos sin penalizar demasiado el rendimiento.
+- **`shadow-camera`** — ortográfica, cubriendo un volumen de `16×16×30` unidades (de `-8` a `+8` en X/Z, de `0.5` a `30` en profundidad). Es lo bastante grande para cubrir toda la habitación.
+- **`shadow-bias={-0.0005}`** — pequeño offset para evitar el "shadow acne" (sombras fantasma en superficies).
 
-El **target** define hacia dónde apunta la luz. Por defecto, una `DirectionalLight` apunta al origen `(0,0,0)`, lo que aquí sería el suelo. Apuntando a `(0, 1.5, 0)` dirigimos la luz al centro del escritorio.
+### 3. `directionalLight` de relleno (sin sombras)
 
-Visualmente:
+- **`intensity={0.5}`** — luz tenue.
+- **`color="#dde8ff"`** — blanco con un toque azulado.
+- **`position={[-3, 4, -3]}`** — desde el lado opuesto a la luz principal.
 
-```mermaid
-graph LR
-    L[💡 Luz en 0, 4, 3] -- dirección -- T[🎯 Target en 0, 1.5, 0]
-    T -.ilumina.-> M[Escritorio y modelos]
-```
-
-### 4. `useHelper`
-
-```tsx
-const refLight = useRef<DirectionalLightHelper>(null!);
-useHelper(refLight, DirectionalLightHelper, 1, "red");
-```
-
-`useHelper` de `@react-three/drei` añade un **helper visual** a la escena: una línea roja que muestra la dirección y posición de la luz.
-
-```mermaid
-graph TB
-    Dir[directionalLight] --> Helper[🟥 Helper rojo en escena]
-    Helper -.visible.-> Dev[Visibilidad en desarrollo]
-```
-
-⚠️ **Problema:** este helper está siempre activo, incluso en producción. Debería usarse sólo en desarrollo.
-
-## Helpers en los otros componentes
-
-### `Controls.tsx`
-
-```tsx
-const refLight = useRef(null);
-useHelper(refLight.current, DirectionalLightHelper, 1, "red");
-```
-
-⚠️ **Bug menor:** se pasa `refLight.current` en lugar del ref directamente. La primera vez, `current` es `null`, lo que puede causar un warning. Lo correcto sería:
-
-```tsx
-const refLight = useRef<DirectionalLightHelper>(null!);
-useHelper(refLight, DirectionalLightHelper, 1, "red");
-```
-
-Además, este helper es **innecesario** porque el `<OrbitControls>` no necesita iluminación. Probablemente sobró un experimento.
+Su función es suavizar el contraste: ilumina ligeramente las zonas que la luz principal deja en sombra.
 
 ## Sistema de coordenadas del proyecto
 
@@ -118,58 +100,34 @@ graph LR
     end
 ```
 
-La luz está **arriba + detrás** para iluminar desde un ángulo cenital con componente posterior, lo que da sombras interesantes sobre el escritorio.
+La luz principal está **arriba + derecha-delantera**, lo que da sombras largas hacia la parte trasera-izquierda. Coherente con una lámpara de techo en la esquina de la habitación.
 
 ## Sombras
 
 ### Estado actual
 
-- En `Light.tsx` **no se especifica** `castShadow={true}` en la `directionalLight`.
-- En `App.tsx`, el `<Canvas>` **no tiene** la prop `shadows`.
-- En cada mesh de los modelos: `castShadow` y `receiveShadow` están puestos, pero como no hay sombras en el render, no se nota nada.
+- ✅ `shadows` activo en `<Canvas>`.
+- ✅ Luz direccional principal con `castShadow`.
+- ✅ Todos los meshes con `castShadow` y `receiveShadow`.
+- ✅ `shadow-mapSize` alta (2048).
+- ✅ `shadow-camera` dimensionada para cubrir toda la escena.
 
-Para activarlas:
+Las sombras son **visibles** y nítidas en la escena actual.
 
-```tsx
-// App.tsx
-<Canvas shadows style={{ height: '100vh', width: '100%' }}>
-```
+## Helpers en los otros componentes
 
-```tsx
-// Light.tsx
-<directionalLight
-  ref={refLight}
-  intensity={5}
-  color="white"
-  position={[0, 4, 3]}
-  castShadow   // ← añadir
->
-```
+### `Controls.tsx`
 
-Y opcionalmente configurar el shadow map:
+✅ **Corregido**: ya no se usa `useHelper` (era innecesario y tenía un bug menor: `refLight.current` se pasaba antes de que el ref estuviera inicializado).
 
-```tsx
-<directionalLight
-  ...
-  shadow-mapSize-width={1024}
-  shadow-mapSize-height={1024}
-  shadow-camera-near={0.5}
-  shadow-camera-far={20}
-  shadow-camera-left={-5}
-  shadow-camera-right={5}
-  shadow-camera-top={5}
-  shadow-camera-bottom={-5}
->
-```
+## Recomendaciones de mantenimiento
 
-## Recomendaciones
-
-1. **Quitar `useHelper` en producción** o, al menos, eliminar el `refLight` de `Light.tsx`.
-2. **Corregir el `useHelper` en `Controls.tsx`** (no es necesario ahí).
-3. **Decidir si se quieren sombras**: si sí, seguir los pasos de arriba; si no, quitar `castShadow`/`receiveShadow` de los meshes para limpiar el código.
+1. **No añadir `useHelper` en producción**. Si necesitas debug, hazlo condicionalmente con una variable de entorno.
+2. **Ajustar `shadow-bias`** si aparecen artefactos ("shadow acne") o "peter panning" (sombras flotantes).
+3. **Si la cámara se aleja mucho**, considera aumentar `shadow-camera-far` o reposicionar la luz.
 
 ## Documentos relacionados
 
 - [Sistema de escena](./sistema-de-escena.md)
 - [Posicionamiento de objetos](./posicionamiento-de-objetos.md)
-- [Guía de diseño de componentes](../03-componentes/guia-de-diseno-completo.md)
+- [Sistema de físicas](./sistema-de-fisicas.md)
