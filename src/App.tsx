@@ -1,172 +1,155 @@
+import { Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Preload, useProgress } from '@react-three/drei';
 
-import { Canvas } from '@react-three/fiber'
+// Entorno de escena (luces, cámara, controles)
+import Controls from './components/scene-environment/Controls';
+import Light from './components/scene-environment/Light';
+import CamaraController from './components/scene-environment/CamaraController';
+import Loader from './components/scene-environment/Loader';
 
-//Environment
-import Controls from './components/scene-environment/Controls'
-import Light from './components/scene-environment/Light'
-import CamaraController from './components/scene-environment/CamaraController'
-import { Sky } from '@react-three/drei'
+// Environment visual (habitación, decoraciones)
+import Room from './components/environment/Room';
+import Floor from './components/environment/Floor';
+import Plant from './components/environment/Plant';
+import WallDecor from './components/environment/WallDecor';
 
-//3D Models
-import DeskTable from './components/3d-models/DeskTable'
-import Taza from './components/3d-models/Taza'
-import Monitor from './components/3d-models/Monitor'
-import PortaLapiceros from './components/3d-models/PortaLapiceros'
-import KeyBoard from './components/3d-models/KeyBoard'
-import Mause from './components/3d-models/Mause'
-import RoboticHand from './components/3d-models/RoboticHand'
-import HeadPhones from './components/3d-models/HeadPhones'
-import Band from './components/3d-models/Band'
-import Clock from './components/3d-models/Clock'
-import Lapiz from './components/3d-models/Lapiz'
-import Lamp from './components/3d-models/Lamp'
-import LinkedinLogo from './components/3d-models/LinkedinLogo'
-import GitHubLogo from './components/3d-models/GitHubLogo'
-import Vehicle from './components/3d-models/Vehicle'
-import MausePad from './components/3d-models/MausePad'
-import PortaVasos from './components/3d-models/PortaVasos'
+// Sistema de físicas
+import PhysicsWorld from './components/physics/PhysicsWorld';
 
-const App = () => {
+// Modelos 3D — fijos
+import DeskTable from './components/3d-models/DeskTable';
+import Monitor from './components/3d-models/Monitor';
+import MausePad from './components/3d-models/MausePad';
+import PortaVasos from './components/3d-models/PortaVasos';
 
+// Modelos 3D — dinámicos
+import Taza from './components/3d-models/Taza';
+import PortaLapiceros from './components/3d-models/PortaLapiceros';
+import KeyBoard from './components/3d-models/KeyBoard';
+import Mause from './components/3d-models/Mause';
+import RoboticHand from './components/3d-models/RoboticHand';
+import HeadPhones from './components/3d-models/HeadPhones';
+import Band from './components/3d-models/Band';
+import Clock from './components/3d-models/Clock';
+import Lapiz from './components/3d-models/Lapiz';
+import Lamp from './components/3d-models/Lamp';
+import LinkedinLogo from './components/3d-models/LinkedinLogo';
+import GitHubLogo from './components/3d-models/GitHubLogo';
+import Vehicle from './components/3d-models/Vehicle';
+
+/**
+ * Contenido completo de la escena.
+ *
+ * Se monta dentro del `<Canvas>` envuelto por `<Suspense>`. El fallback
+ * del Suspense es `null` (no contiene HTML) porque el indicador de
+ * carga real se renderiza **fuera** del Canvas (ver componente `App`).
+ */
+const Scene = () => {
   return (
-    <div id="canvas-container">
-      <Canvas
-        style={{ height: "100vh", width: "100%" }}
-      >
-        {/* Enviroment */}
-        <Light />
-        <Controls />
-        <CamaraController />
-        <Sky />
+    <>
+      {/* ─── Sistema de físicas ─── */}
+      <PhysicsWorld>
+        {/* Suelo físico fijo: recoge los RigidBody dinámicos que caigan fuera */}
+        <Floor />
 
-        {/* 3D Models */}
+        {/* ─── Objetos físicos fijos (escritorio y ancla de superficie) ─── */}
+        <DeskTable />
+        <Monitor />
+        <MausePad />
+        <PortaVasos />
 
-        <DeskTable
-          position={[0, -0.5, 0]}
-        />
+        {/* ─── Objetos físicos dinámicos (caen, colisionan, arrastrables) ─── */}
+        <Taza />
+        <PortaLapiceros />
+        <KeyBoard />
+        <Mause />
+        <RoboticHand />
+        <HeadPhones />
+        <Band />
+        <Clock />
+        <Lamp />
+        <LinkedinLogo />
+        <GitHubLogo />
+        <Vehicle />
 
-        <Taza
-          position={[-2.2, 1.48, 0.56]}
-          scale={0.6}
-        />
-
-        <Monitor
-          position={[0, 1.43, -0.48]}
-          scale={1}
-          rotation={[0, 4.7, 0]}
-        />
-
-        <KeyBoard
-          position={[0, 1.55, 0.38]}
-          scale={1.7}
-          rotation={[0, 0.05, 0]}
-        />
-
-        <Mause
-          position={[0.9, 1.48, 0.38]}
-          scale={2.4}
-          rotation={[0, 0.3, 0]}
-        />
-
-        <RoboticHand
-          position={[-1.4, 1.48, -0.5]}
-          scale={1.2}
-          rotation={[0, -4.6, 0]}
-        />
-
-        <HeadPhones
-          position={[1.5, 1.57, 0.4]}
-          scale={1.6}
-          rotation={[0, 0.7, -1.68]}
-        />
-
-        <Clock
-          position={[0.7, 1.476, -0.3]}
-          scale={4}
-          rotation={[0, 0, 0]}
-        />
-
-        <Band
-          position={[-1.4, 1.535, 0.4]}
-          scale={0.45}
-          rotation={[0, 1, 1.46]}
-        />
-
-        <PortaLapiceros
-          position={[-2, 1.48, -0.4]}
-          scale={1}
-        />
+        {/* Lápices (4 instancias con paleta distinta) */}
         <Lapiz
           key={1}
-          groupProps={{
-            position: [-2, 1.48, -0.4],
-            scale: 0.9
-          }}
+          groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
           intensidad={500}
-          paleta='amarillos'
+          paleta="amarillos"
         />
         <Lapiz
           key={2}
-          groupProps={{
-            position: [-1.96, 1.48, -0.4],
-            scale: 0.9
-          }}
+          groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
           intensidad={500}
-          paleta='rojos'
+          paleta="rojos"
         />
         <Lapiz
           key={3}
-          groupProps={{
-            position: [-2, 1.48, -0.28],
-            scale: 0.9
-          }}
+          groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
           intensidad={500}
-          paleta='azulGrisOscuro'
+          paleta="azulGrisOscuro"
         />
         <Lapiz
-          groupProps={{
-            position: [-1.96, 1.48, -0.28],
-            scale: 0.9
-          }}
+          groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
           intensidad={500}
-          paleta='verdes'
+          paleta="verdes"
         />
+      </PhysicsWorld>
 
-        <Lamp
-          position={[2, 1.47, -0.3]}
-          scale={1.5}
-          rotation={[0, 5.5, 0]}
-        />
+      {/* ─── Environment visual (sin físicas) ─── */}
+      <Room />
+      <Plant />
+      <WallDecor />
 
-        <LinkedinLogo
-          position={[1.4, 1.49, -0.3]}
-          scale={0.4}
-        />
+      {/* ─── Sistema de escena ─── */}
+      <Light />
+      <Controls />
+      <CamaraController />
 
-        <GitHubLogo
-          position={[1.65, 1.49, -0.3]}
-          scale={0.45}
-        />
+      {/* Fuerza la precarga de todos los useGLTF.preload() declarados */}
+      <Preload all />
+    </>
+  );
+};
 
-        <Vehicle
-          position={[-2, 1.49, 0.2]}
-          scale={0.15}
-          rotation={[0, 1, 0]}
-        />
-        <MausePad
-          position={[0.15, 1.485, 0.35]}
-          scale={0.3}
-          rotation={[0, 0, 0]}
-        />
-        <PortaVasos
-          position={[-2.2, 1.485, 0.57]}
-          scale={0.7}
-          rotation={[0, 0, 0]}
-        />
+/**
+ * Componente "puente" que consulta el porcentaje de carga y decide
+ * si el `<Loader />` debe mostrarse. Vive en el árbol de React pero
+ * puede usar hooks de `@react-three/drei` como `useProgress` aunque
+ * no esté dentro del `<Canvas>`, porque drei expone un store global
+ * al que se suscribe.
+ */
+const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
+  const { progress, total } = useProgress();
+  const isLoading = progress < 100 || total === 0;
+  return (
+    <>
+      <Loader active={isLoading} />
+      {children}
+    </>
+  );
+};
 
-      </Canvas>
-    </div>
-  )
-}
+const App = () => {
+  return (
+    <ProgressBridge>
+      <div id="canvas-container">
+        <Canvas
+          shadows
+          style={{ height: '100vh', width: '100%' }}
+        >
+          {/* Suspense: mientras la escena no esté lista, no renderiza
+              contenido three.js. El indicador visual está fuera del Canvas. */}
+          <Suspense fallback={null}>
+            <Scene />
+          </Suspense>
+        </Canvas>
+      </div>
+    </ProgressBridge>
+  );
+};
 
 export default App;
