@@ -4,11 +4,12 @@ Portafolio web personal renderizado en **3D** con React + TypeScript + three.js.
 
 ## ✨ Características
 
-- 🖥️ **Escena 3D** completa renderizada en el navegador con `react-three-fiber`.
-- 🎯 **Interacciones por objeto**: cada elemento del escritorio está pensado para mostrar información al visitante.
-- 💥 **Físicas** integradas con `@react-three/rapier` (motor Rapier).
+- 🖥️ **Escena 3D interior** con habitación, planta decorativa y cuadro en la pared.
+- 💡 **Iluminación realista** con luz ambiental, luz direccional principal con sombras nítidas, y luz de relleno.
+- 🖐️ **Físicas con Rapier**: la taza, los lápices, los auriculares, etc. caen sobre el escritorio con gravedad y el visitante puede arrastrarlos con el ratón.
+- 📌 **Objetos fijos** (escritorio, monitor, mausePad, portaVasos) permanecen anclados.
 - 🎨 **Paleta de colores propia** definida en código, con tipos estrictos.
-- 📦 **17 modelos 3D** en formato `.glb` listos para cargar.
+- 📦 **17 modelos 3D** en formato `.glb`.
 
 ## 🧰 Stack
 
@@ -27,7 +28,7 @@ npm install
 npm run dev
 ```
 
-Por defecto se sirve en `http://localhost:5173`.
+Por defecto se sirve en `http://localhost:5173`. Al cargar, se muestra una pantalla de carga mientras se descargan los modelos 3D (`.glb`); cuando todos están listos, la escena aparece.
 
 Otros scripts disponibles:
 
@@ -55,14 +56,16 @@ Para empezar, el documento más útil es la [**Visión general**](./docs/01-arqu
 
 ```
 portafolio/
-├── public/3d-models/        # 17 modelos .glb
+├── public/3d-models/             # 17 modelos .glb
 ├── src/
 │   ├── components/
-│   │   ├── 3d-models/       # Componentes que renderizan los modelos
-│   │   └── scene-environment/  # Luz, controles, cámara
-│   ├── helpers/             # paleta-colores.ts
-│   ├── hooks/               # (reservado para hooks futuros)
-│   ├── App.tsx              # Raíz: monta <Canvas> con todos los modelos
-│   └── main.tsx             # Punto de entrada
-└── docs/                    # Documentación completa
+│   │   ├── 3d-models/            # 17 modelos (físicos)
+│   │   ├── environment/          # Room, Plant, WallDecor
+│   │   ├── physics/              # PhysicsWorld, RigidObject
+│   │   └── scene-environment/    # Luz, controles, cámara
+│   ├── helpers/                  # paleta-colores.ts
+│   ├── hooks/                    # useDragObject
+│   ├── App.tsx                   # Raíz: integra Physics + Environment + modelos
+│   └── main.tsx                  # Punto de entrada
+└── docs/                         # Documentación completa
 ```
