@@ -14,7 +14,7 @@ El proyecto usa **Rapier** como motor de físicas, expuesto vía `@react-three/r
 
 ```mermaid
 graph TB
-    Physics[PhysicsWorld<br/>gravedad -9.81]
+    Physics[Physics<br/>gravedad -9.81]
     Physics --> Fixed[📌 Fijos: type='fixed']
     Physics --> Dynamic[💥 Dinámicos: type='dynamic']
 
@@ -40,7 +40,9 @@ graph TB
 
 ## Componentes clave
 
-#### `PhysicsWorld.tsx`
+#### `<Physics>` de `@react-three/rapier`
+
+En este proyecto **no hay un wrapper propio**: el componente `<Physics>` se importa directamente desde `@react-three/rapier` y se monta dentro de un `React.lazy` (ver `App.tsx`) para que su WASM se cargue bajo demanda.
 
 ```tsx
 <Physics gravity={[0, -9.81, 0]}>
@@ -48,7 +50,7 @@ graph TB
 </Physics>
 ```
 
-Wrapper de `<Physics>` con la gravedad por defecto del proyecto. Acepta `paused` opcional.
+Acepta `paused` opcional.
 
 #### `RigidObject.tsx`
 
@@ -196,16 +198,16 @@ export default function Model() {
 useGLTF.preload('/3d-models/mi-objeto.glb');
 ```
 
-### 2. Registrar en `App.tsx` dentro de `<PhysicsWorld>`
+### 2. Registrar en `App.tsx` dentro de `<Physics>`
 
 ```tsx
 import MiObjeto from './components/3d-models/MiObjeto';
 
 // …
-<PhysicsWorld>
+<Physics>
   {/* ... */}
   <MiObjeto />
-</PhysicsWorld>
+</Physics>
 ```
 
 ### 3. Decidir fijo o dinámico
