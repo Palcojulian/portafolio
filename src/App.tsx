@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Preload, useProgress } from '@react-three/drei';
 
@@ -8,119 +8,135 @@ import Light from './components/scene-environment/Light';
 import CamaraController from './components/scene-environment/CamaraController';
 import Loader from './components/scene-environment/Loader';
 
-// Environment visual (habitación, decoraciones)
+// Environment visual (habitación, decoraciones — sin físicas)
 import Room from './components/environment/Room';
-import Floor from './components/environment/Floor';
 import Plant from './components/environment/Plant';
 import WallDecor from './components/environment/WallDecor';
 
-// Sistema de físicas
-import PhysicsWorld from './components/physics/PhysicsWorld';
+// Sistema de físicas — lazy
+const Physics = lazy(async () => {
+  const mod = await import('@react-three/rapier');
+  return { default: mod.Physics };
+});
 
-// Modelos 3D — fijos
-import DeskTable from './components/3d-models/DeskTable';
-import Monitor from './components/3d-models/Monitor';
-import MausePad from './components/3d-models/MausePad';
-import PortaVasos from './components/3d-models/PortaVasos';
+// Componentes físicos (todos lazy para no arrastrar el chunk al inicio).
+const Floor = lazy(() => import('./components/environment/Floor'));
+const DeskTable = lazy(() => import('./components/3d-models/DeskTable'));
+const Monitor = lazy(() => import('./components/3d-models/Monitor'));
+const MausePad = lazy(() => import('./components/3d-models/MausePad'));
+const PortaVasos = lazy(() => import('./components/3d-models/PortaVasos'));
 
-// Modelos 3D — dinámicos
-import Taza from './components/3d-models/Taza';
-import PortaLapiceros from './components/3d-models/PortaLapiceros';
-import KeyBoard from './components/3d-models/KeyBoard';
-import Mause from './components/3d-models/Mause';
-import RoboticHand from './components/3d-models/RoboticHand';
-import HeadPhones from './components/3d-models/HeadPhones';
-import Band from './components/3d-models/Band';
-import Clock from './components/3d-models/Clock';
-import Lapiz from './components/3d-models/Lapiz';
-import Lamp from './components/3d-models/Lamp';
-import LinkedinLogo from './components/3d-models/LinkedinLogo';
-import GitHubLogo from './components/3d-models/GitHubLogo';
-import Vehicle from './components/3d-models/Vehicle';
+const Taza = lazy(() => import('./components/3d-models/Taza'));
+const PortaLapiceros = lazy(() => import('./components/3d-models/PortaLapiceros'));
+const KeyBoard = lazy(() => import('./components/3d-models/KeyBoard'));
+const Mause = lazy(() => import('./components/3d-models/Mause'));
+const RoboticHand = lazy(() => import('./components/3d-models/RoboticHand'));
+const HeadPhones = lazy(() => import('./components/3d-models/HeadPhones'));
+const Band = lazy(() => import('./components/3d-models/Band'));
+const Clock = lazy(() => import('./components/3d-models/Clock'));
+const Lamp = lazy(() => import('./components/3d-models/Lamp'));
+const LinkedinLogo = lazy(() => import('./components/3d-models/LinkedinLogo'));
+const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
+const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
+const Lapiz = lazy(() => import('./components/3d-models/Lapiz'));
+
+// Overlay de diagnóstico
+import StatsOverlay from './components/scene-environment/StatsOverlay';
 
 /**
- * Contenido completo de la escena.
+ * Fase 1: escena estática (sin físicas).
  *
- * Se monta dentro del `<Canvas>` envuelto por `<Suspense>`. El fallback
- * del Suspense es `null` (no contiene HTML) porque el indicador de
- * carga real se renderiza **fuera** del Canvas (ver componente `App`).
+ * Se renderiza INMEDIATAMENTE sin esperar al WASM de Rapier. El
+ * visitante ve la habitación y las decoraciones casi al instante.
+ *
+ * **Importante**: no incluye modelos con `<RigidBody>`, porque
+ * `react-three-rapier` exige que cualquier RigidBody esté dentro de
+ * un `<Physics>`. La fase 2 se encarga de los físicos.
  */
-const Scene = () => {
+const SceneBase = () => {
   return (
     <>
-      {/* ─── Sistema de físicas ─── */}
-      <PhysicsWorld>
-        {/* Suelo físico fijo: recoge los RigidBody dinámicos que caigan fuera */}
-        <Floor />
-
-        {/* ─── Objetos físicos fijos (escritorio y ancla de superficie) ─── */}
-        <DeskTable />
-        <Monitor />
-        <MausePad />
-        <PortaVasos />
-
-        {/* ─── Objetos físicos dinámicos (caen, colisionan, arrastrables) ─── */}
-        <Taza />
-        <PortaLapiceros />
-        <KeyBoard />
-        <Mause />
-        <RoboticHand />
-        <HeadPhones />
-        <Band />
-        <Clock />
-        <Lamp />
-        <LinkedinLogo />
-        <GitHubLogo />
-        <Vehicle />
-
-        {/* Lápices (4 instancias con paleta distinta) */}
-        <Lapiz
-          key={1}
-          groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
-          intensidad={500}
-          paleta="amarillos"
-        />
-        <Lapiz
-          key={2}
-          groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
-          intensidad={500}
-          paleta="rojos"
-        />
-        <Lapiz
-          key={3}
-          groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
-          intensidad={500}
-          paleta="azulGrisOscuro"
-        />
-        <Lapiz
-          groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
-          intensidad={500}
-          paleta="verdes"
-        />
-      </PhysicsWorld>
-
-      {/* ─── Environment visual (sin físicas) ─── */}
+      {/* Environment visual */}
       <Room />
       <Plant />
       <WallDecor />
 
-      {/* ─── Sistema de escena ─── */}
+      {/* Sistema de escena */}
       <Light />
       <Controls />
       <CamaraController />
 
-      {/* Fuerza la precarga de todos los useGLTF.preload() declarados */}
-      <Preload all />
+      {/* Preload de los modelos fijos (los críticos para el primer
+          frame una vez que se monta Physics). */}
+      <Preload />
+    </>
+  );
+};
+
+/**
+ * Fase 2: objetos físicos.
+ *
+ * Se monta dentro de `<Physics>`, que carga el WASM de Rapier
+ * bajo demanda. Mientras el WASM no llega, no se muestran; cuando
+ * está listo, aparecen y caen con gravedad.
+ */
+const PhysicsScene = () => {
+  return (
+    <>
+      {/* Suelo físico fijo */}
+      <Floor />
+
+      {/* Objetos físicos fijos */}
+      <DeskTable />
+      <Monitor />
+      <MausePad />
+      <PortaVasos />
+
+      {/* Objetos físicos dinámicos */}
+      <Taza />
+      <PortaLapiceros />
+      <KeyBoard />
+      <Mause />
+      <RoboticHand />
+      <HeadPhones />
+      <Band />
+      <Clock />
+      <Lamp />
+      <LinkedinLogo />
+      <GitHubLogo />
+      <Vehicle />
+
+      {/* Lápices (4 instancias con paleta distinta) */}
+      <Lapiz
+        key={1}
+        groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
+        intensidad={500}
+        paleta="amarillos"
+      />
+      <Lapiz
+        key={2}
+        groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
+        intensidad={500}
+        paleta="rojos"
+      />
+      <Lapiz
+        key={3}
+        groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
+        intensidad={500}
+        paleta="azulGrisOscuro"
+      />
+      <Lapiz
+        groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
+        intensidad={500}
+        paleta="verdes"
+      />
     </>
   );
 };
 
 /**
  * Componente "puente" que consulta el porcentaje de carga y decide
- * si el `<Loader />` debe mostrarse. Vive en el árbol de React pero
- * puede usar hooks de `@react-three/drei` como `useProgress` aunque
- * no esté dentro del `<Canvas>`, porque drei expone un store global
- * al que se suscribe.
+ * si el `<Loader />` debe mostrarse.
  */
 const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   const { progress, total } = useProgress();
@@ -128,6 +144,7 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Loader active={isLoading} />
+      <StatsOverlay />
       {children}
     </>
   );
@@ -137,14 +154,15 @@ const App = () => {
   return (
     <ProgressBridge>
       <div id="canvas-container">
-        <Canvas
-          shadows
-          style={{ height: '100vh', width: '100%' }}
-        >
-          {/* Suspense: mientras la escena no esté lista, no renderiza
-              contenido three.js. El indicador visual está fuera del Canvas. */}
+        <Canvas shadows style={{ height: '100vh', width: '100%' }}>
+          {/* Fase 1: escena estática (sin esperar a Rapier) */}
+          <SceneBase />
+
+          {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
           <Suspense fallback={null}>
-            <Scene />
+            <Physics gravity={[0, -9.81, 0]}>
+              <PhysicsScene />
+            </Physics>
           </Suspense>
         </Canvas>
       </div>
