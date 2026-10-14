@@ -43,19 +43,50 @@ Convención de nombres:
 
 ## Paso 3 — Crear el componente React
 
-Crea `src/components/3d-models/Book.tsx`:
+### Opción A — Patrón simple con `AutoGLTF` (recomendado)
+
+Para la mayoría de modelos usa el componente `AutoGLTF`, que recorre la escena del `.glb` y renderiza todas sus mallas automáticamente:
 
 ```tsx
-import type { Mesh } from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react/jsx-dev-runtime'
+// src/components/3d-models/Book.tsx
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/3d-models/book.glb')
+export default function Model() {
+  return (
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[0, 1.5, 0]}
+      scale={1}
+    >
+      <AutoGLTF url="/3d-models/book.glb" />
+    </RigidObject>
+  );
+}
+
+useGLTF.preload('/3d-models/book.glb');
+```
+
+**Ventaja**: no necesitas saber los nombres exactos de los nodos del `.glb`. `AutoGLTF` los descubre recorriendo la escena.
+
+> ⚠️ **Limitación de `AutoGLTF`**: si el `.glb` no incluye materiales en su JSON (es decir, `materials: []`), las mallas se renderizarán sin material (color blanco plano por defecto). Si esto ocurre, usa la **Opción B** (patrón manual) y asigna materiales manualmente. Los modelos `lamp.glb`, `mausePad.glb` y `portaVasos.glb` del proyecto usan este patrón.
+
+### Opción B — Patrón manual (sólo si necesitas reescribir un material)
+
+Si necesitas sustituir el material de una malla (como hace `Lapiz.tsx`), usa el patrón manual:
+
+```tsx
+import type { Mesh } from 'three';
+import { useGLTF } from '@react-three/drei';
+import RigidObject from '../physics/RigidObject';
+
+export default function Model() {
+  const { nodes, materials } = useGLTF('/3d-models/book.glb');
 
   return (
-    <group {...props} dispose={null}>
-      {/* Un mesh por cada parte del modelo */}
+    <RigidObject type="dynamic" colliders="hull" position={[0, 1.5, 0]} scale={1}>
       <mesh
         castShadow
         receiveShadow
@@ -68,32 +99,31 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
         geometry={(nodes.bookPages as Mesh).geometry}
         material={materials['book-pages']}
       />
-    </group>
-  )
+    </RigidObject>
+  );
 }
 
-useGLTF.preload('/3d-models/book.glb')
+useGLTF.preload('/3d-models/book.glb');
 ```
 
-### Notas importantes**
+**Importante**: para conocer los nombres exactos de los nodos y materiales del `.glb`, necesitas inspeccionarlo. Hay herramientas como [gltf.report](https://gltf.report/) (online) o [Blender](https://www.blender.org/) (local).
+
+### Notas importantes
 
 - **`useGLTF.preload(...)`** al final del archivo: pre-carga el modelo cuando se importa el módulo, evitando un flash de "loading" en el primer render.
-- **`dispose={null}`**: le indica a react-three-fiber que no libere los recursos del GLB al desmontar. Útil porque muchos modelos se reutilizan.
-- **`import type { JSX } from 'react/jsx-dev-runtime'`**: es el tipo correcto para las props del componente. Ver [Guía de diseño](./guia-de-diseno-completo.md).
+- **`type="fixed"` vs `type="dynamic"`**: usa `fixed` para superficies/anclajes y `dynamic` para objetos que caen/colisionan/arrastran. Ver [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md).
+- **`colliders="hull"` vs `cuboid`**: usa `hull` para formas irregulares y `cuboid` para cajas. Ver [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md).
 - **`as Mesh`**: los nodos que devuelve `useGLTF` son `Object3D` por defecto; se castean a `Mesh` para acceder a `.geometry`.
 
-## Paso 4 — Inspeccionar los nombres de nodos
+## Paso 4 — (Solo si usaste el patrón manual) Inspeccionar nombres de nodos
 
-Si no sabes cómo se llaman los nodos internos del `.glb`, añade temporalmente al componente:
+Si optaste por el patrón manual y necesitas saber los nombres exactos de los nodos y materiales:
 
-```tsx
-useGLTF.preload('/3d-models/book.glb')
+- Usa [gltf.report](https://gltf.report/) subiendo tu `.glb`.
+- O ábrelo en Blender y lee los nombres en la jerarquía.
+- O añade temporalmente `console.log(useGLTF('/3d-models/book.glb'))` en el componente y mira la consola.
 
-// Inspeccionar:
-console.log(useGLTF('/3d-models/book.glb'))
-```
-
-Esto te imprimirá en consola los `nodes` y `materials` disponibles. Renómbralos en Blender si los nombres son feos.
+Con `AutoGLTF` no necesitas este paso.
 
 ## Paso 5 — Montar en `App.tsx`
 

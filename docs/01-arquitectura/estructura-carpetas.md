@@ -9,8 +9,8 @@ Mapa completo del proyecto, archivo por archivo, con la función de cada uno.
 ```
 portafolio/
 │
-├── public/                          # Assets estáticos servidos tal cual
-│   └── 3d-models/                   # 17 modelos .glb (uno por componente 3D)
+├── public/                                # Assets estáticos servidos tal cual
+│   └── 3d-models/                         # 17 modelos .glb (uno por componente 3D)
 │       ├── band.glb
 │       ├── clock.glb
 │       ├── desk-table.glb
@@ -29,157 +29,111 @@ portafolio/
 │       ├── taza.glb
 │       └── vehicle.glb
 │
-├── src/                             # Código fuente
-│   ├── components/                  # Componentes React
-│   │   ├── 3d-models/               # Componentes que renderizan modelos 3D
-│   │   │   ├── Band.tsx
-│   │   │   ├── Clock.tsx
-│   │   │   ├── DeskTable.tsx
-│   │   │   ├── GitHubLogo.tsx
-│   │   │   ├── HeadPhones.tsx
-│   │   │   ├── KeyBoard.tsx
-│   │   │   ├── Lamp.tsx
-│   │   │   ├── Lapiz.tsx
-│   │   │   ├── LinkedinLogo.tsx
-│   │   │   ├── Mause.tsx
-│   │   │   ├── MausePad.tsx
-│   │   │   ├── Monitor.tsx
-│   │   │   ├── PortaLapiceros.tsx
-│   │   │   ├── PortaVasos.tsx
-│   │   │   ├── RoboticHand.tsx
-│   │   │   ├── Taza.tsx
-│   │   │   └── Vehicle.tsx
+├── src/                                   # Código fuente
+│   ├── components/
+│   │   ├── 3d-models/                     # 17 modelos 3D, todos con RigidBody
+│   │   │   ├── Band.tsx                   #   dinámico
+│   │   │   ├── Clock.tsx                  #   dinámico
+│   │   │   ├── DeskTable.tsx              #   FIJO
+│   │   │   ├── GitHubLogo.tsx             #   dinámico
+│   │   │   ├── HeadPhones.tsx             #   dinámico
+│   │   │   ├── KeyBoard.tsx               #   dinámico
+│   │   │   ├── Lamp.tsx                   #   dinámico
+│   │   │   ├── Lapiz.tsx                  #   dinámico, reutilizable (paleta)
+│   │   │   ├── LinkedinLogo.tsx           #   dinámico
+│   │   │   ├── Mause.tsx                  #   dinámico
+│   │   │   ├── MausePad.tsx               #   FIJO
+│   │   │   ├── Monitor.tsx                #   FIJO
+│   │   │   ├── PortaLapiceros.tsx         #   dinámico
+│   │   │   ├── PortaVasos.tsx             #   FIJO
+│   │   │   ├── RoboticHand.tsx            #   dinámico
+│   │   │   ├── Taza.tsx                   #   dinámico
+│   │   │   └── Vehicle.tsx                #   dinámico
 │   │   │
-│   │   └── scene-environment/       # Componentes del entorno de la escena 3D
-│   │       ├── CamaraController.tsx # Posiciona la cámara inicial
-│   │       ├── Controls.tsx         # OrbitControls (rotar/zoom con ratón)
-│   │       └── Light.tsx            # Luz direccional + helper de debug
+│   │   ├── scene-environment/             # Luz, controles, cámara, loader
+│   │   │   ├── CamaraController.tsx       # Posiciona la cámara inicial
+│   │   │   ├── Controls.tsx               # OrbitControls (con límites de enfoque)
+│   │   │   ├── Light.tsx                  # ambient + 2 directionales con sombras
+│   │   │   ├── Loader.tsx                 # Pantalla de carga con useProgress
+│   │   │   └── StatsOverlay.tsx           # Overlay FPS (sólo en desarrollo)
+│   │   │
+│   │   ├── environment/                   # 🆕 Environment visual (interior)
+│   │   │   ├── Floor.tsx                  # Suelo físico (dentro de <Physics>)
+│   │   │   ├── Room.tsx                   # Paredes + alfombra (fuera de <Physics>)
+│   │   │   ├── Plant.tsx                  # Planta decorativa
+│   │   │   └── WallDecor.tsx              # Cuadro en pared trasera
+│   │   │
+│   │   └── physics/                       # 🆕 Sistema de físicas con Rapier
+│   │       └── RigidObject.tsx            # HOC: convierte un modelo en RigidBody
 │   │
-│   ├── helpers/                     # Utilidades compartidas
-│   │   └── paleta-colores.ts        # Paleta de colores tipada (12 gamas × 5 tonos)
+│   ├── helpers/                           # Utilidades compartidas
+│   │   └── paleta-colores.ts              # Paleta de colores tipada
 │   │
-│   ├── hooks/                       # Hooks personalizados de React
-│   │   └── (vacío)                 # Carpeta reservada, sin archivos
+│   ├── hooks/                             # Hooks personalizados
+│   │   └── useDragObject.ts               # 🆕 Drag de RigidBody con el ratón
 │   │
-│   ├── App.tsx                      # Componente raíz: monta <Canvas> y todos los modelos
-│   ├── index.css                    # Estilos globales (mínimos)
-│   └── main.tsx                     # Punto de entrada: createRoot + <StrictMode>
+│   ├── App.tsx                            # Raíz: integra Physics + Environment + modelos
+│   ├── index.css                          # Estilos globales
+│   └── main.tsx                           # createRoot + <StrictMode>
 │
-├── docs/                            # 📚 Esta documentación
+├── docs/                                  # 📚 Documentación
 │   ├── README.md
 │   └── (…)
 │
-├── eslint.config.js                 # Configuración de ESLint (formato flat)
-├── vite.config.ts                   # Configuración de Vite (sólo el plugin de React)
-├── tsconfig.json                    # Config base de TS (referencia a .app y .node)
-├── tsconfig.app.json                # TS config para el código de src/
-├── tsconfig.node.json               # TS config para vite.config.ts
-├── index.html                       # HTML único con <div id="root">
-├── package.json                     # Dependencias y scripts
-├── package-lock.json                # Lockfile de npm
-├── .gitignore                       # Exclusiones estándar de Vite + node_modules, dist
-└── README.md                        # README genérico de plantilla Vite (no documenta el proyecto)
+├── eslint.config.js
+├── vite.config.ts
+├── tsconfig.json / .app.json / .node.json
+├── index.html
+├── package.json
+├── package-lock.json
+├── .gitignore
+└── README.md
 ```
-
-## Función de cada archivo de configuración
-
-### `vite.config.ts`
-
-```ts
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  plugins: [react()],
-})
-```
-
-Configuración mínima. Sólo activa el plugin de React. No hay configuración de puerto, alias, build options, etc.
-
-### `tsconfig.json` (raíz)
-
-Archivo raíz que simplemente referencia a las dos configs especializadas:
-
-```jsonc
-{
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
-}
-```
-
-### `tsconfig.app.json`
-
-Configuración para todo el código dentro de `src/`. Características clave:
-
-- `target: "es2023"` — código moderno.
-- `module: "esnext"` + `moduleResolution: "bundler"` — pensado para Vite.
-- `jsx: "react-jsx"` — no hace falta `import React from 'react'`.
-- `noEmit: true` — el código lo emite Vite, no tsc.
-- `noUnusedLocals` y `noUnusedParameters` — fallará si dejas código muerto.
-
-### `tsconfig.node.json`
-
-Configuración para archivos del entorno Node (en este proyecto, sólo `vite.config.ts`).
-
-### `eslint.config.js`
-
-ESLint en formato **flat config** (ESLint 9+). Activa:
-
-- Reglas recomendadas de JS (`@eslint/js`).
-- Reglas recomendadas de TS (`typescript-eslint`).
-- Reglas de hooks de React (`eslint-plugin-react-hooks`).
-- Reglas de Fast Refresh (`eslint-plugin-react-refresh`).
-- Globales de navegador (`globals.browser`).
-
-Ignora la carpeta `dist/`.
 
 ## Conteo de archivos
 
 | Tipo | Cantidad |
 |---|---|
-| Componentes 3D (`src/components/3d-models/*.tsx`) | 17 |
-| Componentes de escena (`src/components/scene-environment/*.tsx`) | 3 |
+| Modelos 3D (`src/components/3d-models/*.tsx`) | 17 (4 fijos + 13 dinámicos) |
+| Componentes de escena (`src/components/scene-environment/`) | 3 |
+| Componentes de environment (`src/components/environment/`) | 3 |
+| Componentes de físicas (`src/components/physics/`) | 2 |
+| Hooks (`src/hooks/`) | 1 |
 | Helpers (`src/helpers/`) | 1 |
-| Hooks (`src/hooks/`) | 0 (carpeta vacía) |
 | Modelos `.glb` (`public/3d-models/`) | 17 |
 | Archivos de configuración | 7 |
 
-## Diagrama de responsabilidades
+## Diagrama de capas del runtime
 
 ```mermaid
-graph LR
-    HTML[index.html] --> Main[src/main.tsx]
-    Main --> App[src/App.tsx]
+graph TB
+    Main[main.tsx] --> App[App.tsx]
+    App --> Canvas[Canvas con shadows]
 
-    App --> Canvas
+    Canvas --> Physics[Physics<br/>gravedad -9.81]
+    Canvas --> Env[Environment visual]
+    Canvas --> Scene[Scene environment]
 
-    subgraph Components[src/components/]
-        direction TB
-        Env[scene-environment/]
-        Models[3d-models/]
-    end
+    Physics --> Fixed[📌 Fijos]
+    Physics --> Dynamic[💥 Dinámicos]
+    Fixed --> DeskTable
+    Fixed --> Monitor
+    Fixed --> MausePad
+    Fixed --> PortaVasos
+    Dynamic -.->|resto| Models13[13 modelos]
 
-    Canvas --> Env
-    Canvas --> Models
+    Env --> Room
+    Env --> Plant
+    Env --> WallDecor
 
-    subgraph Helpers[src/helpers/]
-        Paleta[paleta-colores.ts]
-    end
-
-    Models -.importa.-> Paleta
-
-    subgraph Public[public/]
-        GLB[3d-models/*.glb]
-    end
-
-    Models -.carga.-> GLB
+    Scene --> Light
+    Scene --> Controls
+    Scene --> CamaraController
 ```
 
 ## Documentos relacionados
 
 - [Visión general](./vision-general.md)
 - [Stack tecnológico](./stack-tecnologico.md)
-- [Cómo añadir un modelo 3D](../03-componentes/como-anadir-modelo-3d.md)
+- [Sistema de escena](../04-escena-3d/sistema-de-escena.md)
+- [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md)

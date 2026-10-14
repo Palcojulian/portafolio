@@ -1,21 +1,27 @@
-import { Mesh } from 'three'
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react'
-
-
-export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/3d-models/porta-lapiceros.glb');
+/**
+ * Portalápices. Cuerpo físico dinámico: el visitante puede arrastrarlo
+ * junto con los lápices que contiene.
+ *
+ * El .glb tiene una única malla (`portaLapiceros`) y un material
+ * `Material`.
+ */
+const Model = () => {
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.portaLapiceros as Mesh).geometry}
-        material={materials.Material}
-      />
-    </group>
-  )
-}
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[-2, 1.48, -0.4]}
+      scale={1}
+    >
+      <AutoGLTF url="/3d-models/porta-lapiceros.glb" />
+    </RigidObject>
+  );
+};
 
-useGLTF.preload('/3d-models/porta-lapiceros.glb')
+useGLTF.preload('/3d-models/porta-lapiceros.glb');
+
+export default Model;

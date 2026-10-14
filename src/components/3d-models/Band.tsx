@@ -1,44 +1,27 @@
-import type { Mesh } from 'three'
-import type { JSX } from 'react';
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-import { useGLTF } from '@react-three/drei'
+/**
+ * Banda elástica. Cuerpo físico dinámico.
+ *
+ * El .glb tiene 5 mallas (caja, botón, correa, hebilla, pantalla)
+ * y 2 materiales (`cajon`, `correa`). AutoGLTF los mapea todos.
+ */
+const Model = () => {
+  return (
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[-1.4, 1.535, 0.4]}
+      scale={0.45}
+      rotation={[0, 1, 1.46]}
+    >
+      <AutoGLTF url="/3d-models/band.glb" />
+    </RigidObject>
+  );
+};
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-    const { nodes, materials } = useGLTF('/3d-models/band.glb');
-    return (
-        <group {...props} dispose={null}>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.boxBand_ as Mesh).geometry}
-                material={materials.cajon}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.btnBand as Mesh).geometry}
-                material={materials.correa}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.correaBand as Mesh).geometry}
-                material={materials.correa}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.hebillaBand as Mesh).geometry}
-                material={materials.correa}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={(nodes.screenBand as Mesh).geometry}
-                material={materials.correa}
-            />
-        </group>
-    )
-}
+useGLTF.preload('/3d-models/band.glb');
 
-useGLTF.preload('/3d-models/band.glb')
+export default Model;

@@ -1,49 +1,27 @@
-import { Mesh } from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react'
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/3d-models/headPhones.glb');
+/**
+ * Auriculares. Cuerpo físico dinámico.
+ *
+ * El .glb tiene 3 mallas (arco, almohadilla izquierda, almohadilla
+ * derecha) y 2 materiales (`baseMaterial`, `Material`).
+ */
+const Model = () => {
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshArcoHeadPhone as Mesh).geometry}
-        material={materials.baseMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshArcoHeadPhone_1 as Mesh).geometry}
-        material={materials.Material}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshLPillow as Mesh).geometry}
-        material={materials.baseMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshLPillow_1 as Mesh).geometry}
-        material={materials.Material}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshRPillow as Mesh).geometry}
-        material={materials.baseMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshRPillow_1 as Mesh).geometry}
-        material={materials.Material}
-      />
-    </group>
-  )
-}
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[1.5, 1.57, 0.4]}
+      scale={1.6}
+      rotation={[0, 0.7, -1.68]}
+    >
+      <AutoGLTF url="/3d-models/headPhones.glb" />
+    </RigidObject>
+  );
+};
 
-useGLTF.preload('/3d-models/headPhones.glb')
+useGLTF.preload('/3d-models/headPhones.glb');
+
+export default Model;

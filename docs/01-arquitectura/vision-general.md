@@ -73,17 +73,18 @@ flowchart TB
 
 ## Cómo se "ve" el escritorio desde la cámara
 
-La cámara está posicionada en `(0, 3, 2.5)` y orbita alrededor del punto `(0, 2.5, 0)` (definido como `target` en `OrbitControls`). Esto coloca al visitante ligeramente por encima del escritorio y mirando hacia abajo con un ángulo frontal.
+La cámara está posicionada en `(0, 3, 4)` y orbita alrededor del punto `(0, 1.5, 0)` (definido como `target` en `OrbitControls`). Esto coloca al visitante ligeramente por encima del escritorio y mirando hacia abajo con un ángulo frontal-tres-cuartos.
 
 ```mermaid
 graph LR
-    A[Visitante<br/>posición: 0, 3, 2.5] -->|---| B[Escritorio<br/>target: 0, 2.5, 0]
+    A[Visitante<br/>posición: 0, 3, 4] -->|---| B[Escritorio<br/>target: 0, 1.5, 0]
 ```
 
 El visitante puede:
 
 - 🖱️ **Rotar** la cámara arrastrando con el ratón.
 - 🔍 **Hacer zoom** con la rueda del ratón (esto está habilitado en `OrbitControls`).
+- 🖐️ **Arrastrar** cualquier objeto dinámico del escritorio con click + ratón (físicas con Rapier).
 
 ## Tipos de componentes
 

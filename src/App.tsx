@@ -1,172 +1,173 @@
+import { Suspense, lazy } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Preload, useProgress } from '@react-three/drei';
 
-import { Canvas } from '@react-three/fiber'
+// Entorno de escena (luces, cámara, controles)
+import Controls from './components/scene-environment/Controls';
+import Light from './components/scene-environment/Light';
+import CamaraController from './components/scene-environment/CamaraController';
+import Loader from './components/scene-environment/Loader';
 
-//Environment
-import Controls from './components/scene-environment/Controls'
-import Light from './components/scene-environment/Light'
-import CamaraController from './components/scene-environment/CamaraController'
-import { Sky } from '@react-three/drei'
+// Environment visual (habitación, decoraciones — sin físicas)
+import Room from './components/environment/Room';
+import Plant from './components/environment/Plant';
+import WallDecor from './components/environment/WallDecor';
 
-//3D Models
-import DeskTable from './components/3d-models/DeskTable'
-import Taza from './components/3d-models/Taza'
-import Monitor from './components/3d-models/Monitor'
-import PortaLapiceros from './components/3d-models/PortaLapiceros'
-import KeyBoard from './components/3d-models/KeyBoard'
-import Mause from './components/3d-models/Mause'
-import RoboticHand from './components/3d-models/RoboticHand'
-import HeadPhones from './components/3d-models/HeadPhones'
-import Band from './components/3d-models/Band'
-import Clock from './components/3d-models/Clock'
-import Lapiz from './components/3d-models/Lapiz'
-import Lamp from './components/3d-models/Lamp'
-import LinkedinLogo from './components/3d-models/LinkedinLogo'
-import GitHubLogo from './components/3d-models/GitHubLogo'
-import Vehicle from './components/3d-models/Vehicle'
-import MausePad from './components/3d-models/MausePad'
-import PortaVasos from './components/3d-models/PortaVasos'
+// Sistema de físicas — lazy
+const Physics = lazy(async () => {
+  const mod = await import('@react-three/rapier');
+  return { default: mod.Physics };
+});
+
+// Componentes físicos (todos lazy para no arrastrar el chunk al inicio).
+const Floor = lazy(() => import('./components/environment/Floor'));
+const DeskTable = lazy(() => import('./components/3d-models/DeskTable'));
+const Monitor = lazy(() => import('./components/3d-models/Monitor'));
+const MausePad = lazy(() => import('./components/3d-models/MausePad'));
+const PortaVasos = lazy(() => import('./components/3d-models/PortaVasos'));
+
+const Taza = lazy(() => import('./components/3d-models/Taza'));
+const PortaLapiceros = lazy(() => import('./components/3d-models/PortaLapiceros'));
+const KeyBoard = lazy(() => import('./components/3d-models/KeyBoard'));
+const Mause = lazy(() => import('./components/3d-models/Mause'));
+const RoboticHand = lazy(() => import('./components/3d-models/RoboticHand'));
+const HeadPhones = lazy(() => import('./components/3d-models/HeadPhones'));
+const Band = lazy(() => import('./components/3d-models/Band'));
+const Clock = lazy(() => import('./components/3d-models/Clock'));
+const Lamp = lazy(() => import('./components/3d-models/Lamp'));
+const LinkedinLogo = lazy(() => import('./components/3d-models/LinkedinLogo'));
+const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
+const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
+const Lapiz = lazy(() => import('./components/3d-models/Lapiz'));
+
+// Overlay de diagnóstico
+import StatsOverlay from './components/scene-environment/StatsOverlay';
+
+/**
+ * Fase 1: escena estática (sin físicas).
+ *
+ * Se renderiza INMEDIATAMENTE sin esperar al WASM de Rapier. El
+ * visitante ve la habitación y las decoraciones casi al instante.
+ *
+ * **Importante**: no incluye modelos con `<RigidBody>`, porque
+ * `react-three-rapier` exige que cualquier RigidBody esté dentro de
+ * un `<Physics>`. La fase 2 se encarga de los físicos.
+ */
+const SceneBase = () => {
+  return (
+    <>
+      {/* Environment visual */}
+      <Room />
+      <Plant />
+      <WallDecor />
+
+      {/* Sistema de escena */}
+      <Light />
+      <Controls />
+      <CamaraController />
+
+      {/* Preload de los modelos fijos (los críticos para el primer
+          frame una vez que se monta Physics). */}
+      <Preload />
+    </>
+  );
+};
+
+/**
+ * Fase 2: objetos físicos.
+ *
+ * Se monta dentro de `<Physics>`, que carga el WASM de Rapier
+ * bajo demanda. Mientras el WASM no llega, no se muestran; cuando
+ * está listo, aparecen y caen con gravedad.
+ */
+const PhysicsScene = () => {
+  return (
+    <>
+      {/* Suelo físico fijo */}
+      <Floor />
+
+      {/* Objetos físicos fijos */}
+      <DeskTable />
+      <Monitor />
+      <MausePad />
+      <PortaVasos />
+
+      {/* Objetos físicos dinámicos */}
+      <Taza />
+      <PortaLapiceros />
+      <KeyBoard />
+      <Mause />
+      <RoboticHand />
+      <HeadPhones />
+      <Band />
+      <Clock />
+      <Lamp />
+      <LinkedinLogo />
+      <GitHubLogo />
+      <Vehicle />
+
+      {/* Lápices (4 instancias con paleta distinta) */}
+      <Lapiz
+        key={1}
+        groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
+        intensidad={500}
+        paleta="amarillos"
+      />
+      <Lapiz
+        key={2}
+        groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
+        intensidad={500}
+        paleta="rojos"
+      />
+      <Lapiz
+        key={3}
+        groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
+        intensidad={500}
+        paleta="azulGrisOscuro"
+      />
+      <Lapiz
+        groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
+        intensidad={500}
+        paleta="verdes"
+      />
+    </>
+  );
+};
+
+/**
+ * Componente "puente" que consulta el porcentaje de carga y decide
+ * si el `<Loader />` debe mostrarse.
+ */
+const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
+  const { progress, total } = useProgress();
+  const isLoading = progress < 100 || total === 0;
+  return (
+    <>
+      <Loader active={isLoading} />
+      <StatsOverlay />
+      {children}
+    </>
+  );
+};
 
 const App = () => {
-
   return (
-    <div id="canvas-container">
-      <Canvas
-        style={{ height: "100vh", width: "100%" }}
-      >
-        {/* Enviroment */}
-        <Light />
-        <Controls />
-        <CamaraController />
-        <Sky />
+    <ProgressBridge>
+      <div id="canvas-container">
+        <Canvas shadows style={{ height: '100vh', width: '100%' }}>
+          {/* Fase 1: escena estática (sin esperar a Rapier) */}
+          <SceneBase />
 
-        {/* 3D Models */}
-
-        <DeskTable
-          position={[0, -0.5, 0]}
-        />
-
-        <Taza
-          position={[-2.2, 1.48, 0.56]}
-          scale={0.6}
-        />
-
-        <Monitor
-          position={[0, 1.43, -0.48]}
-          scale={1}
-          rotation={[0, 4.7, 0]}
-        />
-
-        <KeyBoard
-          position={[0, 1.55, 0.38]}
-          scale={1.7}
-          rotation={[0, 0.05, 0]}
-        />
-
-        <Mause
-          position={[0.9, 1.48, 0.38]}
-          scale={2.4}
-          rotation={[0, 0.3, 0]}
-        />
-
-        <RoboticHand
-          position={[-1.4, 1.48, -0.5]}
-          scale={1.2}
-          rotation={[0, -4.6, 0]}
-        />
-
-        <HeadPhones
-          position={[1.5, 1.57, 0.4]}
-          scale={1.6}
-          rotation={[0, 0.7, -1.68]}
-        />
-
-        <Clock
-          position={[0.7, 1.476, -0.3]}
-          scale={4}
-          rotation={[0, 0, 0]}
-        />
-
-        <Band
-          position={[-1.4, 1.535, 0.4]}
-          scale={0.45}
-          rotation={[0, 1, 1.46]}
-        />
-
-        <PortaLapiceros
-          position={[-2, 1.48, -0.4]}
-          scale={1}
-        />
-        <Lapiz
-          key={1}
-          groupProps={{
-            position: [-2, 1.48, -0.4],
-            scale: 0.9
-          }}
-          intensidad={500}
-          paleta='amarillos'
-        />
-        <Lapiz
-          key={2}
-          groupProps={{
-            position: [-1.96, 1.48, -0.4],
-            scale: 0.9
-          }}
-          intensidad={500}
-          paleta='rojos'
-        />
-        <Lapiz
-          key={3}
-          groupProps={{
-            position: [-2, 1.48, -0.28],
-            scale: 0.9
-          }}
-          intensidad={500}
-          paleta='azulGrisOscuro'
-        />
-        <Lapiz
-          groupProps={{
-            position: [-1.96, 1.48, -0.28],
-            scale: 0.9
-          }}
-          intensidad={500}
-          paleta='verdes'
-        />
-
-        <Lamp
-          position={[2, 1.47, -0.3]}
-          scale={1.5}
-          rotation={[0, 5.5, 0]}
-        />
-
-        <LinkedinLogo
-          position={[1.4, 1.49, -0.3]}
-          scale={0.4}
-        />
-
-        <GitHubLogo
-          position={[1.65, 1.49, -0.3]}
-          scale={0.45}
-        />
-
-        <Vehicle
-          position={[-2, 1.49, 0.2]}
-          scale={0.15}
-          rotation={[0, 1, 0]}
-        />
-        <MausePad
-          position={[0.15, 1.485, 0.35]}
-          scale={0.3}
-          rotation={[0, 0, 0]}
-        />
-        <PortaVasos
-          position={[-2.2, 1.485, 0.57]}
-          scale={0.7}
-          rotation={[0, 0, 0]}
-        />
-
-      </Canvas>
-    </div>
-  )
-}
+          {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
+          <Suspense fallback={null}>
+            <Physics gravity={[0, -9.81, 0]}>
+              <PhysicsScene />
+            </Physics>
+          </Suspense>
+        </Canvas>
+      </div>
+    </ProgressBridge>
+  );
+};
 
 export default App;

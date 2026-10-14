@@ -1,31 +1,27 @@
-import type { Mesh } from 'three'
-import type { JSX } from 'react';
-import { useGLTF } from '@react-three/drei'
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/3d-models/clock.glb');
+/**
+ * Reloj. Cuerpo físico dinámico.
+ *
+ * El .glb tiene 3 mallas (caja, pantalla, soporte) y 3 materiales
+ * (`boxMaterial`, `screenMaterial`, `baseMaterial`).
+ */
+const Model = () => {
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.boxClock as Mesh).geometry}
-        material={materials.boxMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.screenClock as Mesh).geometry}
-        material={materials.screenMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.supportsClock as Mesh).geometry}
-        material={materials.baseMaterial}
-      />
-    </group>
-  )
-}
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[0.7, 1.476, -0.3]}
+      scale={4}
+      rotation={[0, 0, 0]}
+    >
+      <AutoGLTF url="/3d-models/clock.glb" />
+    </RigidObject>
+  );
+};
 
-useGLTF.preload('/3d-models/clock.glb')
+useGLTF.preload('/3d-models/clock.glb');
+
+export default Model;

@@ -1,38 +1,27 @@
-import { Mesh } from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { JSX } from 'react';
+import AutoGLTF from '../physics/AutoGLTF';
+import RigidObject from '../physics/RigidObject';
+import { useGLTF } from '@react-three/drei';
 
-
-export default function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/3d-models/mause.glb');
+/**
+ * Ratón. Cuerpo físico dinámico.
+ *
+ * El .glb tiene 3 mallas (`mausePart1`, `mausePart2`, `mausePart3`)
+ * y 3 materiales (`whiteMaterial`, `blueMaterial`, `colorMaterial`).
+ */
+const Model = () => {
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.mausePart2 as Mesh).geometry}
-        material={materials.blueMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.mausePart3 as Mesh).geometry}
-        material={materials.whiteMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshMausePart1 as Mesh).geometry}
-        material={materials.whiteMaterial}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={(nodes.meshMausePart1_1 as Mesh).geometry}
-        material={materials.whiteMaterial}
-      />
-    </group>
-  )
-}
+    <RigidObject
+      type="dynamic"
+      colliders="cuboid"
+      position={[0.9, 1.48, 0.38]}
+      scale={2.4}
+      rotation={[0, 0.3, 0]}
+    >
+      <AutoGLTF url="/3d-models/mause.glb" />
+    </RigidObject>
+  );
+};
 
-useGLTF.preload('/3d-models/mause.glb')
+useGLTF.preload('/3d-models/mause.glb');
+
+export default Model;
