@@ -24,11 +24,10 @@ const Controls = () => {
   return (
     <OrbitControls
       target={[0, 1.5, 0]}
-      enableZoom={true}
+      enableZoom={false}
       enableRotate={true}
       enablePan={false}
-      minDistance={2}
-      maxDistance={8}
+      maxDistance={3}
       minPolarAngle={Math.PI / 6}
       maxPolarAngle={Math.PI / 2.2}
       minAzimuthAngle={-Math.PI / 3}
