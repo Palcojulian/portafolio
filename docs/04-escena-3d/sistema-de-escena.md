@@ -9,51 +9,26 @@ Cómo está organizada la escena 3D: el `<Canvas>`, el environment visual, las f
 ```tsx
 <div id="canvas-container">
   <Canvas shadows style={{ height: '100vh', width: '100%' }}>
-    {/* Físicas: envuelve los objetos físicos */}
-    <PhysicsWorld>
-      {/* Fijos */}
-      <DeskTable />
-      <Monitor />
-      <MausePad />
-      <PortaVasos />
+    {/* Fase 1: escena estática (sin esperar a Rapier) */}
+    <SceneBase />
 
-      {/* Dinámicos */}
-      <Taza />
-      <PortaLapiceros />
-      <KeyBoard />
-      <Mause />
-      <RoboticHand />
-      <HeadPhones />
-      <Band />
-      <Clock />
-      <Lamp />
-      <LinkedinLogo />
-      <GitHubLogo />
-      <Vehicle />
-      <Lapiz ... />
-      <Lapiz ... />
-      <Lapiz ... />
-      <Lapiz ... />
-    </PhysicsWorld>
-
-    {/* Environment visual (sin físicas) */}
-    <Room />
-    <Plant />
-    <WallDecor />
-
-    {/* Escena */}
-    <Light />
-    <Controls />
-    <CamaraController />
+    {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
+    <Suspense fallback={null}>
+      <Physics gravity={[0, -9.81, 0]}>
+        <PhysicsScene />
+      </Physics>
+    </Suspense>
   </Canvas>
 </div>
 ```
 
+`SceneBase` contiene el environment visual y el sistema de escena. `PhysicsScene` contiene todos los componentes físicos (fijos + dinámicos). Ambos se cargan bajo demanda con `React.lazy`.
+
 ### Puntos clave
 
 - **`shadows` activado**: necesario para que las sombras del `directionalLight` se rendericen.
-- **`<PhysicsWorld>`** envuelve SOLO los objetos físicos (fijos + dinámicos). El environment visual está fuera.
-- **El orden de los elementos dentro de `<PhysicsWorld>` no afecta a la simulación**, pero el orden dentro del `<Canvas>` puede afectar al render (z-buffer).
+- **`<Physics>`** de `@react-three/rapier` envuelve SOLO los objetos físicos (fijos + dinámicos). El environment visual está fuera.
+- **El orden de los elementos dentro de `<Physics>` no afecta a la simulación**, pero el orden dentro del `<Canvas>` puede afectar al render (z-buffer).
 
 ## Las cuatro capas de la escena
 
@@ -61,7 +36,7 @@ Cómo está organizada la escena 3D: el `<Canvas>`, el environment visual, las f
 graph TB
     Canvas[Canvas con shadows]
 
-    Canvas --> Physics[⚛️ PhysicsWorld]
+    Canvas --> Physics[⚛️ Physics]
     Canvas --> Env[🏠 Environment visual]
     Canvas --> Models[📦 Modelos 3D]
     Canvas --> Scene[🎬 Sistema de escena]
@@ -100,9 +75,14 @@ graph TB
 
 ### Capa de físicas (`physics/`)
 
-Define el sistema de simulación con Rapier. Envuelve a:
+Define el sistema de simulación con Rapier. **El motor de Rapier (incluido su WASM) se carga bajo demanda** mediante `React.lazy` (ver [Rendimiento](../06-rendimiento.md)). Mientras llega:
+
+- **Fase 1 (inmediata)**: el visitante ve el escritorio y las decoraciones.
+- **Fase 2 (cuando Rapier carga)**: los RigidBody aparecen y caen con gravedad.
+
+Envuelve a:
 - **El suelo físico** (`Floor.tsx`): recoge los RigidBody dinámicos que caigan fuera del escritorio.
-- **Los modelos 3D físicos**: fijos (4) y dinámicos (13).
+- **Los modelos 3D dinámicos** (13): taza, reloj, lámpara, lápices, etc.
 
 ### Capa de environment (`environment/`)
 
@@ -179,7 +159,7 @@ graph TB
 
     Container --> Canvas
 
-    Canvas --> Physics[⚛️ PhysicsWorld]
+    Canvas --> Physics[⚛️ Physics]
     Canvas --> Env[🏠 Environment]
     Canvas --> Scene[🎬 Scene environment]
 
