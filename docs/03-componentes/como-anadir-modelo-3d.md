@@ -111,7 +111,7 @@ useGLTF.preload('/3d-models/book.glb');
 ### Notas importantes
 
 - **`useGLTF.preload(...)`** al final del archivo: pre-carga el modelo cuando se importa el módulo, evitando un flash de "loading" en el primer render.
-- **`type="fixed"` vs `type="dynamic"`**: usa `fixed` para superficies/anclajes y `dynamic` para objetos que caen/colisionan/arrastran. Ver [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md).
+- **`type="fixed"` vs `type="dynamic"`**: usa `fixed` para superficies/anclajes y `dynamic` para objetos que caen, colisionan o empuja el personaje. Ver [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md).
 - **`colliders="hull"` vs `cuboid`**: usa `hull` para formas irregulares y `cuboid` para cajas. Ver [Sistema de físicas](../04-escena-3d/sistema-de-fisicas.md).
 - **`as Mesh`**: los nodos que devuelve `useGLTF` son `Object3D` por defecto; se castean a `Mesh` para acceder a `.geometry`.
 

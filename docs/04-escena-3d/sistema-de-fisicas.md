@@ -10,7 +10,7 @@ El proyecto usa **Rapier** como motor de físicas, expuesto vía `@react-three/r
 
 - Gravedad: `-9.81` en el eje Y (igual que la Tierra).
 - timeStep: 1/60s (gestionado internamente).
-- Objetos clasificados en **fijos** (no se mueven) y **dinámicos** (caen, chocan, se pueden arrastrar).
+- Objetos clasificados en **fijos** (no se mueven) y **dinámicos** (caen, chocan y el personaje puede empujarlos).
 
 ```mermaid
 graph TB
@@ -57,7 +57,7 @@ Acepta `paused` opcional.
 Componente reutilizable que:
 
 1. Envuelve el modelo en un `<RigidBody>` con `type`, `colliders`, `position`, `rotation`, `scale`.
-2. Si es dinámico y `draggable={true}`, monta los handlers de `useDragObject` en un `<group>` hijo.
+2. Si es dinámico y tiene `sound` u `onFloorImpact`, detecta los golpes contra el suelo con `useFloorImpact` (ver [Sistema de sonido](./sistema-de-sonido.md)).
 
 ```tsx
 interface RigidObjectProps {
@@ -66,14 +66,11 @@ interface RigidObjectProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
-  draggable?: boolean;
+  sound?: SoundMaterial;
+  onFloorImpact?: (impact: FloorImpact) => void;
   children: ReactNode;
 }
 ```
-
-#### `useDragObject.ts` (hook)
-
-Implementa el drag físico. Ver sección [Drag con el ratón](#drag-con-el-ratón).
 
 ## Clasificación de los 17 modelos
 
@@ -90,7 +87,7 @@ Son superficies o anclas que no deben moverse:
 
 ### Dinámicos (`type="dynamic"`)
 
-Son objetos que caen con gravedad y pueden ser arrastrados:
+Son objetos que caen con gravedad y el personaje puede empujar:
 
 | Modelo | Posición |
 |---|---|
@@ -118,57 +115,9 @@ Son objetos que caen con gravedad y pueden ser arrastrados:
 
 En este proyecto se usa **`cuboid` para todos los modelos**. La caja envolvente del conjunto es suficiente para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
 
-## Drag con el ratón
+## Interacción
 
-El hook `useDragObject` permite arrastrar cualquier `RigidObject` dinámico.
-
-### Flujo del drag
-
-```mermaid
-sequenceDiagram
-    participant U as Visitante
-    participant M as mesh
-    participant R as RigidObject
-    participant H as useDragObject
-    participant Rapier as Rapier
-
-    U->>M: onPointerDown
-    M->>H: handlePointerDown
-    H->>Rapier: setBodyType(Kinematic)
-    H->>H: captura plano y offset
-
-    U->>M: onPointerMove (botón pulsado)
-    M->>H: handlePointerMove
-    H->>Rapier: setNextKinematicTranslation(x, y, z)
-    Rapier-->>M: posición actualizada
-
-    U->>M: onPointerUp
-    M->>H: handlePointerUp
-    H->>Rapier: setBodyType(Dynamic)
-    H->>Rapier: setLinvel(0,0,0)
-```
-
-### Implementación por dentro
-
-1. **`pointerDown`**: al pulsar, el hook sube por el árbol de three.js hasta encontrar el `Object3D` del `<RigidBody>` (lo marca `@react-three/rapier` con `userData.rigidBody`). Captura:
-   - La posición del RigidBody en ese momento.
-   - El plano perpendicular a la cámara que pasa por esa posición.
-   - El offset entre el punto exacto del click y el centro del RigidBody.
-
-2. **Cambio a kinematic**: `setBodyType(2, true)` convierte el RigidBody en `KinematicPositionBased`, lo que permite moverlo por código sin que las colisiones lo empujen.
-
-3. **`pointerMove`**: proyecta el ratón sobre el plano y aplica `setNextKinematicTranslation`.
-
-4. **`pointerUp`**: restaura el RigidBody a `dynamic` (`setBodyType(0, true)`) y anula las velocidades (`setLinvel(0,0,0)`, `setAngvel(0,0,0)`). **No hay lanzamiento**: el objeto reposa donde lo dejaste.
-
-### Cursor
-
-El hook cambia el cursor del `<canvas>` a:
-- `grab` cuando se está arrastrando (`pointerDown`).
-- `grabbing` mientras se arrastra (`pointerMove` con botón pulsado).
-- `default` cuando se suelta.
-
-Para que el cursor cambie también al pasar sobre un objeto arrastrable, añadir `style={{ cursor: 'grab' }}` en el `<mesh>`.
+El visitante **no manipula los objetos con el ratón**: el ratón sólo gira la cámara. La única forma de mover los objetos dinámicos es empujarlos con el personaje (`Player`), que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ver [Sistema de personaje](./sistema-de-personaje.md).
 
 ## Cómo añadir un nuevo objeto físico
 
@@ -215,7 +164,7 @@ import MiObjeto from './components/3d-models/MiObjeto';
 | Caso | type |
 |---|---|
 | Es superficie, anclaje o decoración pesada | `fixed` |
-| Es un objeto que debe caer, chocar o arrastrarse | `dynamic` |
+| Es un objeto que debe caer, chocar o ser empujado | `dynamic` |
 
 ## Cómo añadir un objeto fijo sin físicas
 
@@ -230,11 +179,27 @@ Para elementos puramente visuales (suelo, paredes, decoraciones), no hace falta 
 
 Es el patrón usado en `Room.tsx`, `Plant.tsx` y `WallDecor.tsx`.
 
+## Objetos rompibles
+
+La taza (`Taza.tsx`) se rompe si golpea el suelo a más de `BREAK_SPEED` (3,5 m/s). Una caída desde el escritorio da ~6 m/s; un golpe suave sólo hace "clink".
+
+```mermaid
+graph LR
+    Impact[onFloorImpact<br/>speed > 3.5] --> Frac[fracturar<br/>helpers/fracturar.ts]
+    Frac --> Rota[TazaRota<br/>fragmentos con collider hull]
+    Rota -->|4 s + 1 s de fundido| Done[onDone]
+    Done --> Nueva[Taza entera en su sitio<br/>key = generation + 1]
+```
+
+1. **`fracturar(modelo, escala, pose)`**: envolvente convexa del modelo (`ConvexGeometry`), troceada con `ConvexObjectBreaker.subdivideByImpact` alrededor de un punto de la base. Usa `Math.random`, así que se llama desde el manejador del impacto, nunca durante el render.
+2. **`TazaRota`**: cada fragmento es un RigidBody dinámico (`colliders="hull"`) con la pose de la taza y un empuje hacia fuera. Comparten un material transparente para el fundido final.
+3. **Reaparición**: al terminar el fundido se liberan geometrías y material, y la taza se vuelve a montar con una `key` nueva en su posición inicial.
+
+Para hacer rompible otro objeto: reutilizar `fracturar` y `TazaRota` (o generalizarlo) desde su `onFloorImpact`.
+
 ## Limitaciones
 
-- ❌ **No hay lanzamiento con velocidad**: al soltar, el objeto reposa. Implementable en el futuro modificando `handlePointerUp` para calcular velocidad desde el historial de posiciones.
-- ❌ **Drag sólo en plano perpendicular a la cámara**: no se puede "rotar" el objeto en el aire.
-- ❌ **No hay callback de colisión**: no se ejecuta código cuando un objeto colisiona con otro.
+- ⚠️ **Sólo se detectan golpes contra el suelo** (`useFloorImpact`); los choques entre objetos no suenan.
 
 ## Documentos relacionados
 

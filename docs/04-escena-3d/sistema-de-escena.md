@@ -51,7 +51,6 @@ graph TB
 
     Scene --> Light
     Scene --> Controls
-    Scene --> CamaraController
 
     Fixed --> DeskTable
     Fixed --> Monitor
@@ -104,15 +103,14 @@ Las luces, los controles orbitales y la posición de cámara.
 
 | Propiedad | Valor actual | Notas |
 |---|---|---|
-| `style.height` | `'100vh'` | Ocupa toda la ventana vertical. |
-| `style.width` | `'100%'` | Ocupa todo el ancho del contenedor. |
+| `camera.position` | `[0, 3, 4]` | Posición inicial de la cámara. |
 | `shadows` | `true` | Activa el render de sombras. |
 
 ## Cámara y controles
 
 ```mermaid
 graph LR
-    Cam[CamaraController<br/>position 0, 3, 4]
+    Cam[Canvas camera<br/>position 0, 3, 4]
     Ctrl[Controls<br/>target 0, 1.5, 0]
     Visit[🖱️ Usuario arrastra]
 
@@ -121,7 +119,7 @@ graph LR
     Visit -.arrastra.-> CamC
 ```
 
-- **Cámara**: `(0, 3, 4)` mirando al origen. Vista cenital-tres-cuartos.
+- **Cámara**: `(0, 3, 4)`, definida con la prop `camera` del `<Canvas>`. OrbitControls la orienta hacia su target. El tamaño del canvas lo da el CSS (`html, body, #root, #canvas-container { height: 100% }`).
 - **Target** de `OrbitControls`: `(0, 1.5, 0)` (centro del escritorio).
 - **Panning deshabilitado** (`enablePan={false}`) para que el visitante no se "pierda".
 - **Distancia limitada** entre `2` y `3` unidades para evitar alejarse demasiado.
@@ -169,10 +167,9 @@ graph TB
     Env --> WallDecor
     Scene --> Light
     Scene --> Controls
-    Scene --> CamaraController
 
     Light -.ilumina.-> Models
-    Controls -.permite rotar/zoom.-> Models
+    Controls -.permite rotar.-> Models
     Rapier -.simula gravedad.-> Models
 ```
 
