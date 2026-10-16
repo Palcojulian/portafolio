@@ -107,7 +107,7 @@ sequenceDiagram
 | Síntoma | Solución |
 |---|---|
 | FPS < 30 al cargar | Probablemente el lazy-load de Rapier aún no terminó. Es normal los primeros segundos. |
-| FPS bajo al arrastrar personas | Demasiados draw calls. Revisar si hay muchos meshes en un mismo RigidObject. Combinar mallas o usar `InstancedMesh` cuando aplique. |
+| FPS bajo con muchos objetos en movimiento | Demasiados draw calls. Revisar si hay muchos meshes en un mismo RigidObject. Combinar mallas o usar `InstancedMesh` cuando aplique. |
 | FPS bajo al rotar la cámara | El shadow map se recalcula. Reducir a 512×512 o desactivar temporalmente. |
 | Memoria del navegador crece | Probablemente no se liberan los `.glb`. Revisar que cada componente llame a `useGLTF.preload` correctamente. |
 
