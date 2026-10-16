@@ -1,12 +1,15 @@
 # Portafolio 3D Interactivo
 
-Portafolio web personal renderizado en **3D** con React + TypeScript + three.js. Un escritorio virtual donde cada objeto es interactivo: el visitante puede **hacer click / hover** sobre los elementos para descubrir información personal, y se incorporarán **colisiones físicas** para que los objetos respondan a la interacción.
+Portafolio web personal renderizado en **3D** con React + TypeScript + three.js. Un escritorio virtual donde cada objeto es interactivo: los objetos tienen **físicas** (caen con gravedad y colisionan) y el visitante los mueve **empujándolos con el personaje**. Próximamente: **click / hover** sobre los elementos para descubrir información personal.
 
 ## ✨ Características
 
 - 🖥️ **Escena 3D interior** con habitación, planta decorativa y cuadro en la pared.
 - 💡 **Iluminación realista** con luz ambiental, luz direccional principal con sombras nítidas, y luz de relleno.
-- 🖐️ **Físicas con Rapier**: la taza, los lápices, los auriculares, etc. caen sobre el escritorio con gravedad y el visitante puede arrastrarlos con el ratón.
+- 🖐️ **Físicas con Rapier**: la taza, los lápices, los auriculares, etc. caen sobre el escritorio con gravedad y chocan entre sí; sólo el personaje puede moverlos.
+- 🐾 **Personaje controlable**: una esfera (futuro gato) que se mueve con `WASD`/flechas, corre con `Shift`, salta con `Espacio` y empuja los objetos del escritorio. `R` la devuelve al escritorio y `H` muestra/oculta la ayuda.
+- 🔊 **Sonidos de impacto** sintetizados según el material (cerámica, plástico, metal, madera) cuando un objeto cae al suelo. `M` silencia.
+- ☕ **Taza rompible**: si cae al suelo con fuerza se hace añicos y, a los pocos segundos, reaparece entera.
 - 📌 **Objetos fijos** (escritorio, monitor, mausePad, portaVasos) permanecen anclados.
 - 🎨 **Paleta de colores propia** definida en código, con tipos estrictos.
 - 📦 **17 modelos 3D** en formato `.glb`.
@@ -61,10 +64,12 @@ portafolio/
 │   ├── components/
 │   │   ├── 3d-models/            # 17 modelos (físicos)
 │   │   ├── environment/          # Room, Plant, WallDecor
-│   │   ├── physics/              # PhysicsWorld, RigidObject
-│   │   └── scene-environment/    # Luz, controles, cámara
-│   ├── helpers/                  # paleta-colores.ts
-│   ├── hooks/                    # useDragObject
+│   │   ├── physics/              # AutoGLTF, RigidObject
+│   │   ├── player/               # Personaje controlable (futuro gato)
+│   │   └── scene-environment/    # Luz, controles, loader, ayuda
+│   ├── audio/                    # Sonido sintetizado (Web Audio)
+│   ├── helpers/                  # paleta-colores.ts, fracturar.ts
+│   ├── hooks/                    # useFloorImpact
 │   ├── App.tsx                   # Raíz: integra Physics + Environment + modelos
 │   └── main.tsx                  # Punto de entrada
 └── docs/                         # Documentación completa
