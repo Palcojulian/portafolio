@@ -54,7 +54,9 @@ Cómo funciona la escena renderizada con react-three-fiber.
 |---|---|---|
 | 10 | [Sistema de escena](./04-escena-3d/sistema-de-escena.md) | `Canvas`, capas (environment vs models), jerarquía. |
 | 11 | [Sistema de luces](./04-escena-3d/sistema-de-luces.md) | `directionalLight`, ambient, sombras. |
-| 12 | [Sistema de físicas](./04-escena-3d/sistema-de-fisicas.md) | Rapier, fijos vs dinámicos, drag con el ratón. |
+| 12 | [Sistema de físicas](./04-escena-3d/sistema-de-fisicas.md) | Rapier, fijos vs dinámicos, objetos rompibles. |
+| 12b | [Sistema de personaje](./04-escena-3d/sistema-de-personaje.md) | Personaje controlable con el teclado (futuro gato). |
+| 12c | [Sistema de sonido](./04-escena-3d/sistema-de-sonido.md) | Sonidos sintetizados al caer al suelo; taza rompible. |
 | 13 | [Loading y Suspense](./04-escena-3d/loading-y-suspense.md) | Cómo se muestran los `.glb` mientras se cargan. |
 | 14 | [Posicionamiento de objetos](./04-escena-3d/posicionamiento-de-objetos.md) | Sistema de coordenadas y tabla con posiciones actuales. |
 
