@@ -1,12 +1,13 @@
 import { Suspense, lazy } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Preload, useProgress } from '@react-three/drei';
+import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
 import Controls from './components/scene-environment/Controls';
 import Light from './components/scene-environment/Light';
-import CamaraController from './components/scene-environment/CamaraController';
 import Loader from './components/scene-environment/Loader';
+import ControlsHelp from './components/scene-environment/ControlsHelp';
+import { keyboardMap } from './components/player/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
 import Room from './components/environment/Room';
@@ -40,6 +41,9 @@ const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
 const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
 const Lapiz = lazy(() => import('./components/3d-models/Lapiz'));
 
+// Personaje controlable con el teclado (placeholder del futuro gato).
+const Player = lazy(() => import('./components/player/Player'));
+
 // Overlay de diagnóstico
 import StatsOverlay from './components/scene-environment/StatsOverlay';
 
@@ -64,7 +68,6 @@ const SceneBase = () => {
       {/* Sistema de escena */}
       <Light />
       <Controls />
-      <CamaraController />
 
       {/* Preload de los modelos fijos (los críticos para el primer
           frame una vez que se monta Physics). */}
@@ -108,19 +111,16 @@ const PhysicsScene = () => {
 
       {/* Lápices (4 instancias con paleta distinta) */}
       <Lapiz
-        key={1}
         groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
         intensidad={500}
         paleta="amarillos"
       />
       <Lapiz
-        key={2}
         groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
         intensidad={500}
         paleta="rojos"
       />
       <Lapiz
-        key={3}
         groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
         intensidad={500}
         paleta="azulGrisOscuro"
@@ -130,6 +130,9 @@ const PhysicsScene = () => {
         intensidad={500}
         paleta="verdes"
       />
+
+      {/* Personaje controlable con el teclado */}
+      <Player />
     </>
   );
 };
@@ -144,7 +147,8 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Loader active={isLoading} />
-      <StatsOverlay />
+      <ControlsHelp hidden={isLoading} />
+      {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>
   );
@@ -154,17 +158,19 @@ const App = () => {
   return (
     <ProgressBridge>
       <div id="canvas-container">
-        <Canvas shadows style={{ height: '100vh', width: '100%' }}>
-          {/* Fase 1: escena estática (sin esperar a Rapier) */}
-          <SceneBase />
+        <KeyboardControls map={keyboardMap}>
+          <Canvas shadows camera={{ position: [0, 3, 4] }}>
+            {/* Fase 1: escena estática (sin esperar a Rapier) */}
+            <SceneBase />
 
-          {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
-          <Suspense fallback={null}>
-            <Physics gravity={[0, -9.81, 0]}>
-              <PhysicsScene />
-            </Physics>
-          </Suspense>
-        </Canvas>
+            {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
+            <Suspense fallback={null}>
+              <Physics gravity={[0, -9.81, 0]}>
+                <PhysicsScene />
+              </Physics>
+            </Suspense>
+          </Canvas>
+        </KeyboardControls>
       </div>
     </ProgressBridge>
   );
