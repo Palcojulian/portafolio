@@ -9,10 +9,13 @@ import { RigidBody } from '@react-three/rapier';
  *
  * DEBE estar dentro de un `<Physics>`, si no rapier no encuentra el
  * contexto y lanza `useRapier must be used within <Physics />`.
+ *
+ * `userData.surface = 'floor'` permite a `useFloorImpact` reconocerlo
+ * para reproducir sonidos y romper la taza.
  */
 const Floor = () => {
   return (
-    <RigidBody type="fixed" colliders="cuboid">
+    <RigidBody type="fixed" colliders="cuboid" userData={{ surface: 'floor' }}>
       <mesh receiveShadow position={[0, -0.51, 0]}>
         <boxGeometry args={[20, 0.02, 20]} />
         <meshStandardMaterial color="#c8a878" roughness={0.85} metalness={0.05} />
