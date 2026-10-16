@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
  *
  * Muestra en la esquina superior derecha los FPS actuales.
  *
- * **Sólo se muestra en desarrollo** (`import.meta.env.DEV`). En
- * producción devuelve `null` para no añadir overhead.
+ * **Sólo para desarrollo**: `App.tsx` lo monta únicamente cuando
+ * `import.meta.env.DEV` es `true`, así en producción ni siquiera se
+ * arranca el bucle de `requestAnimationFrame`.
  */
 const StatsOverlay = () => {
   const [fps, setFps] = useState(0);
@@ -31,8 +32,6 @@ const StatsOverlay = () => {
     tick();
     return () => cancelAnimationFrame(frame);
   }, []);
-
-  if (!import.meta.env.DEV) return null;
 
   return (
     <div
