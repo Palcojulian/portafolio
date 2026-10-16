@@ -1,7 +1,8 @@
 import { RigidBody } from '@react-three/rapier';
 import type { RapierRigidBody } from '@react-three/rapier';
-import type { ReactNode } from 'react';
-import { useDragObject } from '../../hooks/useDragObject';
+import { useRef, type ReactNode } from 'react';
+import { useFloorImpact, type FloorImpact } from '../../hooks/useFloorImpact';
+import type { SoundMaterial } from '../../audio/sound';
 
 /**
  * Wrapper que convierte un modelo 3D en un cuerpo físico de Rapier.
@@ -12,9 +13,9 @@ import { useDragObject } from '../../hooks/useDragObject';
  *
  * - **type="fixed"**: el objeto no se mueve. Útil para superficies como
  *   el escritorio, el monitor, el mausePad y el portaVasos.
- * - **type="dynamic"**: el objeto cae por gravedad y puede colisionar
- *   con otros. Si `draggable` está activo, el visitante puede arrastrarlo
- *     con el ratón.
+ * - **type="dynamic"**: el objeto cae por gravedad y colisiona con
+ *   otros. El visitante no lo manipula directamente: sólo el personaje
+ *   (`Player`) puede moverlo al empujarlo.
  *
  * Colliders:
  * - `cuboid` (por defecto): una caja que envuelve todo el modelo. Es
@@ -24,11 +25,10 @@ import { useDragObject } from '../../hooks/useDragObject';
  *   modelos complejos.
  * - `ball`: esfera envolvente (no usada en este proyecto).
  *
- * Los handlers de pointer (drag) se aplican a un `<group>` hijo que
- * envuelve el modelo. Rapier no expone `onPointerDown` directamente en
- * `RigidBody`, así que el listener se monta en el group interior y desde
- * ahí `useDragObject` puede recorrer el árbol hasta encontrar el
- * RigidBody.
+ * Sonido e impactos (sólo objetos `dynamic`):
+ * - `sound`: material con el que suena al golpear el suelo.
+ * - `onFloorImpact`: callback con la velocidad del golpe (p. ej. para
+ *   romper la taza). Ver `useFloorImpact`.
  */
 interface RigidObjectProps {
   type?: 'fixed' | 'dynamic';
@@ -36,7 +36,8 @@ interface RigidObjectProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
-  draggable?: boolean;
+  sound?: SoundMaterial;
+  onFloorImpact?: (impact: FloorImpact) => void;
   children: ReactNode;
 }
 
@@ -46,29 +47,30 @@ const RigidObject = ({
   position,
   rotation,
   scale,
-  draggable = true,
+  sound,
+  onFloorImpact,
   children,
 }: RigidObjectProps) => {
-  const { handlePointerDown, handlePointerMove, handlePointerUp } =
-    useDragObject();
+  const bodyRef = useRef<RapierRigidBody>(null);
 
-  const isInteractive = type === 'dynamic' && draggable;
+  const onCollisionEnter = useFloorImpact({
+    bodyRef,
+    enabled: type === 'dynamic' && (!!sound || !!onFloorImpact),
+    sound,
+    onFloorImpact,
+  });
 
   return (
     <RigidBody
+      ref={bodyRef}
       type={type}
       colliders={colliders}
       position={position}
       rotation={rotation}
       scale={scale}
+      onCollisionEnter={onCollisionEnter}
     >
-      <group
-        onPointerDown={isInteractive ? handlePointerDown : undefined}
-        onPointerMove={isInteractive ? handlePointerMove : undefined}
-        onPointerUp={isInteractive ? handlePointerUp : undefined}
-      >
-        {children}
-      </group>
+      {children}
     </RigidBody>
   );
 };
