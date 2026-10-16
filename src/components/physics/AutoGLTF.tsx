@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useMemo } from 'react';
+import { Quaternion, Vector3 } from 'three';
 import type { Object3D, Mesh as ThreeMesh } from 'three';
 
 /**
@@ -15,8 +16,9 @@ import type { Object3D, Mesh as ThreeMesh } from 'three';
  *                    que no quieres renderizar.
  *
  * El componente recorre `scene.traverse()` y crea un `<mesh>` por cada
- * `Object3D` que sea `Mesh`. Aplica sombras y mantiene los materiales
- * originales del GLB.
+ * `Object3D` que sea `Mesh`. Aplica sombras, mantiene los materiales
+ * originales del GLB y conserva la transformación de cada nodo
+ * (incluida la heredada de sus padres) relativa a la raíz del GLB.
  */
 interface AutoGLTFProps {
   url: string;
@@ -27,11 +29,21 @@ const AutoGLTF = ({ url, filterMesh }: AutoGLTFProps) => {
   const gltf = useGLTF(url);
 
   const meshes = useMemo(() => {
-    const found: ThreeMesh[] = [];
+    const found: {
+      mesh: ThreeMesh;
+      position: Vector3;
+      quaternion: Quaternion;
+      scale: Vector3;
+    }[] = [];
+    gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse((obj: Object3D) => {
       const mesh = obj as ThreeMesh;
       if (mesh.isMesh && (!filterMesh || filterMesh(mesh.name))) {
-        found.push(mesh);
+        const position = new Vector3();
+        const quaternion = new Quaternion();
+        const scale = new Vector3();
+        mesh.matrixWorld.decompose(position, quaternion, scale);
+        found.push({ mesh, position, quaternion, scale });
       }
     });
     return found;
@@ -39,13 +51,16 @@ const AutoGLTF = ({ url, filterMesh }: AutoGLTFProps) => {
 
   return (
     <>
-      {meshes.map((mesh, i) => (
+      {meshes.map(({ mesh, position, quaternion, scale }) => (
         <mesh
-          key={i}
+          key={mesh.uuid}
           castShadow
           receiveShadow
           geometry={mesh.geometry}
           material={mesh.material}
+          position={position}
+          quaternion={quaternion}
+          scale={scale}
         />
       ))}
     </>
