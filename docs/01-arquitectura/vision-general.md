@@ -47,7 +47,6 @@ flowchart TB
 
     Env --> Light[Light.tsx<br/>Luz direccional]
     Env --> Controls[Controls.tsx<br/>OrbitControls]
-    Env --> Camera[CamaraController.tsx<br/>Posición de cámara]
     Env --> Sky[Sky de @react-three/drei]
 
     Models --> DeskTable
@@ -84,7 +83,7 @@ El visitante puede:
 
 - 🖱️ **Rotar** la cámara arrastrando con el ratón.
 - 🔍 **Hacer zoom** con la rueda del ratón (esto está habilitado en `OrbitControls`).
-- 🖐️ **Arrastrar** cualquier objeto dinámico del escritorio con click + ratón (físicas con Rapier).
+- 🐾 **Mover el personaje** con el teclado y **empujar** los objetos del escritorio (físicas con Rapier).
 
 ## Tipos de componentes
 
