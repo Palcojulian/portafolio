@@ -7,7 +7,7 @@
 | Archivo | Rol |
 |---|---|
 | `src/components/player/keyboardMap.ts` | Acciones (`Controls`), mapa de teclas para `<KeyboardControls>` y etiquetas legibles. |
-| `src/components/player/Player.tsx` | Cuerpo físico + lógica de movimiento en `useFrame`. |
+| `src/components/player/Player.tsx` | Cuerpo físico + control en cada paso de física (`useBeforePhysicsStep`); giro visual en `useFrame`. |
 | `src/components/scene-environment/ControlsHelp.tsx` | Panel HTML con las instrucciones (se pliega con **H**). |
 | `src/App.tsx` | Envuelve el `<Canvas>` con `<KeyboardControls>` y monta `<Player />` dentro de `<Physics>`. |
 
@@ -27,7 +27,7 @@ Para cambiar una tecla basta con editar `keyboardMap`; el panel de ayuda se actu
 
 ```mermaid
 graph TD
-    KC[KeyboardControls] -->|getKeys| Frame[useFrame en Player]
+    KC[KeyboardControls] -->|getKeys| Frame[useBeforePhysicsStep en Player]
     Cam[Cámara] -->|dirección XZ| Frame
     Frame -->|setLinvel| RB[RigidBody dinámico<br/>rotaciones bloqueadas]
     Frame -->|castRay hacia abajo| Ground{¿Hay suelo?}
@@ -37,7 +37,8 @@ graph TD
 ```
 
 - **Movimiento relativo a la cámara**: "adelante" es la dirección de la cámara proyectada en el plano XZ, así que `W` siempre aleja al personaje del visitante aunque haya girado la vista.
-- **Velocidad, no fuerzas**: cada frame se interpola la velocidad horizontal hacia la deseada y se conserva la vertical. El control es preciso, y como Rapier resuelve los contactos, el personaje empuja los objetos dinámicos al chocar.
+- **Velocidad, no fuerzas**: en **cada paso de física** se interpola la velocidad horizontal hacia la deseada y se conserva la vertical. Hacerlo por paso, y no por fotograma, es lo que hace que el empuje no dependa de los FPS: con pocos FPS hay varios pasos por fotograma y el contacto frenaría al personaje entre medias.
+- **Volcar objetos**: el `userData` del cuerpo (`PlayerUserData`) publica `kind: 'player'` y la velocidad que intenta llevar. Los objetos con `knock` lo usan para volcarse al recibir el golpe (ver [Sistema de físicas](./sistema-de-fisicas.md#volcar-objetos-con-el-personaje-knock)).
 - **Rotación bloqueada** (`enabledRotations={[false, false, false]}`): el cuerpo físico no rueda. El giro hacia la dirección de avance se aplica solo al `<group>` visual.
 - **Salto**: solo al pulsar (no manteniendo) y si un rayo corto hacia abajo detecta suelo.
 - **Caídas**: los objetos pueden caer al suelo, pero si el personaje baja de `y = 1.0` vuelve automáticamente a `SPAWN`.
@@ -59,4 +60,4 @@ graph TD
 
 1. Cambiar el contenido de `<group ref={visualRef}>` por el modelo del gato (orientado mirando a **+Z**).
 2. Cambiar `BallCollider` por un `CapsuleCollider` ajustado al cuerpo del gato y revisar `RADIUS` en el rayo de suelo (distancia del centro a los pies).
-3. Para las animaciones (`useAnimations` de drei), elegir la postura según el estado que ya calcula el `useFrame`: quieto / andando / corriendo (`keys.run`) / en el aire (sin suelo).
+3. Para las animaciones (`useAnimations` de drei), elegir la postura según el estado que ya calcula el control: quieto / andando / corriendo (`keys.run`) / en el aire (sin suelo).

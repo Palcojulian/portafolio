@@ -53,10 +53,7 @@ La cámara está en `(0, 3, 4)` mirando al punto `(0, 1.5, 0)`. Esto significa q
 | `<Clock>` | `[0.7, 1.476, -0.3]` | `4` | `[0, 0, 0]` | Derecha, en la pared trasera. |
 | `<Band>` | `[-1.4, 1.535, 0.4]` | `0.45` | `[0, 1, 1.46]` | Izquierda-frontal. |
 | `<PortaLapiceros>` | `[-2, 1.48, -0.4]` | `1` | (defecto) | Esquina izquierda-trasera. |
-| `<Lapiz>` (1) | `[-2, 1.48, -0.4]` | `0.9` | (defecto) | Dentro del portalápices. |
-| `<Lapiz>` (2) | `[-1.96, 1.48, -0.4]` | `0.9` | (defecto) | Junto al primero. |
-| `<Lapiz>` (3) | `[-2, 1.48, -0.28]` | `0.9` | (defecto) | Segundo nivel del portalápices. |
-| `<Lapiz>` (4) | `[-1.96, 1.48, -0.28]` | `0.9` | (defecto) | Cuarto lápiz. |
+| `<Lapiz>` ×4 | en las diagonales, a `0.05` del centro, `y + 0.013` | `0.9` | inclinados `0.12` rad hacia fuera | Dentro del portalápices, **pegados a él** hasta que vuelca. Los monta `PortaLapiceros.tsx`, con posiciones relativas al portalápices. |
 | `<Lamp>` | `[2, 1.47, -0.3]` | `1.5` | `[0, 5.5, 0]` | Esquina derecha-trasera, ladeado. |
 | `<LinkedinLogo>` | `[1.4, 1.49, -0.3]` | `0.4` | (defecto) | Derecha-trasera. |
 | `<GitHubLogo>` | `[1.65, 1.49, -0.3]` | `0.45` | (defecto) | Al lado del logo de LinkedIn. |
