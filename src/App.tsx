@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense, lazy, useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
@@ -39,7 +39,6 @@ const Lamp = lazy(() => import('./components/3d-models/Lamp'));
 const LinkedinLogo = lazy(() => import('./components/3d-models/LinkedinLogo'));
 const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
 const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
-const Lapiz = lazy(() => import('./components/3d-models/Lapiz'));
 
 // Personaje controlable con el teclado (placeholder del futuro gato).
 const Player = lazy(() => import('./components/player/Player'));
@@ -97,6 +96,7 @@ const PhysicsScene = () => {
 
       {/* Objetos físicos dinámicos */}
       <Taza />
+      {/* Incluye los 8 lápices que contiene */}
       <PortaLapiceros />
       <KeyBoard />
       <Mause />
@@ -109,31 +109,43 @@ const PhysicsScene = () => {
       <GitHubLogo />
       <Vehicle />
 
-      {/* Lápices (4 instancias con paleta distinta) */}
-      <Lapiz
-        groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
-        intensidad={500}
-        paleta="amarillos"
-      />
-      <Lapiz
-        groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
-        intensidad={500}
-        paleta="rojos"
-      />
-      <Lapiz
-        groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
-        intensidad={500}
-        paleta="azulGrisOscuro"
-      />
-      <Lapiz
-        groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
-        intensidad={500}
-        paleta="verdes"
-      />
-
       {/* Personaje controlable con el teclado */}
       <Player />
     </>
+  );
+};
+
+/**
+ * Fotogramas que la simulación espera en pausa tras montar la escena.
+ *
+ * `@react-three/rapier` crea los colliders automáticos
+ * (`colliders="cuboid"`, p. ej. el del escritorio) uno o varios renders
+ * después de montar el cuerpo, mientras que los manuales (portalápices,
+ * personaje) existen desde el principio. Además, si el primer fotograma
+ * es lento, Rapier recupera hasta 0,5 s de simulación de golpe. Sin esta
+ * pausa, los objetos caen antes de que exista el escritorio y los
+ * delgados (el portalápices) lo atraviesan.
+ */
+const WARMUP_FRAMES = 5;
+
+/** Cuenta fotogramas desde que se monta y avisa al llegar a `WARMUP_FRAMES`. */
+const PhysicsWarmup = ({ onReady }: { onReady: () => void }) => {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current += 1;
+    if (frames.current === WARMUP_FRAMES) onReady();
+  });
+  return null;
+};
+
+/** `<Physics>` que arranca en pausa hasta que todos los colliders existen. */
+const PhysicsStage = () => {
+  const [paused, setPaused] = useState(true);
+  return (
+    <Physics gravity={[0, -9.81, 0]} paused={paused}>
+      <PhysicsScene />
+      <PhysicsWarmup onReady={() => setPaused(false)} />
+    </Physics>
   );
 };
 
@@ -165,9 +177,7 @@ const App = () => {
 
             {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
             <Suspense fallback={null}>
-              <Physics gravity={[0, -9.81, 0]}>
-                <PhysicsScene />
-              </Physics>
+              <PhysicsStage />
             </Suspense>
           </Canvas>
         </KeyboardControls>

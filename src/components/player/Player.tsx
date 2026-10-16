@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
 import {
   BallCollider,
   RigidBody,
+  useBeforePhysicsStep,
   useRapier,
   type RapierRigidBody,
 } from '@react-three/rapier';
@@ -31,6 +32,20 @@ const TURN_SPEED = 12;
 const UP = new THREE.Vector3(0, 1, 0);
 
 /**
+ * `userData` del RigidBody del personaje. `vx`/`vz` es la velocidad
+ * horizontal que el personaje **intenta** llevar en este paso; los
+ * objetos la leen al chocar (`usePlayerKnock`), porque tras el choque
+ * su velocidad real ya está frenada por el contacto.
+ */
+export interface PlayerUserData {
+  kind: 'player';
+  vx: number;
+  vz: number;
+}
+
+const playerData: PlayerUserData = { kind: 'player', vx: 0, vz: 0 };
+
+/**
  * Personaje controlable con el teclado.
  *
  * Es el marcador de posición del futuro gato: una esfera dinámica de
@@ -44,6 +59,9 @@ const UP = new THREE.Vector3(0, 1, 0);
  * - **Salto**: sólo si un rayo corto hacia abajo detecta suelo.
  * - **Reset**: con la tecla R o automáticamente al caer del escritorio.
  *
+ * `userData.kind = 'player'` permite a los objetos con `knock`
+ * reconocerlo y volcarse al recibir el golpe (`usePlayerKnock`).
+ *
  * Para sustituirlo por el gato basta con cambiar el contenido del
  * `<group ref={visualRef}>` (y el collider, p. ej. un `CapsuleCollider`).
  */
@@ -55,13 +73,20 @@ const Player = () => {
   const [, getKeys] = useKeyboardControls<Control>();
   const { world, rapier } = useRapier();
 
+  const camera = useThree((s) => s.camera);
   const forward = useRef(new THREE.Vector3());
   const right = useRef(new THREE.Vector3());
   const direction = useRef(new THREE.Vector3());
+  const moving = useRef(false);
 
-  useFrame((state, delta) => {
+  // El control va en cada paso de física (no en cada fotograma): así el
+  // empuje sobre otros objetos no depende de los FPS. Con pocos FPS hay
+  // varios pasos por fotograma y, si la velocidad sólo se fijara una vez
+  // por fotograma, el contacto la frenaría entre medias.
+  useBeforePhysicsStep((physicsWorld) => {
     const body = bodyRef.current;
     if (!body) return;
+    const delta = physicsWorld.timestep;
 
     const keys = getKeys();
     const pos = body.translation();
@@ -73,7 +98,7 @@ const Player = () => {
     }
 
     // Ejes de movimiento a partir de la cámara (sólo plano XZ).
-    state.camera.getWorldDirection(forward.current);
+    camera.getWorldDirection(forward.current);
     forward.current.y = 0;
     forward.current.normalize();
     right.current.crossVectors(forward.current, UP);
@@ -83,8 +108,8 @@ const Player = () => {
     if (keys.back) dir.sub(forward.current);
     if (keys.right) dir.add(right.current);
     if (keys.left) dir.sub(right.current);
-    const moving = dir.lengthSq() > 0;
-    if (moving) dir.normalize();
+    moving.current = dir.lengthSq() > 0;
+    if (moving.current) dir.normalize();
 
     const speed = keys.run ? RUN_SPEED : WALK_SPEED;
     const vel = body.linvel();
@@ -107,6 +132,9 @@ const Player = () => {
     }
     jumpHeld.current = keys.jump;
 
+    playerData.vx = dir.x * speed;
+    playerData.vz = dir.z * speed;
+
     body.setLinvel(
       {
         x: THREE.MathUtils.lerp(vel.x, dir.x * speed, t),
@@ -115,10 +143,13 @@ const Player = () => {
       },
       true
     );
+  });
 
-    // Orientar el cuerpo visual hacia donde avanza.
+  // Orientar el cuerpo visual hacia donde avanza (sólo visual: por fotograma).
+  useFrame((_, delta) => {
     const visual = visualRef.current;
-    if (visual && moving) {
+    if (visual && moving.current) {
+      const dir = direction.current;
       const target = Math.atan2(dir.x, dir.z);
       const diff = Math.atan2(
         Math.sin(target - visual.rotation.y),
@@ -134,6 +165,7 @@ const Player = () => {
       type="dynamic"
       colliders={false}
       position={SPAWN.toArray()}
+      userData={playerData}
       enabledRotations={[false, false, false]}
       linearDamping={0.5}
       ccd
