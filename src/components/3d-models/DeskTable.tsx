@@ -18,7 +18,6 @@ const Model = () => {
       type="fixed"
       colliders="cuboid"
       position={[0, -0.5, 0]}
-      draggable={false}
     >
       <AutoGLTF url="/3d-models/desk-table.glb" />
     </RigidObject>

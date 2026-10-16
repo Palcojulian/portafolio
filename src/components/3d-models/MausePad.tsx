@@ -27,7 +27,6 @@ const Model = () => {
       position={[0.15, 1.485, 0.35]}
       scale={0.3}
       rotation={[0, 0, 0]}
-      draggable={false}
     >
       <mesh
         castShadow
