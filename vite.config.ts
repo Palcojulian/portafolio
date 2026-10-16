@@ -10,7 +10,7 @@ import { defineConfig } from 'vite';
  *   propio chunk para que el navegador la descargue en paralelo.
  * - `r3f`: react-three-fiber + @react-three/drei.
  * - `rapier`: @react-three/rapier (incluye el WASM). Se carga
- *   bajo demanda vía `React.lazy` en `PhysicsWorld.tsx`.
+ *   bajo demanda vía `React.lazy` en `App.tsx`.
  *
  * Esto reduce el coste del primer render: el bundle principal ya
  * no contiene el motor de físicas.
