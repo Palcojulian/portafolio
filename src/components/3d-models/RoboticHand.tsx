@@ -11,6 +11,7 @@ const Model = () => {
   return (
     <RigidObject
       type="dynamic"
+      sound="metal"
       colliders="cuboid"
       position={[-1.4, 1.48, -0.5]}
       scale={1.2}

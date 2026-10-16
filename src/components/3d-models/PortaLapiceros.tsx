@@ -3,7 +3,7 @@ import RigidObject from '../physics/RigidObject';
 import { useGLTF } from '@react-three/drei';
 
 /**
- * Portalápices. Cuerpo físico dinámico: el visitante puede arrastrarlo
+ * Portalápices. Cuerpo físico dinámico: el personaje puede empujarlo
  * junto con los lápices que contiene.
  *
  * El .glb tiene una única malla (`portaLapiceros`) y un material
@@ -13,6 +13,7 @@ const Model = () => {
   return (
     <RigidObject
       type="dynamic"
+      sound="metal"
       colliders="cuboid"
       position={[-2, 1.48, -0.4]}
       scale={1}

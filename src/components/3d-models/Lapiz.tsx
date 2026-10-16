@@ -1,4 +1,4 @@
-import { Mesh, MeshStandardMaterial } from 'three';
+import type { Mesh } from 'three';
 import { useGLTF } from '@react-three/drei';
 import type { JSX } from 'react';
 import {
@@ -13,7 +13,7 @@ import RigidObject from '../physics/RigidObject';
  * dinámicamente con una gama e intensidad de la paleta.
  *
  * Es un cuerpo físico dinámico: cae sobre el escritorio y el
- * visitante puede arrastrarlo con el ratón.
+ * personaje puede empujarlo.
  *
  * A diferencia del resto de modelos, este se construye manualmente
  * porque el material del cuerpo se **redefine** con un color de la
@@ -33,13 +33,10 @@ interface Props {
 const Model = (props: Props) => {
   const { nodes, materials } = useGLTF('/3d-models/lapiz.glb');
 
-  const customMaterial = new MeshStandardMaterial({
-    color: paletaColores[props.paleta][props.intensidad],
-  });
-
   return (
     <RigidObject
       type="dynamic"
+      sound="wood"
       colliders="cuboid"
       position={props.groupProps.position as [number, number, number]}
       rotation={props.groupProps.rotation as [number, number, number] | undefined}
@@ -63,8 +60,9 @@ const Model = (props: Props) => {
         castShadow
         receiveShadow
         geometry={(nodes.cuerpoLapiz as Mesh).geometry}
-        material={customMaterial}
-      />
+      >
+        <meshStandardMaterial color={paletaColores[props.paleta][props.intensidad]} />
+      </mesh>
       <mesh
         castShadow
         receiveShadow
