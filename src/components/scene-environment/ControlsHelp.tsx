@@ -178,7 +178,7 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
           >
             🖱️ Arrastra con el ratón para girar la cámara
             <br />
-            💡 Mueve los objetos empujándolos con la esfera
+            💡 Mueve los objetos empujándolos con el gato
             <br />
             ☕ Cuidado con la taza: se rompe si cae al suelo
           </div>
