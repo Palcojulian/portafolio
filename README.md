@@ -7,7 +7,7 @@ Portafolio web personal renderizado en **3D** con React + TypeScript + three.js.
 - 🖥️ **Escena 3D interior** con habitación, planta decorativa y cuadro en la pared.
 - 💡 **Iluminación realista** con luz ambiental, luz direccional principal con sombras nítidas, y luz de relleno.
 - 🖐️ **Físicas con Rapier**: la taza, los lápices, los auriculares, etc. caen sobre el escritorio con gravedad y chocan entre sí; sólo el personaje puede moverlos.
-- 🐾 **Personaje controlable**: una esfera (futuro gato) que se mueve con `WASD`/flechas, corre con `Shift`, salta con `Espacio` y empuja los objetos del escritorio. `R` la devuelve al escritorio y `H` muestra/oculta la ayuda.
+- 🐾 **Personaje controlable**: un gato animado que se mueve con `WASD`/flechas, corre con `Shift`, salta con `Espacio` y empuja los objetos del escritorio. `R` lo devuelve al escritorio y `H` muestra/oculta la ayuda.
 - 🔊 **Sonidos de impacto** sintetizados según el material (cerámica, plástico, metal, madera) cuando un objeto cae al suelo. `M` silencia.
 - ☕ **Taza rompible**: si cae al suelo con fuerza se hace añicos y, a los pocos segundos, reaparece entera.
 - 📌 **Objetos fijos** (escritorio, monitor, mausePad, portaVasos) permanecen anclados.
