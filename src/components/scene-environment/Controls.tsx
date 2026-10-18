@@ -16,7 +16,7 @@ import { OrbitControls } from '@react-three/drei';
  *   (izquierda) y el cuadro (derecha) sin permitir al visitante
  *   "voltearse" y ver la parte trasera de la habitación.
  * - **Zoom deshabilitado**: la distancia queda fijada por la posición
- *   inicial de la cámara (`maxDistance` = 3 como tope de seguridad).
+ *   inicial de la cámara (`maxDistance` = 2.5 como tope de seguridad).
  * - **Polar limitado a [30°, 82°]**: no puede mirar desde muy arriba
  *   (cenital puro) ni desde abajo del escritorio.
  */
@@ -27,7 +27,7 @@ const Controls = () => {
       enableZoom={false}
       enableRotate={true}
       enablePan={false}
-      maxDistance={3}
+      maxDistance={2.5}
       minPolarAngle={Math.PI / 6}
       maxPolarAngle={Math.PI / 2.2}
       minAzimuthAngle={-Math.PI / 3}
