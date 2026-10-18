@@ -33,7 +33,6 @@ graph TB
     Dynamic --> Lamp
     Dynamic --> LinkedinLogo
     Dynamic --> GitHubLogo
-    Dynamic --> Vehicle
     Dynamic --> PortaLapiceros[PortaLapiceros<br/>hueco, volcable]
     PortaLapiceros --> Lapiz1[Lapiz x4]
 ```
@@ -67,6 +66,7 @@ interface RigidObjectProps {
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
   ccd?: boolean;
+  density?: number;          // densidad de los colliders automáticos (defecto 1)
   knock?: number;            // vuelco al chocar el personaje
   sound?: SoundMaterial;
   onFloorImpact?: (impact: FloorImpact) => void;
@@ -95,16 +95,15 @@ Son objetos que caen con gravedad y el personaje puede empujar:
 |---|---|
 | `Taza` | `(-2.2, 1.48, 0.56)` |
 | `PortaLapiceros` | `(-2, 1.48, -0.4)` |
-| `KeyBoard` | `(0, 1.55, 0.38)` |
+| `KeyBoard` | `(0, 1.55, 0.38)` — `density={BULKY_DENSITY}`: el coche no lo mueve |
 | `Mause` | `(0.9, 1.48, 0.38)` |
-| `RoboticHand` | `(-1.4, 1.48, -0.5)` |
-| `HeadPhones` | `(1.5, 1.57, 0.4)` |
+| `RoboticHand` | `(-1.4, 1.48, -0.5)` — `density={BULKY_DENSITY}`: el coche no lo mueve |
+| `HeadPhones` | `(1.5, 1.57, 0.4)` — `density={BULKY_DENSITY}`: el coche no lo mueve |
 | `Band` | `(-1.4, 1.535, 0.4)` |
 | `Clock` | `(0.7, 1.476, -0.3)` |
-| `Lamp` | `(2, 1.47, -0.3)` |
+| `Lamp` | `(2, 1.47, -0.3)` — `density={BULKY_DENSITY}`: el coche no lo mueve |
 | `LinkedinLogo` | `(1.4, 1.49, -0.3)` |
 | `GitHubLogo` | `(1.65, 1.49, -0.3)` |
-| `Vehicle` | `(-2, 1.49, 0.2)` |
 | `Lapiz` (×4) | Dentro del portalápices (los monta `PortaLapiceros`) |
 
 ## Tipos de colisionadores
@@ -115,7 +114,7 @@ Son objetos que caen con gravedad y el personaje puede empujar:
 | `hull` | Fragmentos de la taza rota. | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
 | `ball` | (No usado). | Rápido para esferas. | Sólo para esferas perfectas. |
 
-En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción es el portalápices, que usa un collider compuesto hueco (ver más abajo). La caja envolvente del conjunto es suficiente para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
+En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción es el portalápices, que usa un collider compuesto hueco (ver más abajo). Ojo: `@react-three/rapier` crea **una caja por malla**, no una para todo el modelo (el teclado es una placa más una caja por tecla; el monitor, base, cuello y pantalla). Estas cajas son suficientes para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
 
 ## Arranque de la simulación
 
@@ -182,7 +181,9 @@ El portalápices también expone su cuerpo con `bodyRef` (prop de `RigidObject`)
 
 ## Interacción
 
-El visitante **no manipula los objetos con el ratón**: el ratón sólo gira la cámara. La única forma de mover los objetos dinámicos es empujarlos con el personaje (`Player`), que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ver [Sistema de personaje](./sistema-de-personaje.md).
+El visitante **no manipula los objetos con el ratón**: el ratón sólo gira la cámara. La única forma de mover los objetos dinámicos es empujarlos con el personaje, que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ahora es el coche (`DrivableVehicle`, ver [Sistema de vehículo](./sistema-de-vehiculo.md)); el gato (`Player`) está en el repo sin montar.
+
+Los objetos voluminosos (teclado, lámpara, mano robótica, auriculares) llevan `density={BULKY_DENSITY}` (`physics/density.ts`): pesan tanto que el coche choca con ellos y se detiene, mientras que los ligeros los sigue empujando.
 
 ## Cómo añadir un nuevo objeto físico
 

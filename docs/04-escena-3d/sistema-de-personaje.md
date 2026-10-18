@@ -1,6 +1,8 @@
 # 🐾 Sistema de personaje
 
 > Personaje controlable con el teclado que recorre el escritorio y empuja los objetos. Es un gato animado (`public/3d-models/gato.glb`).
+>
+> ⚠️ Ahora mismo **no se monta**: el personaje de la escena es el coche ([Sistema de vehículo](./sistema-de-vehiculo.md)). Para volver al gato, monta `<Player />` en lugar de `<DrivableVehicle />` en `App.tsx` y restaura los textos de `ControlsHelp`.
 
 ## Archivos
 

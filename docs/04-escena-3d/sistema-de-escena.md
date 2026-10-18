@@ -68,7 +68,6 @@ graph TB
     Dynamic --> Lamp
     Dynamic --> LinkedinLogo
     Dynamic --> GitHubLogo
-    Dynamic --> Vehicle
     Dynamic --> Lapiz1[Lapiz x4]
 ```
 

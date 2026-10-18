@@ -27,7 +27,7 @@ portafolio/
 │       ├── portaVasos.glb
 │       ├── roboticHand.glb
 │       ├── taza.glb
-│       └── vehicle.glb
+│       └── vehicle.glb                    # coche conducible (ruedas separadas)
 │
 ├── src/                                   # Código fuente
 │   ├── components/
@@ -48,12 +48,12 @@ portafolio/
 │   │   │   ├── PortaVasos.tsx             #   FIJO
 │   │   │   ├── RoboticHand.tsx            #   dinámico
 │   │   │   ├── Taza.tsx                   #   dinámico, rompible
-│   │   │   ├── TazaRota.tsx               #   fragmentos de la taza rota
-│   │   │   └── Vehicle.tsx                #   dinámico
+│   │   │   └── TazaRota.tsx               #   fragmentos de la taza rota
 │   │   │
-│   │   ├── player/                        # Personaje controlable (futuro gato)
+│   │   ├── player/                        # Personaje controlable
+│   │   │   ├── DrivableVehicle.tsx        # Coche conducible (el que se monta)
 │   │   │   ├── keyboardMap.ts             # Acciones y teclas
-│   │   │   └── Player.tsx                 # Esfera física movida con el teclado
+│   │   │   └── Player.tsx                 # Gato animado (sin montar)
 │   │   │
 │   │   ├── scene-environment/             # Luz, controles, loader
 │   │   │   ├── Controls.tsx               # OrbitControls (con límites de enfoque)

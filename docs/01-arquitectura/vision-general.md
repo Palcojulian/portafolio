@@ -62,7 +62,6 @@ flowchart TB
     Models --> Lamp
     Models --> LinkedinLogo
     Models --> GitHubLogo
-    Models --> Vehicle
     Models --> MausePad
     Models --> PortaVasos
     Models --> PortaLapiceros
