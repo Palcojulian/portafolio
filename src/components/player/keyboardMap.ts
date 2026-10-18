@@ -5,7 +5,9 @@ import type { KeyboardControlsEntry } from '@react-three/drei';
  *
  * Con el vehículo (`DrivableVehicle`): `forward`/`back` aceleran y
  * frenan (o marcha atrás), `left`/`right` giran, `run` es el turbo y
- * `jump` el freno de mano.
+ * `jump` el freno de mano. `headlights`, `signalLeft`, `signalRight` y
+ * `hazards` encienden y apagan faros, direccionales y estacionarias
+ * (cada pulsación cambia el estado).
  *
  * Se usa un objeto `as const` en lugar de un `enum` porque el proyecto
  * compila con `erasableSyntaxOnly`.
@@ -18,6 +20,10 @@ export const Controls = {
   jump: 'jump',
   run: 'run',
   reset: 'reset',
+  headlights: 'headlights',
+  signalLeft: 'signalLeft',
+  signalRight: 'signalRight',
+  hazards: 'hazards',
 } as const;
 
 export type Control = (typeof Controls)[keyof typeof Controls];
@@ -36,6 +42,10 @@ export const keyboardMap: KeyboardControlsEntry<Control>[] = [
   { name: Controls.jump, keys: ['Space'] },
   { name: Controls.run, keys: ['ShiftLeft', 'ShiftRight'] },
   { name: Controls.reset, keys: ['KeyR'] },
+  { name: Controls.headlights, keys: ['KeyL'] },
+  { name: Controls.signalLeft, keys: ['KeyQ'] },
+  { name: Controls.signalRight, keys: ['KeyE'] },
+  { name: Controls.hazards, keys: ['KeyX'] },
 ];
 
 /** Texto legible para cada `KeyboardEvent.code` usado en el mapa. */
@@ -45,6 +55,10 @@ export const keyLabels: Record<string, string> = {
   KeyS: 'S',
   KeyD: 'D',
   KeyR: 'R',
+  KeyL: 'L',
+  KeyQ: 'Q',
+  KeyE: 'E',
+  KeyX: 'X',
   ArrowUp: '↑',
   ArrowDown: '↓',
   ArrowLeft: '←',

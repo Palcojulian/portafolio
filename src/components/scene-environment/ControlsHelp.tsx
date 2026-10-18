@@ -165,6 +165,22 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
             <Keys keys={keysFor(Controls.jump)} />
           </div>
           <div style={rowStyle}>
+            <span>Faros</span>
+            <Keys keys={keysFor(Controls.headlights)} />
+          </div>
+          <div style={rowStyle}>
+            <span>Direccionales izq. / der.</span>
+            <span>
+              <Keys keys={keysFor(Controls.signalLeft)} />
+              <span style={{ opacity: 0.6 }}> / </span>
+              <Keys keys={keysFor(Controls.signalRight)} />
+            </span>
+          </div>
+          <div style={rowStyle}>
+            <span>Estacionarias</span>
+            <Keys keys={keysFor(Controls.hazards)} />
+          </div>
+          <div style={rowStyle}>
             <span>Volver al escritorio</span>
             <Keys keys={keysFor(Controls.reset)} />
           </div>

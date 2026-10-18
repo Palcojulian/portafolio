@@ -28,6 +28,11 @@ Relativos al coche, no a la cámara.
 | Turbo | `Shift` + acelerar | `run` |
 | Freno de mano (frena y derrapa) | `Espacio` | `jump` |
 | Volver a su sitio | `R` | `reset` |
+| Faros (encender / apagar) | `L` | `headlights` |
+| Direccional izquierdo / derecho | `Q` / `E` | `signalLeft` / `signalRight` |
+| Estacionarias | `X` | `hazards` |
+
+Las teclas de luces cambian el estado en cada pulsación. Pulsar el direccional encendido lo apaga, y pulsar el otro cambia de lado.
 
 ## Cómo funciona
 
@@ -83,11 +88,33 @@ El `.glb` original era una sola malla. Para que las ruedas giren, las 4 islas de
 | `body` | resto de la carrocería |
 | `wheel_front_left` / `wheel_front_right` | `(±0,557, 0,239, 0,936)` |
 | `wheel_rear_left` / `wheel_rear_right` | `(±0,557, 0,239, −0,880)` |
+| `headlights` | faros (`whiteLightMaterial`) |
+| `indicator_left` / `indicator_right` | direccionales delanteros (`orangeLightMaterial`) |
+| `taillight_left` / `taillight_right` | pilotos traseros (`redLightMaterial`) |
+
+Las luces también se separaron por lado (`+X` es la izquierda del coche) para poder encenderlas por separado.
 
 El coche mira a **+Z** (faros en +Z, pilotos `redLightMaterial` en −Z). En `useFrame`:
 - Las ruedas giran sobre su eje según la velocidad, y las delanteras también con el volante (orden de Euler `YXZ`: primero el volante, luego el giro).
-- Los pilotos traseros se encienden al frenar, al dar marcha atrás o con el freno de mano (material propio con `emissive`).
+- Las luces se encienden con `emissive` (ver [Luces](#luces)).
 - La carrocería cabecea un poco: morro abajo al frenar y arriba al acelerar.
+
+## Luces
+
+| Luz | Cuándo | Cómo |
+|---|---|---|
+| Faros | `L` | Brillo blanco cálido y dos `spotLight` que iluminan la mesa delante del coche. |
+| Pilotos | Tenues con los faros; fuertes al frenar (`S` en marcha, `W` en marcha atrás, `Espacio`) | Brillo rojo y un `spotLight` rojo hacia atrás y abajo que tiñe la mesa. |
+| Direccionales | `Q` / `E` | Parpadeo ámbar (periodo `BLINK_PERIOD`, 0,7 s) del direccional delantero y del piloto de ese lado. |
+| Estacionarias | `X` | Las cuatro esquinas en ámbar a la vez. Tienen prioridad sobre los direccionales. |
+
+- **Un material propio por luz**: se clona al montar y se guarda en `mesh.userData.lightMaterial`. En StrictMode, React 19 ejecuta `useMemo` dos veces y se queda con el primer resultado. Si se clonara en cada llamada, la malla acabaría con otro material distinto del que se enciende.
+- **Sombras**: los tres focos del coche (dos faros y el freno) proyectan sombra. Los objetos que iluminan tapan la luz, así que no la atraviesa, y dejan su sombra detrás. Todos los objetos del escritorio ya proyectan y reciben sombras (`AutoGLTF`).
+  - Cada foco está **fuera de la carrocería**, justo delante de los faros o detrás de los pilotos. Dentro, la sombra del propio coche lo taparía.
+  - Su mapa de sombras (512 px) solo se recalcula con la luz encendida (`shadow.autoUpdate`). Apagadas no cuestan nada.
+  - Aun apagado, cada mapa se dibuja **una vez** al empezar (`shadow.needsUpdate`). Una luz con `castShadow` sin mapa deja el shader sin textura, WebGL falla (`INVALID_OPERATION`) y el fotograma sale en blanco.
+- **Las luces de three.js están siempre montadas**: solo cambia su intensidad. Añadirlas o quitarlas obliga a recompilar los shaders de toda la escena, lo que da un tirón al encender los faros.
+- Para que contrasten, la iluminación general es tenue (ver [Sistema de luces](./sistema-de-luces.md)).
 
 ### Flujo de archivos del modelo
 
