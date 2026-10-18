@@ -1,5 +1,6 @@
 import AutoGLTF from '../physics/AutoGLTF';
 import RigidObject from '../physics/RigidObject';
+import { BULKY_DENSITY } from '../physics/density';
 import { useGLTF } from '@react-three/drei';
 
 /**
@@ -18,6 +19,7 @@ const Model = () => {
       type="dynamic"
       sound="plastic"
       colliders="cuboid"
+      density={BULKY_DENSITY}
       position={[0, 1.55, 0.38]}
       scale={1.7}
       rotation={[0, 0.05, 0]}

@@ -1,6 +1,7 @@
 import { Mesh, MeshStandardMaterial } from 'three';
 import { useGLTF } from '@react-three/drei';
 import RigidObject from '../physics/RigidObject';
+import { BULKY_DENSITY } from '../physics/density';
 import { paletaColores } from '../../helpers/paleta-colores';
 
 /**
@@ -55,6 +56,7 @@ const Model = () => {
       type="dynamic"
       sound="metal"
       colliders="cuboid"
+      density={BULKY_DENSITY}
       position={[2, 1.47, -0.3]}
       scale={1.5}
       rotation={[0, 5.5, 0]}

@@ -38,10 +38,10 @@ const Clock = lazy(() => import('./components/3d-models/Clock'));
 const Lamp = lazy(() => import('./components/3d-models/Lamp'));
 const LinkedinLogo = lazy(() => import('./components/3d-models/LinkedinLogo'));
 const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
-const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
 
-// Personaje controlable con el teclado (placeholder del futuro gato).
-const Player = lazy(() => import('./components/player/Player'));
+// Personaje controlable con el teclado: el vehículo. (El gato,
+// `components/player/Player.tsx`, sigue en el repo sin montar.)
+const DrivableVehicle = lazy(() => import('./components/player/DrivableVehicle'));
 
 // Overlay de diagnóstico
 import StatsOverlay from './components/scene-environment/StatsOverlay';
@@ -107,10 +107,9 @@ const PhysicsScene = () => {
       <Lamp />
       <LinkedinLogo />
       <GitHubLogo />
-      <Vehicle />
 
       {/* Personaje controlable con el teclado */}
-      <Player />
+      <DrivableVehicle />
     </>
   );
 };
