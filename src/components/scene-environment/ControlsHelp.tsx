@@ -181,8 +181,6 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
               fontSize: 12,
             }}
           >
-            🖱️ Arrastra con el ratón para girar la cámara
-            <br />
             🚗 Empuja los objetos ligeros con el coche
             <br />
             ☕ Cuidado con la taza: se rompe si cae al suelo

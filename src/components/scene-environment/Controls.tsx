@@ -1,39 +1,27 @@
-import { OrbitControls } from '@react-three/drei';
+import { useLayoutEffect } from 'react';
+import { useThree } from '@react-three/fiber';
+import { CAMERA_POSITION, CAMERA_TARGET } from './camera';
 
 /**
- * Controles de cámara orbital.
+ * Cámara fija.
  *
- * Permite al visitante rotar la cámara alrededor del escritorio
- * arrastrando con el ratón. El target es el
- * centro del escritorio, ligeramente elevado.
+ * Coloca la cámara en `CAMERA_POSITION` mirando a `CAMERA_TARGET` (el
+ * centro del escritorio) y no deja moverla: no hay `OrbitControls`, así
+ * que el ratón no gira, desplaza ni acerca la vista. El vehículo se
+ * maneja sólo con el teclado.
  *
- * **Límites del foco del escritorio:**
- *
- * - **Panning deshabilitado**: el visitante no puede desplazar la
- *   cámara lateralmente.
- * - **Azimut limitado a ±60°**: la cámara sólo puede girar 60° hacia
- *   cada lado desde la posición inicial. Esto permite ver la planta
- *   (izquierda) y el cuadro (derecha) sin permitir al visitante
- *   "voltearse" y ver la parte trasera de la habitación.
- * - **Zoom deshabilitado**: la distancia queda fijada por la posición
- *   inicial de la cámara (`maxDistance` = 2.5 como tope de seguridad).
- * - **Polar limitado a [30°, 82°]**: no puede mirar desde muy arriba
- *   (cenital puro) ni desde abajo del escritorio.
+ * Para cambiar la vista, ajusta la distancia o el ángulo en `camera.ts`.
  */
 const Controls = () => {
-  return (
-    <OrbitControls
-      target={[0, 1.5, 0]}
-      enableZoom={false}
-      enableRotate={true}
-      enablePan={false}
-      maxDistance={2.5}
-      minPolarAngle={Math.PI / 6}
-      maxPolarAngle={Math.PI / 2.2}
-      minAzimuthAngle={-Math.PI / 3}
-      maxAzimuthAngle={Math.PI / 3}
-    />
-  );
+  const camera = useThree((s) => s.camera);
+
+  useLayoutEffect(() => {
+    camera.position.set(...CAMERA_POSITION);
+    camera.lookAt(...CAMERA_TARGET);
+    camera.updateMatrixWorld();
+  }, [camera]);
+
+  return null;
 };
 
 export default Controls;
