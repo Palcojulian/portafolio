@@ -3,6 +3,9 @@
   padding: 0;
 }
 
-.canvas-container {
+html,
+body,
+#root,
+#canvas-container {
   height: 100%;
 }

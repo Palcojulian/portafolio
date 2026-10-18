@@ -9,13 +9,14 @@ import { useGLTF } from '@react-three/drei';
  * las renderiza todas. Los materiales son `whiteKeys`, `skyKeys`,
  * `plate`, `switchColor`, `blueKeys`.
  *
- * Collider `hull` porque el hull envolvente da mejor soporte para
- * colisiones que un cuboid.
+ * Collider `cuboid`: una caja envolvente es suficiente y mucho más
+ * barata que un hull sobre 102 mallas.
  */
 const Model = () => {
   return (
     <RigidObject
       type="dynamic"
+      sound="plastic"
       colliders="cuboid"
       position={[0, 1.55, 0.38]}
       scale={1.7}

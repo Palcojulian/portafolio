@@ -10,7 +10,7 @@ El proyecto usa **Rapier** como motor de físicas, expuesto vía `@react-three/r
 
 - Gravedad: `-9.81` en el eje Y (igual que la Tierra).
 - timeStep: 1/60s (gestionado internamente).
-- Objetos clasificados en **fijos** (no se mueven) y **dinámicos** (caen, chocan, se pueden arrastrar).
+- Objetos clasificados en **fijos** (no se mueven) y **dinámicos** (caen, chocan y el personaje puede empujarlos).
 
 ```mermaid
 graph TB
@@ -30,12 +30,12 @@ graph TB
     Dynamic --> Clock
     Dynamic --> Band
     Dynamic --> RoboticHand
-    Dynamic --> Lapiz1[Lapiz x4]
     Dynamic --> Lamp
     Dynamic --> LinkedinLogo
     Dynamic --> GitHubLogo
     Dynamic --> Vehicle
-    Dynamic --> PortaLapiceros
+    Dynamic --> PortaLapiceros[PortaLapiceros<br/>hueco, volcable]
+    PortaLapiceros --> Lapiz1[Lapiz x4]
 ```
 
 ## Componentes clave
@@ -57,23 +57,22 @@ Acepta `paused` opcional.
 Componente reutilizable que:
 
 1. Envuelve el modelo en un `<RigidBody>` con `type`, `colliders`, `position`, `rotation`, `scale`.
-2. Si es dinámico y `draggable={true}`, monta los handlers de `useDragObject` en un `<group>` hijo.
+2. Si es dinámico y tiene `sound` u `onFloorImpact`, detecta los golpes contra el suelo con `useFloorImpact` (ver [Sistema de sonido](./sistema-de-sonido.md)).
 
 ```tsx
 interface RigidObjectProps {
   type?: 'fixed' | 'dynamic';
-  colliders?: 'cuboid' | 'hull' | 'ball';
+  colliders?: 'cuboid' | 'hull' | 'ball' | false; // false = colliders hijos
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number | [number, number, number];
-  draggable?: boolean;
+  ccd?: boolean;
+  knock?: number;            // vuelco al chocar el personaje
+  sound?: SoundMaterial;
+  onFloorImpact?: (impact: FloorImpact) => void;
   children: ReactNode;
 }
 ```
-
-#### `useDragObject.ts` (hook)
-
-Implementa el drag físico. Ver sección [Drag con el ratón](#drag-con-el-ratón).
 
 ## Clasificación de los 17 modelos
 
@@ -90,7 +89,7 @@ Son superficies o anclas que no deben moverse:
 
 ### Dinámicos (`type="dynamic"`)
 
-Son objetos que caen con gravedad y pueden ser arrastrados:
+Son objetos que caen con gravedad y el personaje puede empujar:
 
 | Modelo | Posición |
 |---|---|
@@ -106,69 +105,84 @@ Son objetos que caen con gravedad y pueden ser arrastrados:
 | `LinkedinLogo` | `(1.4, 1.49, -0.3)` |
 | `GitHubLogo` | `(1.65, 1.49, -0.3)` |
 | `Vehicle` | `(-2, 1.49, 0.2)` |
-| `Lapiz` (×4) | Distintas posiciones |
+| `Lapiz` (×4) | Dentro del portalápices (los monta `PortaLapiceros`) |
 
 ## Tipos de colisionadores
 
 | Tipo | Uso | Ventaja | Desventaja |
 |---|---|---|---|
 | `cuboid` | **Por defecto en este proyecto.** Todos los modelos. | Muy rápido, suficiente para casi todos los casos, robusto con modelos de muchas mallas. | Impreciso para formas muy irregulares. |
-| `hull` | (No usado en este proyecto). | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
+| `hull` | Fragmentos de la taza rota. | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
 | `ball` | (No usado). | Rápido para esferas. | Sólo para esferas perfectas. |
 
-En este proyecto se usa **`cuboid` para todos los modelos**. La caja envolvente del conjunto es suficiente para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
+En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción es el portalápices, que usa un collider compuesto hueco (ver más abajo). La caja envolvente del conjunto es suficiente para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
 
-## Drag con el ratón
+## Arranque de la simulación
 
-El hook `useDragObject` permite arrastrar cualquier `RigidObject` dinámico.
+`App.tsx` monta `<Physics paused>` y la reanuda tras `WARMUP_FRAMES` (5) fotogramas (`PhysicsStage` + `PhysicsWarmup`). Motivo:
 
-### Flujo del drag
+- `@react-three/rapier` crea los colliders **automáticos** (`colliders="cuboid"`, como el del escritorio) uno o varios renders después de montar el cuerpo. Los **manuales** (portalápices, personaje) existen desde el principio.
+- Si el primer fotograma tras la carga es lento (compilación de shaders), Rapier recupera hasta 0,5 s de simulación de golpe (30 pasos).
+
+Sin la pausa, los objetos caen antes de que exista el escritorio: los macizos se hunden y salen disparados al aparecer, y los finos (las paredes del portalápices) lo atraviesan.
+
+## Colliders compuestos: el portalápices
+
+Un collider automático `cuboid` es una **caja maciza**, así que no puede contener nada. El portalápices usa `colliders={false}` y construye su forma con colliders hijos, **ajustados a la malla** (una rejilla con la pared entre r ≈ 0,1265 y 0,1433):
+
+- **Fondo**: `CylinderCollider` fino, con el radio exterior (0,141) y fricción alta (`3`). Es el borde sobre el que pivota al volcar, así que vuelca en lugar de resbalar.
+- **Pared**: 16 `CuboidCollider` en anillo, exterior en 0,141 e interior en 0,110 (3,1 cm de grosor), con fricción `1`.
+  - **Por fuera coincide con la malla.** Si sobresale (antes llegaba a 0,148, y a ~0,16 en las esquinas de un octógono), el portalápices tumbado y lo que se apoya en él **levitan**. Con 16 segmentos las esquinas apenas sobresalen.
+  - **Por dentro es más gruesa que la rejilla y que el lápiz** (2,7 cm de diámetro). Con una pared más fina que el lápiz, al quedar uno aplastado (p. ej. con el portalápices tumbado encima), Rapier lo resolvía empujándolo **a través** de la pared. Medido: penetraciones de hasta 2 cm con la pared ajustada a la rejilla, incluso con más iteraciones del solver.
+- **CCD** en el portalápices y en los lápices. En Rapier el CCD solo evita el *tunneling* del cuerpo que lo tiene: sin él en el portalápices, al recibir el golpe sus paredes giraban tan rápido que barrían los lápices en un solo paso.
+- **`additionalSolverIterations={4}`** en ambos (`PENCIL_SOLVER_ITERATIONS`), para los contactos apretados entre lápiz y pared, sin encarecer el resto de la escena.
+
+### Lápices pegados hasta que vuelca
+
+Mientras el portalápices está de pie, sus 4 lápices **forman parte de su cuerpo rígido**: sus cápsulas son colliders del propio portalápices y no hay contactos lápiz-pared que resolver. Así es imposible que se incrusten. Además, si el personaje empuja los lápices que asoman, empuja el portalápices, como en la realidad.
 
 ```mermaid
-sequenceDiagram
-    participant U as Visitante
-    participant M as mesh
-    participant R as RigidObject
-    participant H as useDragObject
-    participant Rapier as Rapier
-
-    U->>M: onPointerDown
-    M->>H: handlePointerDown
-    H->>Rapier: setBodyType(Kinematic)
-    H->>H: captura plano y offset
-
-    U->>M: onPointerMove (botón pulsado)
-    M->>H: handlePointerMove
-    H->>Rapier: setNextKinematicTranslation(x, y, z)
-    Rapier-->>M: posición actualizada
-
-    U->>M: onPointerUp
-    M->>H: handlePointerUp
-    H->>Rapier: setBodyType(Dynamic)
-    H->>Rapier: setLinvel(0,0,0)
+graph LR
+    Pegados[Lápices = colliders<br/>del portalápices] -->|inclinación > 35°<br/>o golpe contra el suelo| Release[release]
+    Release --> Libres[4 Lapiz dinámicos<br/>misma pose y velocidad<br/>+ POUR_SPEED hacia la boca]
 ```
 
-### Implementación por dentro
+- **Velocidad al soltarse**: la del punto del portalápices, `v_cm + ω × (p − cm)` (`worldCom()`), más `POUR_SPEED` (0,4 m/s) a lo largo de su eje, hacia la boca.
+- **Por qué el empujón**: con el portalápices tumbado nada empuja los lápices a lo largo del tubo. Se quedaban dentro, apoyados en la cara interior (más gruesa que la rejilla) y parecían levitar.
+- **Sin vuelta atrás**: una vez liberados no vuelven a meterse.
 
-1. **`pointerDown`**: al pulsar, el hook sube por el árbol de three.js hasta encontrar el `Object3D` del `<RigidBody>` (lo marca `@react-three/rapier` con `userData.rigidBody`). Captura:
-   - La posición del RigidBody en ese momento.
-   - El plano perpendicular a la cámara que pasa por esa posición.
-   - El offset entre el punto exacto del click y el centro del RigidBody.
+**Lápices**:
+- **Collider**: `CapsuleCollider` con fricción `0`. Redondos, ruedan y resbalan; como cajas se encajaban por las esquinas. Rapier promedia las fricciones, así que lápiz contra pared queda en 0,5.
+- **Escala**: las medidas están en `lapizShape.ts`, **ya escaladas** (0,9). `@react-three/rapier` multiplica la posición de un collider anidado por la escala de su padre, que ya va incluida en su matriz, y la aplicaría dos veces. Por eso solo se escala el grupo de las mallas (`LapizVisual`).
 
-2. **Cambio a kinematic**: `setBodyType(2, true)` convierte el RigidBody en `KinematicPositionBased`, lo que permite moverlo por código sin que las colisiones lo empujen.
+**Comportamiento medido** (empujando caminando):
+- **Hacia la izquierda**: vuelca y queda tumbado en la mesa. Los lápices salen por la boca y, como el borde está a ~30 cm, caen al suelo.
+- **Desde delante**: vuelca y cae por el borde trasero, a 37 cm.
+- **Hacia la derecha**: se inclina ~9° y vuelve. Las puntas de los lápices chocan con la caja de colisión de la mano robótica, que envuelve el pulgar extendido.
 
-3. **`pointerMove`**: proyecta el ratón sobre el plano y aplica `setNextKinematicTranslation`.
+> ⚠️ `RigidObject` solo pasa a `<RigidBody>` las opciones opcionales (`ccd`, `quaternion`, velocidades, iteraciones) cuando están definidas. `@react-three/rapier` aplica cualquier opción presente en las props aunque valga `undefined`, y algunas (p. ej. `setAngularDamping(undefined)`) hacen fallar la WASM de Rapier.
 
-4. **`pointerUp`**: restaura el RigidBody a `dynamic` (`setBodyType(0, true)`) y anula las velocidades (`setLinvel(0,0,0)`, `setAngvel(0,0,0)`). **No hay lanzamiento**: el objeto reposa donde lo dejaste.
+## Volcar objetos con el personaje (`knock`)
 
-### Cursor
+El personaje es bajo (radio 0,09) y se controla por velocidad: empuja casi a ras de la base. Con el contacto físico solo, un objeto alto y ligero como el portalápices **resbala** en lugar de volcar. Por eso los objetos pueden declarar `knock` en `RigidObject`:
 
-El hook cambia el cursor del `<canvas>` a:
-- `grab` cuando se está arrastrando (`pointerDown`).
-- `grabbing` mientras se arrastra (`pointerMove` con botón pulsado).
-- `default` cuando se suelta.
+```tsx
+<RigidObject type="dynamic" colliders={false} knock={0.003}>…</RigidObject>
+```
 
-Para que el cursor cambie también al pasar sobre un objeto arrastrable, añadir `style={{ cursor: 'grab' }}` en el `<mesh>`.
+`usePlayerKnock` aplica entonces, al chocar el personaje, un **impulso de giro** que vuelca el objeto en la dirección del golpe:
+
+- **Fuerza**: `knock × velocidad`, con la velocidad limitada a 1,5 m/s; si no, al correr el objeto sale despedido.
+- **Velocidad usada**: la que el personaje **intenta** llevar (`userData.vx/vz`, ver `PlayerUserData`), porque tras el choque su velocidad real ya está frenada.
+- **Solo de pie**: el impulso se aplica si el objeto está casi vertical (< 25°) y con 300 ms de enfriamiento. Una vez volcado, basta el contacto normal.
+
+Valor del portalápices: `0,003`. Con `0,002` no llega a volcar; con valores mayores sale despedido de la mesa.
+
+El portalápices también expone su cuerpo con `bodyRef` (prop de `RigidObject`) para leer su inclinación y soltar los lápices.
+
+## Interacción
+
+El visitante **no manipula los objetos con el ratón**: el ratón sólo gira la cámara. La única forma de mover los objetos dinámicos es empujarlos con el personaje (`Player`), que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ver [Sistema de personaje](./sistema-de-personaje.md).
 
 ## Cómo añadir un nuevo objeto físico
 
@@ -215,7 +229,7 @@ import MiObjeto from './components/3d-models/MiObjeto';
 | Caso | type |
 |---|---|
 | Es superficie, anclaje o decoración pesada | `fixed` |
-| Es un objeto que debe caer, chocar o arrastrarse | `dynamic` |
+| Es un objeto que debe caer, chocar o ser empujado | `dynamic` |
 
 ## Cómo añadir un objeto fijo sin físicas
 
@@ -230,11 +244,27 @@ Para elementos puramente visuales (suelo, paredes, decoraciones), no hace falta 
 
 Es el patrón usado en `Room.tsx`, `Plant.tsx` y `WallDecor.tsx`.
 
+## Objetos rompibles
+
+La taza (`Taza.tsx`) se rompe si golpea el suelo a más de `BREAK_SPEED` (3,5 m/s). Una caída desde el escritorio da ~6 m/s; un golpe suave sólo hace "clink".
+
+```mermaid
+graph LR
+    Impact[onFloorImpact<br/>speed > 3.5] --> Frac[fracturar<br/>helpers/fracturar.ts]
+    Frac --> Rota[TazaRota<br/>fragmentos con collider hull]
+    Rota -->|4 s + 1 s de fundido| Done[onDone]
+    Done --> Nueva[Taza entera en su sitio<br/>key = generation + 1]
+```
+
+1. **`fracturar(modelo, escala, pose)`**: envolvente convexa del modelo (`ConvexGeometry`), troceada con `ConvexObjectBreaker.subdivideByImpact` alrededor de un punto de la base. Usa `Math.random`, así que se llama desde el manejador del impacto, nunca durante el render.
+2. **`TazaRota`**: cada fragmento es un RigidBody dinámico (`colliders="hull"`) con la pose de la taza y un empuje hacia fuera. Comparten un material transparente para el fundido final.
+3. **Reaparición**: al terminar el fundido se liberan geometrías y material, y la taza se vuelve a montar con una `key` nueva en su posición inicial.
+
+Para hacer rompible otro objeto: reutilizar `fracturar` y `TazaRota` (o generalizarlo) desde su `onFloorImpact`.
+
 ## Limitaciones
 
-- ❌ **No hay lanzamiento con velocidad**: al soltar, el objeto reposa. Implementable en el futuro modificando `handlePointerUp` para calcular velocidad desde el historial de posiciones.
-- ❌ **Drag sólo en plano perpendicular a la cámara**: no se puede "rotar" el objeto en el aire.
-- ❌ **No hay callback de colisión**: no se ejecuta código cuando un objeto colisiona con otro.
+- ⚠️ **Sólo se detectan golpes contra el suelo** (`useFloorImpact`); los choques entre objetos no suenan.
 
 ## Documentos relacionados
 

@@ -47,12 +47,17 @@ portafolio/
 │   │   │   ├── PortaLapiceros.tsx         #   dinámico
 │   │   │   ├── PortaVasos.tsx             #   FIJO
 │   │   │   ├── RoboticHand.tsx            #   dinámico
-│   │   │   ├── Taza.tsx                   #   dinámico
+│   │   │   ├── Taza.tsx                   #   dinámico, rompible
+│   │   │   ├── TazaRota.tsx               #   fragmentos de la taza rota
 │   │   │   └── Vehicle.tsx                #   dinámico
 │   │   │
-│   │   ├── scene-environment/             # Luz, controles, cámara, loader
-│   │   │   ├── CamaraController.tsx       # Posiciona la cámara inicial
+│   │   ├── player/                        # Personaje controlable (futuro gato)
+│   │   │   ├── keyboardMap.ts             # Acciones y teclas
+│   │   │   └── Player.tsx                 # Esfera física movida con el teclado
+│   │   │
+│   │   ├── scene-environment/             # Luz, controles, loader
 │   │   │   ├── Controls.tsx               # OrbitControls (con límites de enfoque)
+│   │   │   ├── ControlsHelp.tsx           # Panel de instrucciones de teclado
 │   │   │   ├── Light.tsx                  # ambient + 2 directionales con sombras
 │   │   │   ├── Loader.tsx                 # Pantalla de carga con useProgress
 │   │   │   └── StatsOverlay.tsx           # Overlay FPS (sólo en desarrollo)
@@ -64,13 +69,18 @@ portafolio/
 │   │   │   └── WallDecor.tsx              # Cuadro en pared trasera
 │   │   │
 │   │   └── physics/                       # 🆕 Sistema de físicas con Rapier
-│   │       └── RigidObject.tsx            # HOC: convierte un modelo en RigidBody
+│   │       ├── AutoGLTF.tsx               # Renderiza todas las mallas de un .glb
+│   │       └── RigidObject.tsx            # HOC: RigidBody + sonido de impacto
+│   │
+│   ├── audio/                             # Sonido sintetizado (Web Audio)
+│   │   └── sound.ts                       # playImpact, playShatter, silencio
 │   │
 │   ├── helpers/                           # Utilidades compartidas
+│   │   ├── fracturar.ts                   # Trocea un modelo en fragmentos convexos
 │   │   └── paleta-colores.ts              # Paleta de colores tipada
 │   │
 │   ├── hooks/                             # Hooks personalizados
-│   │   └── useDragObject.ts               # 🆕 Drag de RigidBody con el ratón
+│   │   └── useFloorImpact.ts              # Golpes contra el suelo → sonido / callback
 │   │
 │   ├── App.tsx                            # Raíz: integra Physics + Environment + modelos
 │   ├── index.css                          # Estilos globales
@@ -95,11 +105,11 @@ portafolio/
 | Tipo | Cantidad |
 |---|---|
 | Modelos 3D (`src/components/3d-models/*.tsx`) | 17 (4 fijos + 13 dinámicos) |
-| Componentes de escena (`src/components/scene-environment/`) | 3 |
+| Componentes de escena (`src/components/scene-environment/`) | 5 |
 | Componentes de environment (`src/components/environment/`) | 3 |
 | Componentes de físicas (`src/components/physics/`) | 2 |
 | Hooks (`src/hooks/`) | 1 |
-| Helpers (`src/helpers/`) | 1 |
+| Helpers (`src/helpers/`) | 2 |
 | Modelos `.glb` (`public/3d-models/`) | 17 |
 | Archivos de configuración | 7 |
 
@@ -128,7 +138,6 @@ graph TB
 
     Scene --> Light
     Scene --> Controls
-    Scene --> CamaraController
 ```
 
 ## Documentos relacionados

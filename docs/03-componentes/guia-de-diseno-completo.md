@@ -11,10 +11,10 @@ Convenciones, patrones y reglas no escritas que se han establecido en el proyect
 | Tipo | Convención | Ejemplo |
 |---|---|---|
 | Componentes 3D | PascalCase + `.tsx` | `DeskTable.tsx` |
-| Componentes de escena | PascalCase + `.tsx` | `CamaraController.tsx` |
+| Componentes de escena | PascalCase + `.tsx` | `StatsOverlay.tsx` |
 | Componentes de environment | PascalCase + `.tsx` | `Room.tsx`, `Plant.tsx` |
 | Componentes de physics | PascalCase + `.tsx` | `RigidObject.tsx` |
-| Hooks | camelCase con prefijo `use` + `.ts` | `useDragObject.ts` |
+| Hooks | camelCase con prefijo `use` + `.ts` | `useFloorImpact.ts` |
 | Helpers | kebab-case + `.ts` | `paleta-colores.ts` |
 
 ### Componentes
@@ -56,7 +56,7 @@ export default function Model() {
   const { nodes, materials } = useGLTF('/3d-models/desk-table.glb');
 
   return (
-    <RigidObject type="fixed" colliders="hull" position={[0, -0.5, 0]} draggable={false}>
+    <RigidObject type="fixed" colliders="hull" position={[0, -0.5, 0]}>
       <mesh
         castShadow
         receiveShadow
@@ -83,11 +83,11 @@ Elementos obligatorios:
 
 ## Cuándo usar cada tipo de `<RigidObject>`
 
-| Caso | type | colliders | draggable |
+| Caso | type | colliders | sound |
 |---|---|---|---|
-| Superficie principal (escritorio, suelo) | `fixed` | `cuboid` | `false` |
-| Anclaje (monitor, mausePad, portaVasos) | `fixed` | `cuboid` | `false` |
-| Objeto arrastrable (taza, reloj, lámpara…) | `dynamic` | `cuboid` | `true` (por defecto) |
+| Superficie principal (escritorio, suelo) | `fixed` | `cuboid` | — |
+| Anclaje (monitor, mausePad, portaVasos) | `fixed` | `cuboid` | — |
+| Objeto que el personaje empuja (taza, reloj, lámpara…) | `dynamic` | `cuboid` | material (`ceramic`, `plastic`…) |
 
 > ⚠️ **`colliders="hull"`** puede causar problemas cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102). Rapier intenta combinar todas las geometrías en un único hull, lo cual es costoso e inestable. **Usa `cuboid` salvo que necesites específicamente una forma más fiel**.
 
@@ -175,8 +175,7 @@ graph TB
 - [ ] Cada nodo del gráfico mapeado a un `<mesh>`.
 - [ ] `castShadow` y `receiveShadow` en cada mesh.
 - [ ] `useGLTF.preload(...)` al final del archivo.
-- [ ] Si es dinámico y arrastrable, `draggable` por defecto ya es `true`.
-- [ ] Si es fijo, `draggable={false}` explícito.
+- [ ] Si es dinámico, asignar `sound` con su material (ver Sistema de sonido).
 - [ ] Sin imports sin usar.
 - [ ] Sin `console.log` olvidados.
 

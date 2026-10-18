@@ -1,12 +1,13 @@
-import { Suspense, lazy } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Preload, useProgress } from '@react-three/drei';
+import { Suspense, lazy, useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
 import Controls from './components/scene-environment/Controls';
 import Light from './components/scene-environment/Light';
-import CamaraController from './components/scene-environment/CamaraController';
 import Loader from './components/scene-environment/Loader';
+import ControlsHelp from './components/scene-environment/ControlsHelp';
+import { keyboardMap } from './components/player/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
 import Room from './components/environment/Room';
@@ -38,7 +39,9 @@ const Lamp = lazy(() => import('./components/3d-models/Lamp'));
 const LinkedinLogo = lazy(() => import('./components/3d-models/LinkedinLogo'));
 const GitHubLogo = lazy(() => import('./components/3d-models/GitHubLogo'));
 const Vehicle = lazy(() => import('./components/3d-models/Vehicle'));
-const Lapiz = lazy(() => import('./components/3d-models/Lapiz'));
+
+// Personaje controlable con el teclado (placeholder del futuro gato).
+const Player = lazy(() => import('./components/player/Player'));
 
 // Overlay de diagnóstico
 import StatsOverlay from './components/scene-environment/StatsOverlay';
@@ -64,7 +67,6 @@ const SceneBase = () => {
       {/* Sistema de escena */}
       <Light />
       <Controls />
-      <CamaraController />
 
       {/* Preload de los modelos fijos (los críticos para el primer
           frame una vez que se monta Physics). */}
@@ -94,6 +96,7 @@ const PhysicsScene = () => {
 
       {/* Objetos físicos dinámicos */}
       <Taza />
+      {/* Incluye los 8 lápices que contiene */}
       <PortaLapiceros />
       <KeyBoard />
       <Mause />
@@ -106,31 +109,43 @@ const PhysicsScene = () => {
       <GitHubLogo />
       <Vehicle />
 
-      {/* Lápices (4 instancias con paleta distinta) */}
-      <Lapiz
-        key={1}
-        groupProps={{ position: [-2, 1.48, -0.4], scale: 0.9 }}
-        intensidad={500}
-        paleta="amarillos"
-      />
-      <Lapiz
-        key={2}
-        groupProps={{ position: [-1.96, 1.48, -0.4], scale: 0.9 }}
-        intensidad={500}
-        paleta="rojos"
-      />
-      <Lapiz
-        key={3}
-        groupProps={{ position: [-2, 1.48, -0.28], scale: 0.9 }}
-        intensidad={500}
-        paleta="azulGrisOscuro"
-      />
-      <Lapiz
-        groupProps={{ position: [-1.96, 1.48, -0.28], scale: 0.9 }}
-        intensidad={500}
-        paleta="verdes"
-      />
+      {/* Personaje controlable con el teclado */}
+      <Player />
     </>
+  );
+};
+
+/**
+ * Fotogramas que la simulación espera en pausa tras montar la escena.
+ *
+ * `@react-three/rapier` crea los colliders automáticos
+ * (`colliders="cuboid"`, p. ej. el del escritorio) uno o varios renders
+ * después de montar el cuerpo, mientras que los manuales (portalápices,
+ * personaje) existen desde el principio. Además, si el primer fotograma
+ * es lento, Rapier recupera hasta 0,5 s de simulación de golpe. Sin esta
+ * pausa, los objetos caen antes de que exista el escritorio y los
+ * delgados (el portalápices) lo atraviesan.
+ */
+const WARMUP_FRAMES = 5;
+
+/** Cuenta fotogramas desde que se monta y avisa al llegar a `WARMUP_FRAMES`. */
+const PhysicsWarmup = ({ onReady }: { onReady: () => void }) => {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current += 1;
+    if (frames.current === WARMUP_FRAMES) onReady();
+  });
+  return null;
+};
+
+/** `<Physics>` que arranca en pausa hasta que todos los colliders existen. */
+const PhysicsStage = () => {
+  const [paused, setPaused] = useState(true);
+  return (
+    <Physics gravity={[0, -9.81, 0]} paused={paused}>
+      <PhysicsScene />
+      <PhysicsWarmup onReady={() => setPaused(false)} />
+    </Physics>
   );
 };
 
@@ -144,7 +159,8 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Loader active={isLoading} />
-      <StatsOverlay />
+      <ControlsHelp hidden={isLoading} />
+      {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>
   );
@@ -154,17 +170,17 @@ const App = () => {
   return (
     <ProgressBridge>
       <div id="canvas-container">
-        <Canvas shadows style={{ height: '100vh', width: '100%' }}>
-          {/* Fase 1: escena estática (sin esperar a Rapier) */}
-          <SceneBase />
+        <KeyboardControls map={keyboardMap}>
+          <Canvas shadows camera={{ position: [0, 3, 4] }}>
+            {/* Fase 1: escena estática (sin esperar a Rapier) */}
+            <SceneBase />
 
-          {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
-          <Suspense fallback={null}>
-            <Physics gravity={[0, -9.81, 0]}>
-              <PhysicsScene />
-            </Physics>
-          </Suspense>
-        </Canvas>
+            {/* Fase 2: sistema de físicas + objetos. Lazy load del WASM. */}
+            <Suspense fallback={null}>
+              <PhysicsStage />
+            </Suspense>
+          </Canvas>
+        </KeyboardControls>
       </div>
     </ProgressBridge>
   );

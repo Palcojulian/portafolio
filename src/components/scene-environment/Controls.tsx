@@ -4,7 +4,7 @@ import { OrbitControls } from '@react-three/drei';
  * Controles de cámara orbital.
  *
  * Permite al visitante rotar la cámara alrededor del escritorio
- * arrastrando con el ratón, y hacer zoom con la rueda. El target es el
+ * arrastrando con el ratón. El target es el
  * centro del escritorio, ligeramente elevado.
  *
  * **Límites del foco del escritorio:**
@@ -15,8 +15,8 @@ import { OrbitControls } from '@react-three/drei';
  *   cada lado desde la posición inicial. Esto permite ver la planta
  *   (izquierda) y el cuadro (derecha) sin permitir al visitante
  *   "voltearse" y ver la parte trasera de la habitación.
- * - **Distancia limitada entre 2 y 8 unidades**: no puede acercarse
- *   demasiado ni alejarse hasta perder el escritorio.
+ * - **Zoom deshabilitado**: la distancia queda fijada por la posición
+ *   inicial de la cámara (`maxDistance` = 3 como tope de seguridad).
  * - **Polar limitado a [30°, 82°]**: no puede mirar desde muy arriba
  *   (cenital puro) ni desde abajo del escritorio.
  */
