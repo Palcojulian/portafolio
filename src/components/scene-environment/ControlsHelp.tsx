@@ -50,6 +50,15 @@ const Keys = ({ keys }: { keys: string[] }) => (
   </>
 );
 
+/** Letras primero y flechas después, separadas por "/". */
+const KeyGroup = ({ keys }: { keys: string[] }) => (
+  <span>
+    <Keys keys={keys.filter((k) => /^[A-Z]$/.test(k))} />
+    <span style={{ opacity: 0.6 }}> / </span>
+    <Keys keys={keys.filter((k) => !/^[A-Z]$/.test(k))} />
+  </span>
+);
+
 const rowStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
@@ -91,12 +100,8 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
 
   if (hidden) return null;
 
-  const moveKeys = [
-    ...keysFor(Controls.forward),
-    ...keysFor(Controls.left),
-    ...keysFor(Controls.back),
-    ...keysFor(Controls.right),
-  ];
+  const throttleKeys = [...keysFor(Controls.forward), ...keysFor(Controls.back)];
+  const steerKeys = [...keysFor(Controls.left), ...keysFor(Controls.right)];
 
   return (
     <div
@@ -142,21 +147,21 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
       {!collapsed && (
         <div style={{ marginTop: 8 }}>
           <div style={rowStyle}>
-            <span>Moverse</span>
+            <span>Acelerar / frenar y marcha atrás</span>
+            <KeyGroup keys={throttleKeys} />
+          </div>
+          <div style={rowStyle}>
+            <span>Girar</span>
+            <KeyGroup keys={steerKeys} />
+          </div>
+          <div style={rowStyle}>
+            <span>Turbo</span>
             <span>
-              <Keys keys={moveKeys.filter((k) => /^[A-Z]$/.test(k))} />
-              <span style={{ opacity: 0.6 }}> / </span>
-              <Keys keys={moveKeys.filter((k) => !/^[A-Z]$/.test(k))} />
+              <Keys keys={keysFor(Controls.run)} /> + acelerar
             </span>
           </div>
           <div style={rowStyle}>
-            <span>Correr</span>
-            <span>
-              <Keys keys={keysFor(Controls.run)} /> + mover
-            </span>
-          </div>
-          <div style={rowStyle}>
-            <span>Saltar</span>
+            <span>Freno de mano</span>
             <Keys keys={keysFor(Controls.jump)} />
           </div>
           <div style={rowStyle}>
@@ -178,7 +183,7 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
           >
             🖱️ Arrastra con el ratón para girar la cámara
             <br />
-            💡 Mueve los objetos empujándolos con el gato
+            🚗 Empuja los objetos ligeros con el coche
             <br />
             ☕ Cuidado con la taza: se rompe si cae al suelo
           </div>

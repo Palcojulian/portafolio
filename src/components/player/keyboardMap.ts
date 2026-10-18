@@ -3,6 +3,10 @@ import type { KeyboardControlsEntry } from '@react-three/drei';
 /**
  * Acciones del personaje controlables con el teclado.
  *
+ * Con el vehículo (`DrivableVehicle`): `forward`/`back` aceleran y
+ * frenan (o marcha atrás), `left`/`right` giran, `run` es el turbo y
+ * `jump` el freno de mano.
+ *
  * Se usa un objeto `as const` en lugar de un `enum` porque el proyecto
  * compila con `erasableSyntaxOnly`.
  */
