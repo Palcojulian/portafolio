@@ -92,7 +92,7 @@ Los 17 componentes que renderizan modelos `.glb`. **Todos están dentro de `Rigi
 
 ### Capa de escena (`scene-environment/`)
 
-Las luces, los controles orbitales y la posición de cámara.
+Las luces y la cámara fija.
 
 ## El `<Canvas>` en detalle
 
@@ -102,27 +102,23 @@ Las luces, los controles orbitales y la posición de cámara.
 
 | Propiedad | Valor actual | Notas |
 |---|---|---|
-| `camera.position` | `[0, 3, 4]` | Posición inicial de la cámara. |
+| `camera.position` | `CAMERA_POSITION` (≈ `[0, 3.04, 1.97]`) | Posición fija de la cámara (`camera.ts`). |
 | `shadows` | `true` | Activa el render de sombras. |
 
 ## Cámara y controles
 
 ```mermaid
 graph LR
-    Cam[Canvas camera<br/>position 0, 3, 4]
-    Ctrl[Controls<br/>target 0, 1.5, 0]
-    Visit[🖱️ Usuario arrastra]
+    Cam[Canvas camera<br/>CAMERA_POSITION]
+    Ctrl[Controls<br/>lookAt 0, 1.5, 0]
 
     Cam -.posiciona.-> CamC[PerspectiveCamera]
-    Ctrl -.define pivot.-> CamC
-    Visit -.arrastra.-> CamC
+    Ctrl -.orienta.-> CamC
 ```
 
-- **Cámara**: `(0, 3, 4)`, definida con la prop `camera` del `<Canvas>`. OrbitControls la orienta hacia su target. El tamaño del canvas lo da el CSS (`html, body, #root, #canvas-container { height: 100% }`).
-- **Target** de `OrbitControls`: `(0, 1.5, 0)` (centro del escritorio).
-- **Panning deshabilitado** (`enablePan={false}`) para que el visitante no se "pierda".
-- **Distancia limitada** entre `2` y `3` unidades para evitar alejarse demasiado.
-- **Rotación polar limitada**: no se puede mirar desde abajo del escritorio (`maxPolarAngle`).
+- **Cámara**: fija en `CAMERA_POSITION` (≈ `(0, 3.04, 1.97)`: 2,5 u del objetivo, 52° de la vertical), definida en `scene-environment/camera.ts` y usada por la prop `camera` del `<Canvas>`. `Controls.tsx` la orienta hacia el objetivo con `lookAt`; el ratón no la mueve. El tamaño del canvas lo da el CSS (`html, body, #root, #canvas-container { height: 100% }`).
+- **Objetivo** (`CAMERA_TARGET`): `(0, 1.5, 0)` (centro del escritorio).
+- **Sin rotación, zoom ni desplazamiento**: la vista es siempre la misma. Para cambiarla, ajusta `DISTANCE` y `POLAR` en `camera.ts`.
 
 ## Render loop
 

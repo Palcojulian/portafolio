@@ -56,7 +56,8 @@ portafolio/
 │   │   │   └── Player.tsx                 # Gato animado (sin montar)
 │   │   │
 │   │   ├── scene-environment/             # Luz, controles, loader
-│   │   │   ├── Controls.tsx               # OrbitControls (con límites de enfoque)
+│   │   │   ├── camera.ts                  # Posición y objetivo de la cámara fija
+│   │   │   ├── Controls.tsx               # Cámara fija (sin OrbitControls)
 │   │   │   ├── ControlsHelp.tsx           # Panel de instrucciones de teclado
 │   │   │   ├── Light.tsx                  # ambient + 2 directionales con sombras
 │   │   │   ├── Loader.tsx                 # Pantalla de carga con useProgress

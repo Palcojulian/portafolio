@@ -181,7 +181,7 @@ El portalápices también expone su cuerpo con `bodyRef` (prop de `RigidObject`)
 
 ## Interacción
 
-El visitante **no manipula los objetos con el ratón**: el ratón sólo gira la cámara. La única forma de mover los objetos dinámicos es empujarlos con el personaje, que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ahora es el coche (`DrivableVehicle`, ver [Sistema de vehículo](./sistema-de-vehiculo.md)); el gato (`Player`) está en el repo sin montar.
+El visitante **no manipula los objetos con el ratón** (la cámara es fija). La única forma de mover los objetos dinámicos es empujarlos con el personaje, que es un cuerpo dinámico más y choca con ellos a través de Rapier. Ahora es el coche (`DrivableVehicle`, ver [Sistema de vehículo](./sistema-de-vehiculo.md)); el gato (`Player`) está en el repo sin montar.
 
 Los objetos voluminosos (teclado, lámpara, mano robótica, auriculares) llevan `density={BULKY_DENSITY}` (`physics/density.ts`): pesan tanto que el coche choca con ellos y se detiene, mientras que los ligeros los sigue empujando.
 

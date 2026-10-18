@@ -25,15 +25,13 @@ graph TB
 
 ## Cámara de referencia
 
-```tsx
-// App.tsx
-<Canvas shadows camera={{ position: [0, 3, 4] }}>
-
-// Controls.tsx
-<OrbitControls makeDefault target={[0, 1.5, 0]} enableZoom={false} enableRotate />
+```ts
+// scene-environment/camera.ts
+CAMERA_TARGET = [0, 1.5, 0];
+CAMERA_POSITION = objetivo + 2,5 · (0, cos 52°, sin 52°) ≈ [0, 3.04, 1.97];
 ```
 
-La cámara está en `(0, 3, 4)` mirando al punto `(0, 1.5, 0)`. Esto significa que:
+La cámara es **fija** en `≈ (0, 3.04, 1.97)` mirando al punto `(0, 1.5, 0)` (`Controls.tsx` la coloca; no hay `OrbitControls`). Esto significa que:
 
 - El **centro del escritorio** está cerca de `(0, 1.5, 0)` (altura de la mesa).
 - Los objetos están alineados principalmente sobre el eje X (izquierda-derecha).
