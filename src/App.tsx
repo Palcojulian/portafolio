@@ -4,6 +4,7 @@ import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
 import Controls from './components/scene-environment/Controls';
+import { CAMERA_POSITION } from './components/scene-environment/camera';
 import Light from './components/scene-environment/Light';
 import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
@@ -170,7 +171,7 @@ const App = () => {
     <ProgressBridge>
       <div id="canvas-container">
         <KeyboardControls map={keyboardMap}>
-          <Canvas shadows camera={{ position: [0, 3, 4] }}>
+          <Canvas shadows camera={{ position: CAMERA_POSITION }}>
             {/* Fase 1: escena estática (sin esperar a Rapier) */}
             <SceneBase />
 
