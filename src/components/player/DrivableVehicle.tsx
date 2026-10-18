@@ -15,8 +15,12 @@ import type { PlayerUserData } from './Player';
 
 const MODEL_URL = '/3d-models/vehicle.glb';
 
-/** El .glb mide 1,33 × 0,90 × 3,16 (escala 1); así queda a escala del escritorio. */
-const S = 0.15;
+/**
+ * El .glb mide 1,33 × 0,90 × 3,16 (escala 1); así queda a escala del
+ * escritorio (40 × 17 × 11,5 cm). Todas las medidas físicas (ruedas,
+ * carrocería, batalla) se derivan de `S`.
+ */
+const S = 0.1275;
 
 /** Pose inicial (la que tenía el coche decorativo). */
 const SPAWN_POSITION = new THREE.Vector3(-2, 1.5, 0.2);
@@ -48,8 +52,12 @@ const CHASSIS_BOTTOM = 0.2 * S;
 const CHASSIS_TOP = 0.9 * S;
 const CHASSIS_HALF = [0.64 * S, (CHASSIS_TOP - CHASSIS_BOTTOM) / 2, 1.57 * S] as const;
 const CHASSIS_CENTER = [0, (CHASSIS_TOP + CHASSIS_BOTTOM) / 2, -0.02 * S] as const;
-/** Masa ~0,1: empuja la taza o los lápices, pero no el teclado ni la lámpara. */
-const CHASSIS_DENSITY = 10;
+/**
+ * Masa ~0,1: empuja la taza o los lápices, pero no el teclado ni la
+ * lámpara. Si cambias `S`, la masa varía con el cubo de la escala:
+ * compénsalo aquí para que el coche empuje igual.
+ */
+const CHASSIS_DENSITY = 16;
 
 /*
  * ── Conducción (modelo bicicleta) ───────────────────────────────────

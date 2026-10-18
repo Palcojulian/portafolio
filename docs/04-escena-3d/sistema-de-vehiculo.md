@@ -52,14 +52,14 @@ graph TD
 - **Caídas**: por debajo de `y = 1.0`, o con `R`, vuelve a su pose inicial.
 - **Volcar objetos**: publica `kind: 'player'` y su velocidad en el `userData` (`PlayerUserData`), así que los objetos con `knock` (el portalápices) siguen funcionando.
 
-> Se probó primero el vehículo de rayos de Rapier (`DynamicRayCastVehicleController`). A esta escala (47 cm, ~0,1 kg) las ruedas o resbalaban de lado sin girar, o con más agarre el coche se inclinaba y giraba al revés. El modelo bicicleta es predecible y fácil de ajustar.
+> Se probó primero el vehículo de rayos de Rapier (`DynamicRayCastVehicleController`). A esta escala (unos 40–47 cm, ~0,1 kg) las ruedas o resbalaban de lado sin girar, o con más agarre el coche se inclinaba y giraba al revés. El modelo bicicleta es predecible y fácil de ajustar.
 
 ### Forma física
 
 | Pieza | Forma | Para qué |
 |---|---|---|
-| Ruedas | 4 esferas del radio de la rueda (3,5 cm) en los centros de `wheel_*` | Tocan la mesa. Suben los bordes de 4 mm (alfombrilla, portavasos) y chocan con lo que llega por encima del eje (la placa del teclado, a 5,8 cm; la base del monitor, a 3,4 cm). |
-| Carrocería | Caja ajustada a la malla, de 3 a 13,5 cm de altura | Choca con todo lo demás. |
+| Ruedas | 4 esferas del radio de la rueda (3 cm) en los centros de `wheel_*` | Tocan la mesa. Suben los bordes de 4 mm (alfombrilla, portavasos) y chocan con lo que llega por encima del eje (la placa del teclado, a 5,8 cm; la base del monitor, a 3,4 cm). |
+| Carrocería | Caja ajustada a la malla, de 2,5 a 11,5 cm de altura | Choca con todo lo demás. |
 
 Todas sin fricción (regla `Min`): el coche se mueve por velocidad y así no arrastra lo que pisa.
 
@@ -69,10 +69,10 @@ Los objetos voluminosos llevan `density={BULKY_DENSITY}` (100). Así pesan decen
 
 | Objeto | Comportamiento (medido) |
 |---|---|
-| Alfombrilla, portavasos | Pasa por encima (sube ~6 mm). |
+| Alfombrilla, portavasos | Pasa por encima (sube ~7 mm). |
 | Teclado, lámpara, mano robótica, auriculares | Lo detienen; se mueven < 1 mm. |
-| Monitor (base y cuello) | Lo detiene. La pantalla empieza a 27 cm de la mesa: el coche (13,5 cm) cabe debajo, por los lados de la base. |
-| Taza, ratón, reloj, logos, lápices | Los empuja. |
+| Monitor (base y cuello) | Lo detiene. La pantalla empieza a 27 cm de la mesa: el coche (11,5 cm) cabe debajo, por los lados de la base. |
+| Taza, ratón, reloj, logos, lápices | Los empuja (taza ~16 cm y ratón ~25 cm en un segundo de empuje). |
 
 ## Modelo
 
@@ -99,16 +99,16 @@ El coche mira a **+Z** (faros en +Z, pilotos `redLightMaterial` en −Z). En `us
 
 | Constante | Valor | Efecto |
 |---|---|---|
-| `S` | `0.15` | Escala del modelo (47 × 20 × 13,5 cm). |
+| `S` | `0.1275` | Escala del modelo (40 × 17 × 11,5 cm). Todas las medidas físicas salen de ella. |
 | `SPAWN_POSITION` / `SPAWN_YAW` | `(-2, 1.5, 0.2)` / `1` | Pose inicial (la del antiguo coche decorativo). |
 | `ACCELERATION` / `REVERSE_ACCELERATION` | `2` / `1.2` m/s² | Motor hacia delante y marcha atrás. |
 | `BRAKE_DECELERATION` / `HANDBRAKE_DECELERATION` / `ROLLING_DECELERATION` | `5` / `3` / `0.6` m/s² | Freno, freno de mano y rodar sin gas. |
 | `MAX_SPEED` / `TURBO_SPEED` / `MAX_REVERSE_SPEED` | `1.2` / `2` / `0.5` m/s | Velocidades máximas. |
 | `MAX_STEER` / `STEER_SPEED_FALLOFF` | `0.5` rad / `0.6` | Ángulo de volante parado, y cuánto se reduce con la velocidad. |
 | `GRIP` / `HANDBRAKE_GRIP` | `14` / `2` | Agarre lateral (1/s), normal y con freno de mano. |
-| `CHASSIS_DENSITY` | `10` | Masa del coche: más alta = empuja objetos más pesados. |
+| `CHASSIS_DENSITY` | `16` | Masa del coche (~0,1): más alta = empuja objetos más pesados. La masa varía con el cubo de `S`: si cambias la escala, compénsala aquí. |
 
-Medido a 60 Hz: de 0 a 1,2 m/s en 0,6 s; frena de 1,2 m/s a 0 en 0,48 s (8 cm); gira ~1,1 rad en 1,5 s a fondo.
+Medido a 60 Hz, con `S = 0.1275`: de 0 a 1,2 m/s en 0,6 s; frena de 1,2 m/s a 0 en 0,48 s (8 cm); gira ~1,1 rad en 1,5 s a fondo.
 
 ## Documentos relacionados
 

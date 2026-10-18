@@ -57,7 +57,7 @@ La cámara está en `(0, 3, 4)` mirando al punto `(0, 1.5, 0)`. Esto significa q
 | `<Lamp>` | `[2, 1.47, -0.3]` | `1.5` | `[0, 5.5, 0]` | Esquina derecha-trasera, ladeado. |
 | `<LinkedinLogo>` | `[1.4, 1.49, -0.3]` | `0.4` | (defecto) | Derecha-trasera. |
 | `<GitHubLogo>` | `[1.65, 1.49, -0.3]` | `0.45` | (defecto) | Al lado del logo de LinkedIn. |
-| `<DrivableVehicle>` | `[-2, 1.5, 0.2]` | `0.15` | `[0, 1, 0]` | Esquina izquierda-frontal. Es el personaje: vuelve aquí con `R`. |
+| `<DrivableVehicle>` | `[-2, 1.5, 0.2]` | `0.1275` | `[0, 1, 0]` | Esquina izquierda-frontal. Es el personaje: vuelve aquí con `R`. |
 | `<MausePad>` | `[0.15, 1.485, 0.35]` | `0.3` | `[0, 0, 0]` | Bajo el ratón. |
 
 > Nota: `<PortaVasos>` figura en el código pero la tabla lo omite por brevedad.
