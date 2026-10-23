@@ -54,10 +54,10 @@ Cómo funciona la escena renderizada con react-three-fiber.
 |---|---|---|
 | 10 | [Sistema de escena](./04-escena-3d/sistema-de-escena.md) | `Canvas`, capas (environment vs models), jerarquía. |
 | 11 | [Sistema de luces](./04-escena-3d/sistema-de-luces.md) | `directionalLight`, ambient, sombras. |
-| 12 | [Sistema de físicas](./04-escena-3d/sistema-de-fisicas.md) | Rapier, fijos vs dinámicos, objetos rompibles. |
+| 12 | [Sistema de físicas](./04-escena-3d/sistema-de-fisicas.md) | Rapier, fijos vs dinámicos. |
 | 12b | [Sistema de personaje](./04-escena-3d/sistema-de-personaje.md) | El gato animado (en el repo, sin montar en la escena). |
 | 12d | [Sistema de vehículo](./04-escena-3d/sistema-de-vehiculo.md) | El coche controlable: conducción, colisiones y modelo con ruedas separadas. |
-| 12c | [Sistema de sonido](./04-escena-3d/sistema-de-sonido.md) | Sonidos sintetizados al caer al suelo; taza rompible. |
+| 12c | [Sistema de sonido](./04-escena-3d/sistema-de-sonido.md) | Sonidos sintetizados al caer al suelo. |
 | 13 | [Loading y Suspense](./04-escena-3d/loading-y-suspense.md) | Cómo se muestran los `.glb` mientras se cargan. |
 | 14 | [Posicionamiento de objetos](./04-escena-3d/posicionamiento-de-objetos.md) | Sistema de coordenadas y tabla con posiciones actuales. |
 
