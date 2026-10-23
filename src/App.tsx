@@ -8,6 +8,8 @@ import { CAMERA_POSITION } from './helpers/camera';
 import Light from './components/scene-environment/Light';
 import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
+import InteractionManager from './components/interaction/InteractionManager';
+import InteractionPrompt from './components/interaction/InteractionPrompt';
 import { keyboardMap } from './helpers/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
@@ -111,6 +113,9 @@ const PhysicsScene = () => {
 
       {/* Personaje controlable con el teclado */}
       <DrivableVehicle />
+
+      {/* Objeto del escritorio más cercano al vehículo + Enter */}
+      <InteractionManager />
     </>
   );
 };
@@ -160,6 +165,7 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
     <>
       <Loader active={isLoading} />
       <ControlsHelp hidden={isLoading} />
+      <InteractionPrompt hidden={isLoading} />
       {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>

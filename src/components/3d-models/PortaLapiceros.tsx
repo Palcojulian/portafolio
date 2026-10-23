@@ -195,6 +195,7 @@ const Model = () => {
   return (
     <>
       <RigidObject
+        interactable={{ id: 'portalapices', label: 'Portalápices' }}
         type="dynamic"
         sound="metal"
         colliders={false}

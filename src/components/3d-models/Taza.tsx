@@ -15,6 +15,7 @@ const SCALE = 0.6;
 const Model = () => {
   return (
     <RigidObject
+      interactable={{ id: 'taza', label: 'Taza' }}
       type="dynamic"
       sound="ceramic"
       colliders="cuboid"

@@ -1,6 +1,8 @@
 import { RigidBody } from '@react-three/rapier';
 import type { RapierRigidBody } from '@react-three/rapier';
 import { useRef, type ReactNode, type RefObject } from 'react';
+import type { Group } from 'three';
+import InteractionHelper from '../interaction/InteractionHelper';
 import { useFloorImpact, type FloorImpact } from '../../hooks/useFloorImpact';
 import { usePlayerKnock } from '../../hooks/usePlayerKnock';
 import type { CollisionEnterPayload } from '@react-three/rapier';
@@ -37,6 +39,10 @@ import type { SoundMaterial } from '../../audio/sound';
  *
  * Volcado: con `knock`, el personaje lo vuelca al chocar con él (ver
  * `usePlayerKnock`).
+ *
+ * Interacción: con `interactable`, un orbe de luz orbita sobre el
+ * objeto y, con el vehículo cerca, Enter ejecuta `onInteract` (ver
+ * `InteractionHelper` e `InteractionManager`).
  */
 interface RigidObjectProps {
   type?: 'fixed' | 'dynamic';
@@ -67,6 +73,12 @@ interface RigidObjectProps {
   knock?: number;
   sound?: SoundMaterial;
   onFloorImpact?: (impact: FloorImpact) => void;
+  /** Lo marca como interactivo: orbe de luz + acción con Enter. */
+  interactable?: {
+    id: string;
+    label: string;
+    onInteract?: () => void;
+  };
   children: ReactNode;
 }
 
@@ -86,8 +98,10 @@ const RigidObject = ({
   knock,
   sound,
   onFloorImpact,
+  interactable,
   children,
 }: RigidObjectProps) => {
+  const meshesRef = useRef<Group>(null);
   const internalBodyRef = useRef<RapierRigidBody>(null);
   const bodyRef = externalBodyRef ?? internalBodyRef;
 
@@ -122,18 +136,30 @@ const RigidObject = ({
   };
 
   return (
-    <RigidBody
-      ref={bodyRef}
-      type={type}
-      colliders={colliders}
-      position={position}
-      rotation={rotation}
-      scale={scale}
-      {...optionalProps}
-      onCollisionEnter={onCollisionEnter}
-    >
-      {children}
-    </RigidBody>
+    <>
+      <RigidBody
+        ref={bodyRef}
+        type={type}
+        colliders={colliders}
+        position={position}
+        rotation={rotation}
+        scale={scale}
+        {...optionalProps}
+        onCollisionEnter={onCollisionEnter}
+      >
+        {/* Grupo sin transformación: solo da al helper una referencia a
+            las mallas para medir su caja en mundo. */}
+        <group ref={meshesRef}>{children}</group>
+      </RigidBody>
+      {interactable && (
+        <InteractionHelper
+          id={interactable.id}
+          label={interactable.label}
+          onInteract={interactable.onInteract}
+          target={meshesRef}
+        />
+      )}
+    </>
   );
 };
 

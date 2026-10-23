@@ -11,6 +11,7 @@ import {
   type RapierRigidBody,
 } from '@react-three/rapier';
 import type { Control } from '../../helpers/keyboardMap';
+import { playerPosition } from '../../helpers/interaccion';
 import type { PlayerUserData } from './Player';
 
 const MODEL_URL = '/3d-models/vehicle.glb';
@@ -311,6 +312,8 @@ const DrivableVehicle = () => {
     const delta = physicsWorld.timestep;
     const keys = getKeys();
     const pos = body.translation();
+    // Para `InteractionManager`: qué objeto del escritorio está cerca.
+    playerPosition.set(pos.x, pos.y, pos.z);
 
     if (keys.reset || pos.y < FALL_LIMIT_Y) {
       body.setTranslation(SPAWN_POSITION, true);

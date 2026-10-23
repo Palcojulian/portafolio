@@ -210,6 +210,9 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
           </Section>
 
           <Section title="General">
+            <Row label="Interactuar con el objeto cercano">
+              <Keys keys={['Enter']} />
+            </Row>
             <Row label="Volver al escritorio">
               <Keys keys={keysFor(Controls.reset)} />
             </Row>

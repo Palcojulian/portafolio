@@ -11,6 +11,7 @@ import { useGLTF } from '@react-three/drei';
 const Model = () => {
   return (
     <RigidObject
+      interactable={{ id: 'pulsera', label: 'Pulsera' }}
       type="dynamic"
       sound="plastic"
       colliders="cuboid"

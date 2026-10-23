@@ -58,6 +58,7 @@ Cómo funciona la escena renderizada con react-three-fiber.
 | 12b | [Sistema de personaje](./04-escena-3d/sistema-de-personaje.md) | El gato animado (en el repo, sin montar en la escena). |
 | 12d | [Sistema de vehículo](./04-escena-3d/sistema-de-vehiculo.md) | El coche controlable: conducción, colisiones y modelo con ruedas separadas. |
 | 12c | [Sistema de sonido](./04-escena-3d/sistema-de-sonido.md) | Sonidos sintetizados al caer al suelo. |
+| 12e | [Sistema de interacción](./04-escena-3d/sistema-de-interaccion.md) | Orbes sobre los objetos del escritorio y acción con Enter. |
 | 13 | [Loading y Suspense](./04-escena-3d/loading-y-suspense.md) | Cómo se muestran los `.glb` mientras se cargan. |
 | 14 | [Posicionamiento de objetos](./04-escena-3d/posicionamiento-de-objetos.md) | Sistema de coordenadas y tabla con posiciones actuales. |
 
