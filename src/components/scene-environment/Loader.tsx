@@ -196,34 +196,7 @@ const Loader = ({ active }: LoaderProps) => {
           <span>{percent}%</span>
         </div>
       </div>
-
-      <div
-        key={tip}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 6,
-          minHeight: 32,
-          marginTop: 48,
-          fontSize: 14,
-          color: COLORS.muted,
-          textAlign: 'center',
-          animation: 'loader-tip-in 400ms ease',
-        }}
-      >
-        <span>Consejo: usa</span>
-        <span>
-          {current.keys.map((k) => (
-            <kbd key={k} style={kbdStyle}>
-              {k}
-            </kbd>
-          ))}
-        </span>
-        <span>{current.text}</span>
-      </div>
-
+      
       <style>{`
         @keyframes loader-tip-in {
           from { opacity: 0; transform: translateY(4px); }
