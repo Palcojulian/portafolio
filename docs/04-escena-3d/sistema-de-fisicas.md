@@ -111,7 +111,7 @@ Son objetos que caen con gravedad y el personaje puede empujar:
 | Tipo | Uso | Ventaja | Desventaja |
 |---|---|---|---|
 | `cuboid` | **Por defecto en este proyecto.** Todos los modelos. | Muy rápido, suficiente para casi todos los casos, robusto con modelos de muchas mallas. | Impreciso para formas muy irregulares. |
-| `hull` | Fragmentos de la taza rota. | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
+| `hull` | (No usado). | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
 | `ball` | (No usado). | Rápido para esferas. | Sólo para esferas perfectas. |
 
 En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción es el portalápices, que usa un collider compuesto hueco (ver más abajo). Ojo: `@react-three/rapier` crea **una caja por malla**, no una para todo el modelo (el teclado es una placa más una caja por tecla; el monitor, base, cuello y pantalla). Estas cajas son suficientes para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
@@ -244,24 +244,6 @@ Para elementos puramente visuales (suelo, paredes, decoraciones), no hace falta 
 ```
 
 Es el patrón usado en `Room.tsx`, `Plant.tsx` y `WallDecor.tsx`.
-
-## Objetos rompibles
-
-La taza (`Taza.tsx`) se rompe si golpea el suelo a más de `BREAK_SPEED` (3,5 m/s). Una caída desde el escritorio da ~6 m/s; un golpe suave sólo hace "clink".
-
-```mermaid
-graph LR
-    Impact[onFloorImpact<br/>speed > 3.5] --> Frac[fracturar<br/>helpers/fracturar.ts]
-    Frac --> Rota[TazaRota<br/>fragmentos con collider hull]
-    Rota -->|4 s + 1 s de fundido| Done[onDone]
-    Done --> Nueva[Taza entera en su sitio<br/>key = generation + 1]
-```
-
-1. **`fracturar(modelo, escala, pose)`**: envolvente convexa del modelo (`ConvexGeometry`), troceada con `ConvexObjectBreaker.subdivideByImpact` alrededor de un punto de la base. Usa `Math.random`, así que se llama desde el manejador del impacto, nunca durante el render.
-2. **`TazaRota`**: cada fragmento es un RigidBody dinámico (`colliders="hull"`) con la pose de la taza y un empuje hacia fuera. Comparten un material transparente para el fundido final.
-3. **Reaparición**: al terminar el fundido se liberan geometrías y material, y la taza se vuelve a montar con una `key` nueva en su posición inicial.
-
-Para hacer rompible otro objeto: reutilizar `fracturar` y `TazaRota` (o generalizarlo) desde su `onFloorImpact`.
 
 ## Limitaciones
 
