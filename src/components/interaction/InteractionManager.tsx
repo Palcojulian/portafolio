@@ -10,6 +10,7 @@ import {
   setActive,
   type Interactable,
 } from '../../helpers/interaccion';
+import { getFocus } from '../../helpers/vista';
 
 /**
  * Distancia horizontal (m) del centro del vehículo a la caja del objeto
@@ -45,7 +46,7 @@ const InteractionManager = () => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'Enter' && e.code !== 'NumpadEnter') return;
-      if (e.repeat) return;
+      if (e.repeat || getFocus() !== 'scene') return;
       // No robar el Enter a botones o campos de texto.
       const el = e.target as HTMLElement | null;
       if (el && ['BUTTON', 'INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return;
@@ -59,7 +60,9 @@ const InteractionManager = () => {
     const current = getActive();
     let nearest: Interactable | null = null;
     let best = Infinity;
-    for (const item of interactables()) {
+    // Mirando el monitor no hay objeto activo (ni aviso ni luz).
+    const items = getFocus() === 'scene' ? interactables() : [];
+    for (const item of items) {
       if (item.box.isEmpty()) continue;
       const d = horizontalDistance(item, playerPosition);
       const limit = NEAR_DISTANCE + (item === current ? RELEASE_MARGIN : 0);
