@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef, useState } from 'react';
+import { Suspense, lazy, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
@@ -10,6 +10,7 @@ import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
 import InteractionManager from './components/interaction/InteractionManager';
 import InteractionPrompt from './components/interaction/InteractionPrompt';
+import { getFocus, subscribe as subscribeFocus } from './helpers/vista';
 import { keyboardMap } from './helpers/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
@@ -161,11 +162,14 @@ const PhysicsStage = () => {
 const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   const { progress, total } = useProgress();
   const isLoading = progress < 100 || total === 0;
+  // Mirando el monitor se ocultan los overlays de la escena.
+  const focus = useSyncExternalStore(subscribeFocus, getFocus);
+  const hideHud = isLoading || focus !== 'scene';
   return (
     <>
       <Loader active={isLoading} />
-      <ControlsHelp hidden={isLoading} />
-      <InteractionPrompt hidden={isLoading} />
+      <ControlsHelp hidden={hideHud} />
+      <InteractionPrompt hidden={hideHud} />
       {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>
@@ -177,7 +181,9 @@ const App = () => {
     <ProgressBridge>
       <div id="canvas-container">
         <KeyboardControls map={keyboardMap}>
-          <Canvas shadows camera={{ position: CAMERA_POSITION }}>
+          {/* dpr hasta 1,5: en pantallas con escalado ≥ 2 evita renderizar
+              ~4× los píxeles por poca diferencia visual. */}
+          <Canvas shadows dpr={[1, 1.5]} camera={{ position: CAMERA_POSITION }}>
             {/* Fase 1: escena estática (sin esperar a Rapier) */}
             <SceneBase />
 
