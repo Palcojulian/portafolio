@@ -114,7 +114,7 @@ Son objetos que caen con gravedad y el personaje puede empujar:
 | `hull` | (No usado). | Forma envolvente fiel a la geometría. | Más lento y potencialmente inestable cuando hay muchas mallas. |
 | `ball` | (No usado). | Rápido para esferas. | Sólo para esferas perfectas. |
 
-En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción es el portalápices, que usa un collider compuesto hueco (ver más abajo). Ojo: `@react-three/rapier` crea **una caja por malla**, no una para todo el modelo (el teclado es una placa más una caja por tecla; el monitor, base, cuello y pantalla). Estas cajas son suficientes para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
+En este proyecto se usa **`cuboid` para casi todos los modelos**; las excepciones son el portalápices, que usa un collider compuesto hueco (ver más abajo), y la mano robótica. Ojo: `@react-three/rapier` crea **una caja por malla**, no una para todo el modelo (el teclado es una placa más una caja por tecla; el monitor, base, cuello y pantalla). Estas cajas son suficientes para que los objetos reposen correctamente sobre el escritorio y choquen entre sí. Cuando el `RigidBody` envuelve muchas mallas (como el teclado con 102 teclas), `cuboid` da un comportamiento predecible, mientras que `hull` puede ser problemático porque rapier intenta combinar todas las geometrías en un único hull.
 
 ## Arranque de la simulación
 
@@ -124,6 +124,10 @@ En este proyecto se usa **`cuboid` para casi todos los modelos**; la excepción 
 - Si el primer fotograma tras la carga es lento (compilación de shaders), Rapier recupera hasta 0,5 s de simulación de golpe (30 pasos).
 
 Sin la pausa, los objetos caen antes de que exista el escritorio: los macizos se hunden y salen disparados al aparecer, y los finos (las paredes del portalápices) lo atraviesan.
+
+## Collider compuesto: la mano robótica
+
+`RoboticHand` usa `colliders={false}` y **4 cajas apiladas** (`PARTS`): la placa de la base, la columna, el antebrazo y la mano. Cada caja envuelve una franja de altura de la malla. Con una sola caja, el antebrazo (que sobresale ~12 cm hacia −Z a partir de ~28 cm de altura) hacía que la caja llegara hasta la mesa, y el vehículo (~11,5 cm de alto) chocaba con aire antes de alcanzar la base. Las medidas están en unidades del modelo: el `scale` del `RigidBody` también escala los colliders hijos. Cada caja usa `density={BULKY_DENSITY}`; el centro de masas queda sobre la base, así que no vuelca sola.
 
 ## Colliders compuestos: el portalápices
 
@@ -157,7 +161,7 @@ graph LR
 **Comportamiento medido** (empujando caminando):
 - **Hacia la izquierda**: vuelca y queda tumbado en la mesa. Los lápices salen por la boca y, como el borde está a ~30 cm, caen al suelo.
 - **Desde delante**: vuelca y cae por el borde trasero, a 37 cm.
-- **Hacia la derecha**: se inclina ~9° y vuelve. Las puntas de los lápices chocan con la caja de colisión de la mano robótica, que envuelve el pulgar extendido.
+- **Hacia la derecha**: se inclina ~9° y vuelve. Las puntas de los lápices chocaban con la caja de colisión única de la mano robótica, que envolvía el pulgar extendido. Medido antes del collider compuesto de la mano; está pendiente volver a medirlo.
 
 > ⚠️ `RigidObject` solo pasa a `<RigidBody>` las opciones opcionales (`ccd`, `quaternion`, velocidades, iteraciones) cuando están definidas. `@react-three/rapier` aplica cualquier opción presente en las props aunque valga `undefined`, y algunas (p. ej. `setAngularDamping(undefined)`) hacen fallar la WASM de Rapier.
 
