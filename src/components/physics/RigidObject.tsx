@@ -33,7 +33,7 @@ import type { SoundMaterial } from '../../audio/sound';
  * Sonido e impactos (sólo objetos `dynamic`):
  * - `sound`: material con el que suena al golpear el suelo.
  * - `onFloorImpact`: callback con la velocidad del golpe (p. ej. para
- *   romper la taza). Ver `useFloorImpact`.
+ *   soltar los lápices del portalápices). Ver `useFloorImpact`.
  *
  * Volcado: con `knock`, el personaje lo vuelca al chocar con él (ver
  * `usePlayerKnock`).
