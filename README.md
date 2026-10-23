@@ -9,7 +9,6 @@ Portafolio web personal renderizado en **3D** con React + TypeScript + three.js.
 - 🖐️ **Físicas con Rapier**: la taza, los lápices, los auriculares, etc. caen sobre el escritorio con gravedad y chocan entre sí; sólo el personaje puede moverlos.
 - 🐾 **Personaje controlable**: un gato animado que se mueve con `WASD`/flechas, corre con `Shift`, salta con `Espacio` y empuja los objetos del escritorio. `R` lo devuelve al escritorio y `H` muestra/oculta la ayuda.
 - 🔊 **Sonidos de impacto** sintetizados según el material (cerámica, plástico, metal, madera) cuando un objeto cae al suelo. `M` silencia.
-- ☕ **Taza rompible**: si cae al suelo con fuerza se hace añicos y, a los pocos segundos, reaparece entera.
 - 📌 **Objetos fijos** (escritorio, monitor, mausePad, portaVasos) permanecen anclados.
 - 🎨 **Paleta de colores propia** definida en código, con tipos estrictos.
 - 📦 **17 modelos 3D** en formato `.glb`.
@@ -68,7 +67,7 @@ portafolio/
 │   │   ├── player/               # Personaje controlable: el coche (y el gato, sin montar)
 │   │   └── scene-environment/    # Luz, controles, loader, ayuda
 │   ├── audio/                    # Sonido sintetizado (Web Audio)
-│   ├── helpers/                  # paleta-colores.ts, fracturar.ts
+│   ├── helpers/                  # paleta-colores.ts, colores-ui.ts
 │   ├── hooks/                    # useFloorImpact
 │   ├── App.tsx                   # Raíz: integra Physics + Environment + modelos
 │   └── main.tsx                  # Punto de entrada
