@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { useProgress } from '@react-three/drei';
 import { Controls, keysFor } from '../player/keyboardMap';
-import { amarillos, azulGrisClaro, azulGrisOscuro } from '../../helpers/paleta-colores';
+import { coloresUI as COLORS } from '../../helpers/colores-ui';
 
 /** Nombre y subtítulo mostrados en la pantalla de carga (provisionales). */
 const OWNER_NAME = 'John Doe';
@@ -12,20 +12,6 @@ const TIP_INTERVAL = 3500;
 
 /** Duración del fundido de salida al terminar la carga (ms). */
 const FADE_OUT_MS = 400;
-
-/**
- * Colores de la paleta del proyecto (`paleta-colores.ts`): los mismos
- * azul-gris "oficina" de la escena y el amarillo de acento de la
- * lámpara y del antiguo spinner.
- */
-const COLORS = {
-  background: azulGrisOscuro[100],
-  surface: azulGrisOscuro[300],
-  border: azulGrisClaro[400],
-  accent: amarillos[500],
-  text: '#ffffff',
-  muted: azulGrisClaro[100],
-};
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 
