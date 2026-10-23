@@ -9,7 +9,7 @@ import {
   useRapier,
   type RapierRigidBody,
 } from '@react-three/rapier';
-import type { Control } from './keyboardMap';
+import type { Control } from '../../helpers/keyboardMap';
 
 const MODEL_URL = '/3d-models/gato.glb';
 

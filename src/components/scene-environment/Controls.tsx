@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react';
 import { useThree } from '@react-three/fiber';
-import { CAMERA_POSITION, CAMERA_TARGET } from './camera';
+import { CAMERA_POSITION, CAMERA_TARGET } from '../../helpers/camera';
 
 /**
  * Cámara fija.

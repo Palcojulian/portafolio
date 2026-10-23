@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
-import { Controls, keysFor } from '../player/keyboardMap';
+import { Controls, keysFor } from '../../helpers/keyboardMap';
 import { isMuted, onMutedChange, setMuted } from '../../audio/sound';
 import { coloresUI as COLORS } from '../../helpers/colores-ui';
 

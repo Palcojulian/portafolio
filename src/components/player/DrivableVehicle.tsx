@@ -10,7 +10,7 @@ import {
   useRapier,
   type RapierRigidBody,
 } from '@react-three/rapier';
-import type { Control } from './keyboardMap';
+import type { Control } from '../../helpers/keyboardMap';
 import type { PlayerUserData } from './Player';
 
 const MODEL_URL = '/3d-models/vehicle.glb';

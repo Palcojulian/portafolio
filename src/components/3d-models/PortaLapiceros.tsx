@@ -17,7 +17,7 @@ import {
   PENCIL_RADIUS,
   PENCIL_SCALE,
   PENCIL_SOLVER_ITERATIONS,
-} from './lapizShape';
+} from '../../helpers/lapizShape';
 import type { NombrePaleta } from '../../helpers/paleta-colores';
 
 type Vec3 = [number, number, number];

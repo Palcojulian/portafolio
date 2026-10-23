@@ -1,7 +1,7 @@
 import { Mesh, MeshStandardMaterial } from 'three';
 import { useGLTF } from '@react-three/drei';
 import RigidObject from '../physics/RigidObject';
-import { BULKY_DENSITY } from '../physics/density';
+import { BULKY_DENSITY } from '../../helpers/density';
 import { paletaColores } from '../../helpers/paleta-colores';
 
 /**
