@@ -4,11 +4,11 @@ import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
 import Controls from './components/scene-environment/Controls';
-import { CAMERA_POSITION } from './components/scene-environment/camera';
+import { CAMERA_POSITION } from './helpers/camera';
 import Light from './components/scene-environment/Light';
 import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
-import { keyboardMap } from './components/player/keyboardMap';
+import { keyboardMap } from './helpers/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
 import Room from './components/environment/Room';
