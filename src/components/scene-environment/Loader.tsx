@@ -1,82 +1,247 @@
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { useProgress } from '@react-three/drei';
+import { Controls, keysFor } from '../player/keyboardMap';
+import { amarillos, azulGrisClaro, azulGrisOscuro } from '../../helpers/paleta-colores';
+
+/** Nombre y subtítulo mostrados en la pantalla de carga (provisionales). */
+const OWNER_NAME = 'John Doe';
+const OWNER_TAGLINE = 'Portafolio interactivo';
+
+/** Milisegundos que permanece visible cada consejo. */
+const TIP_INTERVAL = 3500;
+
+/** Duración del fundido de salida al terminar la carga (ms). */
+const FADE_OUT_MS = 400;
 
 /**
- * Pantalla de carga de la escena 3D.
+ * Colores de la paleta del proyecto (`paleta-colores.ts`): los mismos
+ * azul-gris "oficina" de la escena y el amarillo de acento de la
+ * lámpara y del antiguo spinner.
+ */
+const COLORS = {
+  background: azulGrisOscuro[100],
+  surface: azulGrisOscuro[300],
+  border: azulGrisClaro[400],
+  accent: amarillos[500],
+  text: '#ffffff',
+  muted: azulGrisClaro[100],
+};
+
+const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+
+/** Sólo las letras (sin flechas) de una acción: W, A, S, D… */
+const letters = (action: Parameters<typeof keysFor>[0]) =>
+  keysFor(action).filter((k) => /^[A-Z]$/.test(k));
+
+interface Tip {
+  keys: string[];
+  text: ReactNode;
+}
+
+/**
+ * Consejos rotativos. Las teclas salen de `keyboardMap`, así que
+ * coinciden siempre con las reales (igual que en `ControlsHelp`).
+ */
+const TIPS: Tip[] = [
+  {
+    keys: [
+      ...letters(Controls.forward),
+      ...letters(Controls.left),
+      ...letters(Controls.back),
+      ...letters(Controls.right),
+    ],
+    text: 'para mover el vehículo',
+  },
+  { keys: keysFor(Controls.run), text: '+ acelerar para activar el turbo' },
+  { keys: keysFor(Controls.jump), text: 'para el freno de mano' },
+  { keys: keysFor(Controls.headlights), text: 'para encender los faros' },
+  { keys: keysFor(Controls.reset), text: 'para volver al escritorio' },
+  { keys: ['H'], text: 'para mostrar u ocultar la ayuda' },
+  { keys: ['M'], text: 'para silenciar el sonido' },
+];
+
+/** Texto de estado según el último asset que reporta `useProgress`. */
+const statusFor = (item: string): string => {
+  if (/\.(glb|gltf)(\?|$)/i.test(item)) return 'Cargando modelos 3D…';
+  if (/\.(png|jpe?g|webp|ktx2|hdr)(\?|$)/i.test(item)) return 'Cargando texturas…';
+  return 'Preparando escena…';
+};
+
+const kbdStyle: CSSProperties = {
+  display: 'inline-block',
+  minWidth: 30,
+  padding: '5px 6px',
+  margin: '0 2px',
+  border: `2px solid ${COLORS.border}`,
+  borderBottomWidth: 4,
+  borderRadius: 6,
+  background: COLORS.surface,
+  color: COLORS.accent,
+  fontFamily: MONO,
+  fontSize: 13,
+  lineHeight: 1,
+  textAlign: 'center',
+};
+
+/**
+ * Pantalla de carga de la escena 3D (wireframe de Figma).
  *
  * **Importante**: este componente se renderiza **fuera** del
  * `<Canvas>` de react-three-fiber. Se controla con la variable
- * `active`: cuando es `false`, no muestra nada (devuelve `null`).
+ * `active`: al pasar a `false` se desvanece y deja de renderizarse.
  *
  * Usa `useProgress` de `@react-three/drei`, que internamente se
  * suscribe al `GLTFLoader` y reporta el porcentaje total de assets
  * descargados, independientemente del árbol de React donde se monte.
  *
  * Visualmente:
- * - Fondo oscuro semitransparente que cubre toda la ventana.
- * - Spinner circular con borde animado.
- * - Porcentaje numérico de carga.
+ * - Logo "3D", nombre y subtítulo.
+ * - Barra ligada al progreso real, con estado y porcentaje (HU-17).
+ *   Nunca retrocede: cuando el chunk lazy de físicas encola más
+ *   modelos, `progress` baja, pero la barra mantiene el máximo.
+ * - Consejo de controles que rota cada `TIP_INTERVAL` ms.
  */
 interface LoaderProps {
   active: boolean;
 }
 
 const Loader = ({ active }: LoaderProps) => {
-  const { progress } = useProgress();
+  const { progress, item } = useProgress();
+  const [shown, setShown] = useState(0);
+  const [mounted, setMounted] = useState(active);
+  const [tip, setTip] = useState(0);
 
-  if (!active) return null;
+  // Ajustes de estado durante el render (patrón recomendado por React
+  // para derivar estado de props sin un efecto extra).
+  if (progress > shown) setShown(progress);
+  if (active && !mounted) setMounted(true);
+
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setTip((t) => (t + 1) % TIPS.length), TIP_INTERVAL);
+    return () => clearInterval(id);
+  }, [active]);
+
+  if (!mounted) return null;
+
+  const percent = Math.round(active ? shown : 100);
+  const current = TIPS[tip];
 
   return (
     <div
+      onTransitionEnd={(e) => {
+        if (e.target === e.currentTarget && !active) setMounted(false);
+      }}
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
+        inset: 0,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(10, 10, 16, 0.95)',
-        color: '#ffffff',
+        padding: '0 16px',
+        background: COLORS.background,
+        color: COLORS.text,
         zIndex: 1000,
         fontFamily: 'system-ui, -apple-system, sans-serif',
+        opacity: active ? 1 : 0,
+        pointerEvents: active ? 'auto' : 'none',
+        transition: `opacity ${FADE_OUT_MS}ms ease`,
       }}
     >
       <div
         style={{
-          width: 64,
-          height: 64,
-          border: '4px solid rgba(255, 255, 255, 0.15)',
-          borderTopColor: '#F9C74F',
-          borderRadius: '50%',
-          animation: 'loader-spin 1s linear infinite',
-        }}
-      />
-      <div
-        style={{
-          marginTop: 24,
-          fontSize: 18,
-          fontWeight: 500,
-          letterSpacing: 0.5,
+          width: 112,
+          height: 112,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: `3px solid ${COLORS.accent}`,
+          borderRadius: 24,
+          background: COLORS.surface,
+          color: COLORS.accent,
+          fontSize: 28,
+          fontWeight: 700,
         }}
       >
-        Cargando escena…
+        3D
       </div>
+
+      <h1 style={{ marginTop: 36, fontSize: 32, fontWeight: 700, textAlign: 'center' }}>
+        {OWNER_NAME}
+      </h1>
+      <p style={{ marginTop: 8, fontSize: 16, color: COLORS.muted }}>{OWNER_TAGLINE}</p>
+
+      <div style={{ width: 424, maxWidth: '100%', marginTop: 44 }}>
+        <div
+          role="progressbar"
+          aria-label="Progreso de carga"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+          style={{
+            height: 14,
+            border: `2px solid ${COLORS.border}`,
+            borderRadius: 999,
+            background: COLORS.surface,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              width: `${percent}%`,
+              height: '100%',
+              background: COLORS.accent,
+              transition: 'width 200ms ease-out',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: 10,
+            fontFamily: MONO,
+            fontSize: 14,
+            color: COLORS.muted,
+          }}
+        >
+          <span>{active ? statusFor(item) : 'Listo'}</span>
+          <span>{percent}%</span>
+        </div>
+      </div>
+
       <div
+        key={tip}
         style={{
-          marginTop: 8,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          minHeight: 32,
+          marginTop: 48,
           fontSize: 14,
-          color: 'rgba(255, 255, 255, 0.6)',
+          color: COLORS.muted,
+          textAlign: 'center',
+          animation: 'loader-tip-in 400ms ease',
         }}
       >
-        {progress.toFixed(0)}%
+        <span>Consejo: usa</span>
+        <span>
+          {current.keys.map((k) => (
+            <kbd key={k} style={kbdStyle}>
+              {k}
+            </kbd>
+          ))}
+        </span>
+        <span>{current.text}</span>
       </div>
 
       <style>{`
-        @keyframes loader-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        @keyframes loader-tip-in {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: none; }
         }
       `}</style>
     </div>

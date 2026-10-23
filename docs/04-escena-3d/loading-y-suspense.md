@@ -80,12 +80,13 @@ Componente HTML a pantalla completa:
 <Loader active={isLoading} />
 ```
 
-Cuando `active` es `false` devuelve `null` (no renderiza nada). Cuando es `true`:
+Sigue el wireframe de Figma de la pantalla de carga. Mientras `active` es `true` muestra, con los colores de la paleta del proyecto (`COLORS`, ver [Sistema de colores](../05-estilos/sistema-de-colores.md)): fondo `azulGrisOscuro[100]`, superficies `azulGrisOscuro[300]`, bordes `azulGrisClaro[400]` y acento `amarillos[500]` en el logo, la barra y las teclas:
 
-- Fondo oscuro semitransparente (`rgba(10, 10, 16, 0.95)`).
-- Spinner circular con borde amarillo (`#F9C74F`) animado.
-- Texto "Cargando escena…".
-- Porcentaje real de carga (de `useProgress`).
+- Logo "3D", nombre (`OWNER_NAME`, provisional "John Doe") y subtítulo (`OWNER_TAGLINE`).
+- **Barra de progreso (HU-17)** ligada a `useProgress`, con el estado a la izquierda ("Cargando modelos 3D…", "Cargando texturas…" o "Preparando escena…", según el `item` que se esté descargando) y el porcentaje a la derecha. La barra guarda el máximo alcanzado: cuando el chunk lazy de físicas encola más modelos, `progress` baja, pero la barra no retrocede.
+- **Consejo rotativo** de controles ("Consejo: usa W A S D para mover el vehículo"…), que cambia cada `TIP_INTERVAL` ms. Las teclas se leen de `keyboardMap` con `keysFor`, igual que en `ControlsHelp`.
+
+Cuando `active` pasa a `false`, la pantalla se desvanece (`FADE_OUT_MS`) y después devuelve `null`.
 
 Usa `useProgress` de `@react-three/drei`, que internamente se suscribe al `GLTFLoader` y reporta el porcentaje total de assets descargados, **incluso si está fuera del `<Canvas>`**.
 
@@ -129,10 +130,11 @@ Los `.glb` se descargan en paralelo (no en serie). El progreso global es la suma
 
 | Cambio | Dónde |
 |---|---|
-| Color del spinner | `borderTopColor: '#F9C74F'` |
-| Texto | "Cargando escena…" |
-| Fondo | `background: 'rgba(10, 10, 16, 0.95)'` |
-| Velocidad del spinner | `animation: 'loader-spin 1s linear infinite'` |
+| Nombre y subtítulo | `OWNER_NAME`, `OWNER_TAGLINE` |
+| Colores (fondo, bordes, acento, texto) | objeto `COLORS` (tonos de `paleta-colores.ts`) |
+| Consejos mostrados | array `TIPS` |
+| Tiempo por consejo | `TIP_INTERVAL` |
+| Duración del fundido de salida | `FADE_OUT_MS` |
 
 ## Limitaciones
 

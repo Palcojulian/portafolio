@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
-import { Controls, keyLabels, keyboardMap, type Control } from '../player/keyboardMap';
+import { Controls, keysFor } from '../player/keyboardMap';
 import { isMuted, onMutedChange, setMuted } from '../../audio/sound';
 
 const STORAGE_KEY = 'controls-help-collapsed';
@@ -18,12 +18,6 @@ const writeCollapsed = (value: boolean): void => {
   } catch {
     // Almacenamiento no disponible (modo privado, etc.): se ignora.
   }
-};
-
-/** Teclas (sin duplicados de etiqueta) asignadas a una acción del mapa. */
-const keysFor = (action: Control): string[] => {
-  const entry = keyboardMap.find((e) => e.name === action);
-  return [...new Set((entry?.keys ?? []).map((k) => keyLabels[k] ?? k))];
 };
 
 const kbdStyle: CSSProperties = {
