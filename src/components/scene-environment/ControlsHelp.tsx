@@ -249,7 +249,7 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
           >
             🚗 Empuja los objetos ligeros con el coche
             <br />
-            ☕ Cuidado con la taza: se rompe si cae al suelo
+            ☕ Tira la taza del escritorio y escucha cómo suena
           </div>
         </>
       )}
