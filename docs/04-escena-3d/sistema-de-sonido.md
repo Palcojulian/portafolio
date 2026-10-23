@@ -6,7 +6,7 @@
 
 | Archivo | Rol |
 |---|---|
-| `src/audio/sound.ts` | Motor: `AudioContext`, recetas por material, `playImpact`, `playShatter`, silencio. |
+| `src/audio/sound.ts` | Motor: `AudioContext`, recetas por material, `playImpact`, silencio. |
 | `src/hooks/useFloorImpact.ts` | Detecta golpes contra el suelo y dispara el sonido + callback. |
 | `src/components/physics/RigidObject.tsx` | Props `sound` y `onFloorImpact`. |
 | `src/components/environment/Floor.tsx` | Marca el suelo con `userData={{ surface: 'floor' }}`. |
@@ -42,7 +42,7 @@ sequenceDiagram
 | `metal` | Parciales inarmónicos con caída larga (~0,45 s) | Lámpara, portalápices, mano robótica |
 | `wood` | Ruido pasabajos + tono ~320 Hz | Lápices |
 
-Cada sonido varía el tono ±10 % al azar para que no suene repetitivo. `playShatter()` (taza rota) combina una ráfaga de ruido agudo con 6–10 tintineos repartidos en 250 ms.
+Cada sonido varía el tono ±10 % al azar para que no suene repetitivo.
 
 ## Silencio
 
@@ -60,7 +60,7 @@ Para un material nuevo: añadirlo al tipo `SoundMaterial` y una receta en `recip
 
 ## Pasar a archivos de audio
 
-La API (`playImpact(material, intensidad)`, `playShatter()`) no depende de cómo se genera el sonido. Para usar archivos:
+La API (`playImpact(material, intensidad)`) no depende de cómo se genera el sonido. Para usar archivos:
 
 1. Colocar los `.ogg` / `.mp3` en `public/sounds/`.
 2. En `sound.ts`, cargarlos con `fetch` + `ctx.decodeAudioData` al desbloquear el audio.
@@ -68,5 +68,5 @@ La API (`playImpact(material, intensidad)`, `playShatter()`) no depende de cómo
 
 ## Documentos relacionados
 
-- [Sistema de físicas](./sistema-de-fisicas.md) (objetos rompibles)
+- [Sistema de físicas](./sistema-de-fisicas.md)
 - [Sistema de personaje](./sistema-de-personaje.md)
