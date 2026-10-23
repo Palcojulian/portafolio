@@ -6,53 +6,23 @@ Cómo está configurada la iluminación y las sombras de la escena.
 
 ## El componente `Light.tsx`
 
-```tsx
-import { useRef } from 'react';
-import type { DirectionalLight } from 'three';
+La escena es **tenue, de atardecer**: luces frías y poco intensas, para que contrasten las luces del coche (faros, pilotos, direccionales; ver [Sistema de vehículo](./sistema-de-vehiculo.md#luces)) y la bombilla de la lámpara. Las intensidades están en constantes al principio del archivo:
 
-const Light = () => {
-  const refLight = useRef<DirectionalLight>(null!);
+| Constante | Valor | Antes (escena de día) |
+|---|---|---|
+| `AMBIENT_INTENSITY` | `0.15` | `0.4` |
+| `MAIN_INTENSITY` | `0.8` | `2.5` |
+| `FILL_INTENSITY` | `0.15` | `0.5` |
 
-  return (
-    <>
-      <ambientLight intensity={0.4} color="#ffffff" />
-
-      <directionalLight
-        ref={refLight}
-        intensity={2.5}
-        color="#ffffff"
-        position={[5, 8, 5]}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-left={-8}
-        shadow-camera-right={8}
-        shadow-camera-top={8}
-        shadow-camera-bottom={-8}
-        shadow-camera-near={0.5}
-        shadow-camera-far={30}
-        shadow-bias={-0.0005}
-      />
-
-      <directionalLight
-        intensity={0.5}
-        color="#dde8ff"
-        position={[-3, 4, -3]}
-      />
-    </>
-  );
-};
-
-export default Light;
-```
+Para volver a una escena de día, basta con subirlas (unas 3 veces).
 
 ## Las tres luces
 
 ```mermaid
 graph TB
-    A[ambientLight<br/>intensidad 0.4<br/>color #ffffff]
-    D1[directionalLight principal<br/>intensidad 2.5<br/>position 5, 8, 5<br/>con sombras]
-    D2[directionalLight de relleno<br/>intensidad 0.5<br/>position -3, 4, -3<br/>sin sombras]
+    A[ambientLight<br/>AMBIENT_INTENSITY<br/>color #b8c4ff]
+    D1[directionalLight principal<br/>MAIN_INTENSITY<br/>position 5, 8, 5<br/>con sombras]
+    D2[directionalLight de relleno<br/>FILL_INTENSITY<br/>position -3, 4, -3<br/>sin sombras]
 
     A -.rellena zonas oscuras.-> Escena
     D1 -.ilumina desde arriba con sombras.-> Escena
@@ -61,27 +31,21 @@ graph TB
 
 ### 1. `ambientLight` (luz ambiental)
 
-- **`intensity={0.4}`** — intensidad baja pero suficiente para evitar negros absolutos.
-- **`color="#ffffff"`** — luz neutra.
-
-Suma una cantidad constante de luz a todas las superficies, independientemente de su orientación.
+- **Color `#b8c4ff`** (azulado): da el tono frío de atardecer.
+- Suma una cantidad constante de luz a todas las superficies, independientemente de su orientación. Evita los negros absolutos.
 
 ### 2. `directionalLight` principal (con sombras)
 
-- **`intensity={2.5}`** — luz fuerte, la dominante.
-- **`position={[5, 8, 5]}`** — cenital con leve desplazamiento hacia la derecha.
-- **`castShadow`** — emite sombras.
-- **`shadow-mapSize={2048, 2048}`** — mapa de sombras de 2048×2048 píxeles. Da bordes nítidos sin penalizar demasiado el rendimiento.
-- **`shadow-camera`** — ortográfica, cubriendo un volumen de `16×16×30` unidades (de `-8` a `+8` en X/Z, de `0.5` a `30` en profundidad). Es lo bastante grande para cubrir toda la habitación.
-- **`shadow-bias={-0.0005}`** — pequeño offset para evitar el "shadow acne" (sombras fantasma en superficies).
+- **Color `#dfe4ff`**, la dominante.
+- **`position={[5, 8, 5]}`**: cenital con leve desplazamiento hacia la derecha.
+- **`castShadow`** con un mapa de sombras de 1024×1024.
+- **`shadow-camera`**: ortográfica, cubriendo un volumen de `16×16×30` unidades (de `-8` a `+8` en X/Z, de `0.5` a `30` en profundidad). Cubre toda la habitación.
+- **`shadow-bias={-0.0005}`**: pequeño offset para evitar el "shadow acne" (sombras fantasma en superficies).
 
 ### 3. `directionalLight` de relleno (sin sombras)
 
-- **`intensity={0.5}`** — luz tenue.
-- **`color="#dde8ff"`** — blanco con un toque azulado.
-- **`position={[-3, 4, -3]}`** — desde el lado opuesto a la luz principal.
-
-Su función es suavizar el contraste: ilumina ligeramente las zonas que la luz principal deja en sombra.
+- **Color `#c8d4ff`**, desde el lado opuesto (`[-3, 4, -3]`).
+- Suaviza el contraste: ilumina un poco las zonas que la luz principal deja en sombra.
 
 ## Sistema de coordenadas del proyecto
 

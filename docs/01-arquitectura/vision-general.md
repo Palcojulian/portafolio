@@ -4,7 +4,7 @@
 
 ## ¿Qué es?
 
-Este proyecto es un **portafolio personal interactivo en 3D**. En lugar de una página web tradicional con texto, imágenes y secciones estáticas, renderiza un **escritorio virtual** completamente en 3D que el visitante puede explorar rotando la cámara con el ratón.
+Este proyecto es un **portafolio personal interactivo en 3D**. En lugar de una página web tradicional con texto, imágenes y secciones estáticas, renderiza un **escritorio virtual** completamente en 3D que el visitante recorre conduciendo un coche con el teclado, con la cámara fija.
 
 Sobre el escritorio se encuentran una serie de objetos 3D exportados en formato `.glb`:
 
@@ -46,7 +46,7 @@ flowchart TB
     Canvas --> Models[📦 Modelos 3D]
 
     Env --> Light[Light.tsx<br/>Luz direccional]
-    Env --> Controls[Controls.tsx<br/>OrbitControls]
+    Env --> Controls[Controls.tsx<br/>cámara fija]
     Env --> Sky[Sky de @react-three/drei]
 
     Models --> DeskTable
@@ -62,7 +62,6 @@ flowchart TB
     Models --> Lamp
     Models --> LinkedinLogo
     Models --> GitHubLogo
-    Models --> Vehicle
     Models --> MausePad
     Models --> PortaVasos
     Models --> PortaLapiceros
@@ -72,17 +71,15 @@ flowchart TB
 
 ## Cómo se "ve" el escritorio desde la cámara
 
-La cámara está posicionada en `(0, 3, 4)` y orbita alrededor del punto `(0, 1.5, 0)` (definido como `target` en `OrbitControls`). Esto coloca al visitante ligeramente por encima del escritorio y mirando hacia abajo con un ángulo frontal-tres-cuartos.
+La cámara es **fija**: está en `(0, 3.04, 1.97)`, a 2,5 u del centro del escritorio `(0, 1.5, 0)` y a 52° de la vertical, mirando de frente y desde arriba (`scene-environment/camera.ts`). El ratón no la mueve.
 
 ```mermaid
 graph LR
-    A[Visitante<br/>posición: 0, 3, 4] -->|---| B[Escritorio<br/>target: 0, 1.5, 0]
+    A[Cámara fija<br/>posición: 0, 3.04, 1.97] -->|---| B[Escritorio<br/>target: 0, 1.5, 0]
 ```
 
 El visitante puede:
 
-- 🖱️ **Rotar** la cámara arrastrando con el ratón.
-- 🔍 **Hacer zoom** con la rueda del ratón (esto está habilitado en `OrbitControls`).
 - 🐾 **Mover el personaje** con el teclado y **empujar** los objetos del escritorio (físicas con Rapier).
 
 ## Tipos de componentes

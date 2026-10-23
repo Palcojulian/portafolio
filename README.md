@@ -65,7 +65,7 @@ portafolio/
 │   │   ├── 3d-models/            # 17 modelos (físicos)
 │   │   ├── environment/          # Room, Plant, WallDecor
 │   │   ├── physics/              # AutoGLTF, RigidObject
-│   │   ├── player/               # Personaje controlable (futuro gato)
+│   │   ├── player/               # Personaje controlable: el coche (y el gato, sin montar)
 │   │   └── scene-environment/    # Luz, controles, loader, ayuda
 │   ├── audio/                    # Sonido sintetizado (Web Audio)
 │   ├── helpers/                  # paleta-colores.ts, fracturar.ts

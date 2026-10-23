@@ -25,15 +25,13 @@ graph TB
 
 ## Cámara de referencia
 
-```tsx
-// App.tsx
-<Canvas shadows camera={{ position: [0, 3, 4] }}>
-
-// Controls.tsx
-<OrbitControls makeDefault target={[0, 1.5, 0]} enableZoom={false} enableRotate />
+```ts
+// scene-environment/camera.ts
+CAMERA_TARGET = [0, 1.5, 0];
+CAMERA_POSITION = objetivo + 2,5 · (0, cos 52°, sin 52°) ≈ [0, 3.04, 1.97];
 ```
 
-La cámara está en `(0, 3, 4)` mirando al punto `(0, 1.5, 0)`. Esto significa que:
+La cámara es **fija** en `≈ (0, 3.04, 1.97)` mirando al punto `(0, 1.5, 0)` (`Controls.tsx` la coloca; no hay `OrbitControls`). Esto significa que:
 
 - El **centro del escritorio** está cerca de `(0, 1.5, 0)` (altura de la mesa).
 - Los objetos están alineados principalmente sobre el eje X (izquierda-derecha).
@@ -57,7 +55,7 @@ La cámara está en `(0, 3, 4)` mirando al punto `(0, 1.5, 0)`. Esto significa q
 | `<Lamp>` | `[2, 1.47, -0.3]` | `1.5` | `[0, 5.5, 0]` | Esquina derecha-trasera, ladeado. |
 | `<LinkedinLogo>` | `[1.4, 1.49, -0.3]` | `0.4` | (defecto) | Derecha-trasera. |
 | `<GitHubLogo>` | `[1.65, 1.49, -0.3]` | `0.45` | (defecto) | Al lado del logo de LinkedIn. |
-| `<Vehicle>` | `[-2, 1.49, 0.2]` | `0.15` | `[0, 1, 0]` | Esquina izquierda-frontal, pequeño. |
+| `<DrivableVehicle>` | `[-2, 1.5, 0.2]` | `0.1275` | `[0, 1, 0]` | Esquina izquierda-frontal. Es el personaje: vuelve aquí con `R`. |
 | `<MausePad>` | `[0.15, 1.485, 0.35]` | `0.3` | `[0, 0, 0]` | Bajo el ratón. |
 
 > Nota: `<PortaVasos>` figura en el código pero la tabla lo omite por brevedad.

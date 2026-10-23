@@ -58,6 +58,11 @@ interface RigidObjectProps {
    * reduce penetraciones cuando objetos finos quedan apretados.
    */
   additionalSolverIterations?: number;
+  /**
+   * Densidad de los colliders automáticos (por defecto 1). Más alta =
+   * más pesado: el vehículo no lo puede empujar.
+   */
+  density?: number;
   /** Impulso de vuelco al chocar el personaje (por m/s). Ver `usePlayerKnock`. */
   knock?: number;
   sound?: SoundMaterial;
@@ -77,6 +82,7 @@ const RigidObject = ({
   bodyRef: externalBodyRef,
   ccd,
   additionalSolverIterations,
+  density,
   knock,
   sound,
   onFloorImpact,
@@ -109,6 +115,7 @@ const RigidObject = ({
   const optionalProps = {
     ...(ccd !== undefined && { ccd }),
     ...(additionalSolverIterations !== undefined && { additionalSolverIterations }),
+    ...(density !== undefined && { density }),
     ...(quaternion !== undefined && { quaternion }),
     ...(linearVelocity !== undefined && { linearVelocity }),
     ...(angularVelocity !== undefined && { angularVelocity }),
