@@ -6,6 +6,7 @@ Los objetos del escritorio (salvo el monitor, el teclado, la alfombrilla y el po
 
 > Acciones definidas:
 > - **Ratón** → acerca la cámara al monitor, que se enciende y muestra el perfil (ver [Pantalla del monitor](#pantalla-del-monitor)).
+> - **Portalápices** → abre el modal "Contáctame" (ver [Formulario de contacto](#formulario-de-contacto)).
 > - **LinkedIn** y **GitHub** → abren `perfil.redes.linkedin` / `perfil.redes.github` (`src/data/perfil.ts`) en una pestaña nueva con `abrirEnlace` (`src/helpers/abrirEnlace.ts`). Por ahora apuntan a la home de cada red; basta con cambiar esas dos URL por los perfiles reales.
 >
 > El resto todavía no tiene acción: Enter hace destellar el orbe y escribe en la consola `"[interacción] "Taza" aún no tiene acción."`.
@@ -123,6 +124,22 @@ Comprobado pintando ese fondo de magenta: alrededor del panel no aparece ningún
 - Durante el zoom puede verse algo borroso; queda nítido al llegar.
 - En pantallas estrechas (móvil en vertical) la pantalla cabe a lo ancho, pero el texto queda muy pequeño. Si importa, habría que mostrar en móvil una versión del panel a pantalla completa.
 - Siempre está montado. Apagado usa `zoom: 1` (capa de 1040 × 533 px), y solo con el monitor encendido sube hasta ~3640 × 1866 px en monitores grandes (`MAX_RESOLUTION` = 3,5).
+
+## Formulario de contacto
+
+Enter junto al portalápices llama a `setFocus('contacto')` (`src/helpers/vista.ts`). La cámara no se mueve.
+
+| Pieza | Qué hace |
+|---|---|
+| `components/contacto/ContactoModal.tsx` | `<Html fullscreen>` de drei anclado al centro del escritorio. `calculatePosition` lo fija al centro del canvas: fondo oscuro difuminado sobre toda la vista y tarjeta centrada. Animación de entrada con giro 3D leve (perspectiva + `rotateX` + subida + escala, 380 ms) y salida inversa (200 ms); se desmonta al acabar. Se cierra con ✕, Cancelar, clic fuera o Esc. |
+| `components/contacto/ContactoForm.tsx` | Campos nombre, correo, asunto (opcional) y mensaje (contador de caracteres). Valida al enviar y marca en rojo cada error. Tras enviar muestra "¡Mensaje enviado!". El estado se reinicia en cada apertura. |
+| `helpers/contacto.ts` | `validarContacto`, `MAX_LONGITUD` y `enviarContacto`. |
+
+- **Captura de los datos:** de momento no hay backend. `enviarContacto` guarda cada mensaje en `enviosContacto` (en memoria) y lo muestra en consola (`[contacto] mensaje capturado`). Para recibirlos de verdad, basta con cambiar el cuerpo de `enviarContacto` por la llamada al servicio (Formspree, EmailJS, API propia…). Es `async` y sus errores ya muestran un aviso en el modal.
+- **Mientras está abierto:** el foco no es `'scene'`, así que el coche no conduce (aunque se escriba W, A, S, D), Enter no interactúa y se ocultan el panel de controles y el aviso.
+- **Atajos H y M:** el panel de controles los ignora cuando se escribe en un campo, para que no se plegara ni se silenciara al teclear.
+- **Apilamiento:** `zIndexRange={[300, 200]}` lo deja por encima del canvas y de la pantalla del monitor (50 y 0–49), dentro del contexto de `#canvas-container`.
+- **Movimiento reducido:** con "reducir movimiento" activado en el sistema, la tarjeta aparece sin animación.
 
 ## Enlaces externos y teclas pulsadas
 
