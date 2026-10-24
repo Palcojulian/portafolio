@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useProgress } from '@react-three/drei';
 import { coloresUI as COLORS } from '../../helpers/colores-ui';
+import { perfil } from '../../data/perfil'
 
 /** Nombre y subtítulo mostrados en la pantalla de carga (provisionales). */
-const OWNER_NAME = 'John Doe';
 const OWNER_TAGLINE = 'Portafolio interactivo';
 
 /** Duración del fundido de salida al terminar la carga (ms). */
@@ -75,26 +75,9 @@ const Loader = ({ active }: LoaderProps) => {
         transition: `opacity ${FADE_OUT_MS}ms ease`,
       }}
     >
-      <div
-        style={{
-          width: 112,
-          height: 112,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: `3px solid ${COLORS.accent}`,
-          borderRadius: 24,
-          background: COLORS.surface,
-          color: COLORS.accent,
-          fontSize: 28,
-          fontWeight: 700,
-        }}
-      >
-        3D
-      </div>
-
+      
       <h1 style={{ marginTop: 36, fontSize: 32, fontWeight: 700, textAlign: 'center' }}>
-        {OWNER_NAME}
+        {perfil.nombre}
       </h1>
       <p style={{ marginTop: 8, fontSize: 16, color: COLORS.muted }}>{OWNER_TAGLINE}</p>
 
