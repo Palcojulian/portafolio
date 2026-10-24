@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef, useState, useSyncExternalStore } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
@@ -176,7 +176,28 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+/**
+ * Suelta todas las teclas del mapa al perder el foco la ventana.
+ *
+ * `KeyboardControls` de drei solo escucha `keydown`/`keyup`. Si se
+ * cambia de pestaña con una tecla pulsada (p. ej. Enter en un logo, que
+ * abre otra pestaña, mientras se mantiene W), el `keyup` llega a la otra
+ * pestaña y al volver el coche seguiría acelerando solo.
+ */
+const useReleaseKeysOnBlur = () => {
+  useEffect(() => {
+    const release = () => {
+      for (const { keys } of keyboardMap) {
+        for (const code of keys) window.dispatchEvent(new KeyboardEvent('keyup', { code }));
+      }
+    };
+    window.addEventListener('blur', release);
+    return () => window.removeEventListener('blur', release);
+  }, []);
+};
+
 const App = () => {
+  useReleaseKeysOnBlur();
   return (
     <ProgressBridge>
       <div id="canvas-container">
