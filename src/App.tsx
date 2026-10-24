@@ -10,6 +10,7 @@ import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
 import InteractionManager from './components/interaction/InteractionManager';
 import InteractionPrompt from './components/interaction/InteractionPrompt';
+import ContactoModal from './components/contacto/ContactoModal';
 import { getFocus, subscribe as subscribeFocus } from './helpers/vista';
 import { keyboardMap } from './helpers/keyboardMap';
 
@@ -117,6 +118,9 @@ const PhysicsScene = () => {
 
       {/* Objeto del escritorio más cercano al vehículo + Enter */}
       <InteractionManager />
+
+      {/* Modal "Contáctame" (lo abre el portalápices) */}
+      <ContactoModal />
     </>
   );
 };
