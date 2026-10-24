@@ -48,7 +48,7 @@ export const perfil = {
     },
 
   ] as Experiencia[],
-  habilidades: ['Vue', 'React', 'Vite', 'TypeScript', 'Php', 'Laravel','Msql', 'Git'],
+  habilidades: ['Vue', 'React', 'TypeScript', 'Php', 'Laravel','Msql', 'Git'],
   educacion: [
     {
       titulo: 'Tecnologia en sistemas de informacion',
