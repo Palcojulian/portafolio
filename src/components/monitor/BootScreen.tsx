@@ -32,24 +32,7 @@ const BootScreen = ({ duration }: BootScreenProps) => (
       animation: 'monitor-boot-in 300ms ease both',
     }}
   >
-    <div
-      style={{
-        width: 84,
-        height: 84,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        border: `3px solid ${COLORS.accent}`,
-        borderRadius: 20,
-        background: COLORS.surface,
-        color: COLORS.accent,
-        fontSize: 24,
-        fontWeight: 700,
-        animation: 'monitor-boot-pulse 1s ease-in-out infinite',
-      }}
-    >
-      3D
-    </div>
+    
     <div style={{ fontFamily: MONO, fontSize: 15, color: COLORS.muted, letterSpacing: 1 }}>
       Encendiendo…
     </div>
