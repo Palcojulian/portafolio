@@ -31,7 +31,7 @@ export const perfil = {
    * perfiles reales.
    */
   redes: {
-    linkedin: 'www.linkedin.com/in/julian-palco-23a670247',
+    linkedin: 'https://linkedin.com/in/julian-palco-23a670247',
     github: 'https://github.com/Palcojulian',
   },
   resumen:
