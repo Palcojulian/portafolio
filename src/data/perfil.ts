@@ -25,6 +25,15 @@ export const perfil = {
   correo: 'john.doe@example.com',
   /** Ruta al CV en PDF (p. ej. '/cv.pdf' en `public/`). Vacía = sin enlace. */
   cv: '',
+  /**
+   * Perfiles que abren los logos 3D del escritorio (Enter junto a cada
+   * uno). ⚠️ Provisionales: la home de cada red; sustituir por los
+   * perfiles reales.
+   */
+  redes: {
+    linkedin: 'https://www.linkedin.com/',
+    github: 'https://github.com/',
+  },
   resumen:
     'Desarrollador frontend con 4 años de experiencia creando interfaces web interactivas. ' +
     'Me especializo en React y en experiencias 3D en el navegador con Three.js y ' +
