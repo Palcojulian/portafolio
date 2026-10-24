@@ -6,6 +6,7 @@ Los objetos del escritorio (salvo el monitor, el teclado, la alfombrilla y el po
 
 > Acciones definidas:
 > - **Ratón** → acerca la cámara al monitor, que se enciende y muestra el perfil (ver [Pantalla del monitor](#pantalla-del-monitor)).
+> - **LinkedIn** y **GitHub** → abren `perfil.redes.linkedin` / `perfil.redes.github` (`src/data/perfil.ts`) en una pestaña nueva con `abrirEnlace` (`src/helpers/abrirEnlace.ts`). Por ahora apuntan a la home de cada red; basta con cambiar esas dos URL por los perfiles reales.
 >
 > El resto todavía no tiene acción: Enter hace destellar el orbe y escribe en la consola `"[interacción] "Taza" aún no tiene acción."`.
 
@@ -122,6 +123,14 @@ Comprobado pintando ese fondo de magenta: alrededor del panel no aparece ningún
 - Durante el zoom puede verse algo borroso; queda nítido al llegar.
 - En pantallas estrechas (móvil en vertical) la pantalla cabe a lo ancho, pero el texto queda muy pequeño. Si importa, habría que mostrar en móvil una versión del panel a pantalla completa.
 - Siempre está montado. Apagado usa `zoom: 1` (capa de 1040 × 533 px), y solo con el monitor encendido sube hasta ~3640 × 1866 px en monitores grandes (`MAX_RESOLUTION` = 3,5).
+
+## Enlaces externos y teclas pulsadas
+
+`abrirEnlace(url)` usa `window.open(url, '_blank', 'noopener,noreferrer')`:
+- **No lo bloquea el navegador:** se llama dentro del manejador de Enter, que es un gesto del usuario, así que no cuenta como ventana emergente.
+- **`noopener,noreferrer`:** la página abierta no puede acceder a esta.
+
+**Teclas pulsadas al cambiar de pestaña.** `KeyboardControls` de drei solo escucha `keydown`/`keyup`. Si se abre otra pestaña con una tecla pulsada (p. ej. manteniendo W), el `keyup` se pierde y al volver el coche seguiría acelerando. `useReleaseKeysOnBlur` (`App.tsx`) envía un `keyup` de cada tecla del mapa cuando la ventana pierde el foco. Comprobado: manteniendo W y simulando el `blur`, el coche frena hasta pararse, mientras que sin `blur` sigue avanzando.
 
 ## Documentos relacionados
 
