@@ -19,10 +19,10 @@ export interface Educacion {
 }
 
 export const perfil = {
-  nombre: 'John Doe',
-  rol: 'Desarrollador Frontend · 3D Web',
-  ciudad: 'Bogotá, Colombia',
-  correo: 'john.doe@example.com',
+  nombre: 'Julian Palco',
+  rol: 'Desarrollador full stack',
+  ciudad: 'Cali, Colombia',
+  correo: 'palcojulian@outlook.com',
   /** Ruta al CV en PDF (p. ej. '/cv.pdf' en `public/`). Vacía = sin enlace. */
   cv: '',
   /**
@@ -41,35 +41,19 @@ export const perfil = {
     'cualquier dispositivo.',
   experiencia: [
     {
-      puesto: 'Frontend Developer',
-      empresa: 'Acme Studio',
+      puesto: 'Desarrollador full stack',
+      empresa: 'Cuidarte en casa SAS',
       periodo: '2023 — actual',
       descripcion: 'Configuradores 3D de producto con R3F y optimización de modelos GLB.',
     },
-    {
-      puesto: 'Desarrollador Web',
-      empresa: 'Pixel Labs',
-      periodo: '2021 — 2023',
-      descripcion: 'Aplicaciones React + TypeScript y sistema de diseño compartido.',
-    },
-    {
-      puesto: 'Desarrollador Junior',
-      empresa: 'Startup XYZ',
-      periodo: '2020 — 2021',
-      descripcion: 'Landing pages animadas y mantenimiento de un e-commerce.',
-    },
+
   ] as Experiencia[],
-  habilidades: ['React', 'TypeScript', 'Three.js', 'R3F', 'Blender', 'Rapier', 'Vite', 'Git'],
+  habilidades: ['Vue', 'React', 'Vite', 'TypeScript', 'Php', 'Laravel','Msql', 'Git'],
   educacion: [
     {
-      titulo: 'Ingeniería de Sistemas',
-      centro: 'Universidad Ejemplo',
-      periodo: '2015 — 2020',
-    },
-    {
-      titulo: 'Curso de gráficos 3D para la web',
-      centro: 'Online',
-      periodo: '2022',
+      titulo: 'Tecnologia en sistemas de informacion',
+      centro: 'Universidad del valle',
+      periodo: '2019 — 2022',
     },
   ] as Educacion[],
 };
