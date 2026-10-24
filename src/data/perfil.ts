@@ -31,8 +31,8 @@ export const perfil = {
    * perfiles reales.
    */
   redes: {
-    linkedin: 'https://www.linkedin.com/',
-    github: 'https://github.com/',
+    linkedin: 'www.linkedin.com/in/julian-palco-23a670247',
+    github: 'https://github.com/Palcojulian',
   },
   resumen:
     'Desarrollador frontend con 4 años de experiencia creando interfaces web interactivas. ' +
