@@ -19,6 +19,10 @@ import {
   PENCIL_SOLVER_ITERATIONS,
 } from '../../helpers/lapizShape';
 import type { NombrePaleta } from '../../helpers/paleta-colores';
+import { setFocus } from '../../helpers/vista';
+
+/** Enter junto al portalápices: abre el formulario de contacto. */
+const abrirContacto = () => setFocus('contacto');
 
 type Vec3 = [number, number, number];
 
@@ -142,6 +146,9 @@ interface LapizLiberado {
  *
  * El .glb tiene una única malla (`portaLapiceros`) y un material
  * `Material`.
+ *
+ * Interactivo: con el vehículo cerca, Enter abre el formulario de
+ * contacto (`ContactoModal`).
  */
 const Model = () => {
   const bodyRef = useRef<RapierRigidBody>(null);
@@ -195,7 +202,7 @@ const Model = () => {
   return (
     <>
       <RigidObject
-        interactable={{ id: 'portalapices', label: 'Portalápices' }}
+        interactable={{ id: 'portalapices', label: 'Portalápices', onInteract: abrirContacto }}
         type="dynamic"
         sound="metal"
         colliders={false}
