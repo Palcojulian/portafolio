@@ -116,6 +116,10 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
+      // Escribiendo en un campo (p. ej. el formulario de contacto), H y M
+      // son letras, no atajos.
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
       if (e.code === 'KeyH') setCollapsed((c) => !c);
       if (e.code === 'KeyM') setMuted(!isMuted());
     };
