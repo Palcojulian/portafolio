@@ -35,7 +35,6 @@ const PARTS = {
 const Model = () => {
   return (
     <RigidObject
-      interactable={{ id: 'mano-robotica', label: 'Mano robótica' }}
       type="dynamic"
       sound="metal"
       colliders={false}
