@@ -7,9 +7,10 @@ Los objetos del escritorio (salvo el monitor, el teclado, la alfombrilla y el po
 > Acciones definidas:
 > - **Ratón** → acerca la cámara al monitor, que se enciende y muestra el perfil (ver [Pantalla del monitor](#pantalla-del-monitor)).
 > - **Portalápices** → abre el modal "Contáctame" (ver [Formulario de contacto](#formulario-de-contacto)).
+> - **Taza** → abre la ventana de créditos de los modelos y la música (ver [Créditos](#créditos)).
 > - **LinkedIn** y **GitHub** → abren `perfil.redes.linkedin` / `perfil.redes.github` (`src/data/perfil.ts`) en una pestaña nueva con `abrirEnlace` (`src/helpers/abrirEnlace.ts`). Por ahora apuntan a la home de cada red; basta con cambiar esas dos URL por los perfiles reales.
 >
-> El resto todavía no tiene acción: Enter hace destellar el orbe y escribe en la consola `"[interacción] "Taza" aún no tiene acción."`.
+> El resto todavía no tiene acción: Enter hace destellar el orbe y escribe en la consola `"[interacción] "Reloj" aún no tiene acción."`.
 
 ## Piezas
 
@@ -140,6 +141,21 @@ Enter junto al portalápices llama a `setFocus('contacto')` (`src/helpers/vista.
 - **Atajos H y M:** el panel de controles los ignora cuando se escribe en un campo, para que no se plegara ni se silenciara al teclear.
 - **Apilamiento:** `zIndexRange={[300, 200]}` lo deja por encima del canvas y de la pantalla del monitor (50 y 0–49), dentro del contexto de `#canvas-container`.
 - **Movimiento reducido:** con "reducir movimiento" activado en el sistema, la tarjeta aparece sin animación.
+
+## Créditos
+
+Enter junto a la taza llama a `setFocus('creditos')`. La cámara no se mueve.
+
+| Pieza | Qué hace |
+|---|---|
+| `data/creditos.ts` | `creditos.modelos` (nombre, `.glb`, autor, sitio, enlace, giro inicial opcional) y `creditos.musica` (título, autor, sitio, enlace). ⚠️ Datos provisionales. |
+| `components/creditos/CreditosModal.tsx` | Overlay HTML **fuera del `<Canvas>`** (en `ProgressBridge`, `zIndex` 900, bajo la pantalla de carga): el carrusel tiene su propio `<Canvas>`. Misma animación y cierre que el modal de contacto (✕, clic fuera o Esc). Pestañas Modelos 3D / Música. |
+| `components/creditos/ModelosCarrusel.tsx` | Un modelo a la vez con su ficha al lado (debajo en pantallas estrechas). Flechas ‹ ›, puntos o ←/→. |
+| `components/creditos/BaseGiratoria.tsx` | `<Canvas>` transparente: base circular (`azulGrisOscuro[300]` con aro `amarillos[500]`) que gira con el modelo encima. Cada modelo se escala para que su mayor dimensión mida 1 m, se centra en el eje y crece desde 0 al cambiar. Reutiliza el caché de `useGLTF`. |
+| `components/creditos/MusicaLista.tsx` y `FichaReferencia.tsx` | Tarjetas de música y la ficha común (autor, sitio, enlace en pestaña nueva). |
+
+- **Añadir un recurso:** basta con una entrada en `data/creditos.ts`; el carrusel y la lista se generan solos.
+- **Mientras está abierta:** el foco no es `'scene'`, así que ←/→ solo mueven el carrusel (el coche no conduce).
 
 ## Enlaces externos y teclas pulsadas
 
