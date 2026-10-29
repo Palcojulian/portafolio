@@ -11,6 +11,7 @@ import ControlsHelp from './components/scene-environment/ControlsHelp';
 import InteractionManager from './components/interaction/InteractionManager';
 import InteractionPrompt from './components/interaction/InteractionPrompt';
 import ContactoModal from './components/contacto/ContactoModal';
+import CreditosModal from './components/creditos/CreditosModal';
 import { getFocus, subscribe as subscribeFocus } from './helpers/vista';
 import { keyboardMap } from './helpers/keyboardMap';
 
@@ -174,6 +175,9 @@ const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
       <Loader active={isLoading} />
       <ControlsHelp hidden={hideHud} />
       <InteractionPrompt hidden={hideHud} />
+      {/* Ventana de créditos (la abre la taza). Fuera del Canvas: tiene
+          su propio Canvas para el carrusel de modelos. */}
+      <CreditosModal />
       {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>
