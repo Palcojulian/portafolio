@@ -1,6 +1,10 @@
 import AutoGLTF from '../physics/AutoGLTF';
 import RigidObject from '../physics/RigidObject';
 import { useGLTF } from '@react-three/drei';
+import { setFocus } from '../../helpers/vista';
+
+/** Enter junto a la taza: abre la ventana de créditos. */
+const abrirCreditos = () => setFocus('creditos');
 
 const POSITION: [number, number, number] = [-2.2, 1.48, 0.56];
 const SCALE = 0.6;
@@ -11,11 +15,14 @@ const SCALE = 0.6;
  * El .glb tiene una única malla (`tazaModel`) y 2 materiales
  * (`baseMaterial`, `secondaryMaterial`). Si cae al suelo sólo suena a
  * cerámica (`sound="ceramic"`); no se rompe.
+ *
+ * Interactivo: con el vehículo cerca, Enter abre los créditos de los
+ * modelos y la música (`CreditosModal`).
  */
 const Model = () => {
   return (
     <RigidObject
-      interactable={{ id: 'taza', label: 'Taza' }}
+      interactable={{ id: 'taza', label: 'Taza', onInteract: abrirCreditos }}
       type="dynamic"
       sound="ceramic"
       colliders="cuboid"
