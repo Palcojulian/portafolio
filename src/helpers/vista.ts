@@ -1,6 +1,6 @@
 /**
- * Qué tiene el foco: la escena (se conduce), la pantalla del monitor o
- * el formulario de contacto.
+ * Qué tiene el foco: la escena (se conduce), la pantalla del monitor,
+ * el formulario de contacto o la ventana de créditos.
  *
  * - El ratón (Enter) llama a `setFocus('monitor')`; el panel de la
  *   pantalla, Esc o "Volver a la escena" llaman a `setFocus('scene')`.
@@ -9,6 +9,8 @@
  *   muestra el perfil cuando termina el arranque.
  * - El portalápices (Enter) llama a `setFocus('contacto')`: el modal de
  *   contacto aparece sin mover la cámara.
+ * - La taza (Enter) llama a `setFocus('creditos')`: igual, la ventana de
+ *   créditos aparece sin mover la cámara.
  * - El vehículo, el aviso de interacción y el panel de controles se
  *   desactivan mientras el foco no es `'scene'`.
  *
@@ -16,7 +18,7 @@
  * `useFrame` sin provocar renders, y los overlays HTML se suscriben con
  * `useSyncExternalStore`.
  */
-export type Focus = 'scene' | 'monitor' | 'contacto';
+export type Focus = 'scene' | 'monitor' | 'contacto' | 'creditos';
 
 /** Duración del viaje de la cámara entre la escena y el monitor (s). */
 export const CAMERA_TRANSITION_SECONDS = 1.2;
