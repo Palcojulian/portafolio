@@ -24,7 +24,7 @@ const Model = () => {
     <RigidObject
       type="fixed"
       colliders="cuboid"
-      position={[0.15, 1.485, 0.35]}
+      position={[0.15, 1.4789, 0.35]}
       scale={0.3}
       rotation={[0, 0, 0]}
     >
