@@ -53,7 +53,6 @@ const Model = () => {
 
   return (
     <RigidObject
-      interactable={{ id: 'lampara', label: 'Lámpara' }}
       type="dynamic"
       sound="metal"
       colliders="cuboid"
