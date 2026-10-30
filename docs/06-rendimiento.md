@@ -94,6 +94,20 @@ sequenceDiagram
 
 `StatsOverlay.tsx` muestra los **FPS actuales** en la esquina superior derecha, sólo en desarrollo (`import.meta.env.DEV`).
 
+### 7. `dpr` limitado a 1,5
+
+`<Canvas dpr={[1, 1.5]}>` en `App.tsx`. Por defecto R3F usa `[1, 2]`: en pantallas con escalado (portátil retina, 4K al 150–200 %) renderizaba hasta 4× los píxeles, y con sombras y luces es el coste dominante de GPU. Con 1,5 son hasta un 44 % menos píxeles que a 2×, con una diferencia visual mínima. El panel del monitor no se ve afectado, porque es HTML y el navegador lo rasteriza al DPR real.
+
+### 8. Pantalla del monitor a baja resolución mientras está apagada
+
+El panel del monitor (`MonitorScreen`) se rasteriza con CSS `zoom` para que se vea nítido de cerca (hasta 3,5×, ~3640 × 1866 px en 4K, unos 27 MB de GPU). Solo hace falta con la cámara acercada, así que en el estado `off` usa `zoom: 1` (1040 × 533 px, ~2 MB). Sube al empezar el zoom, y los 2 s de arranque dan tiempo al navegador a rasterizarlo antes de que aparezca el perfil.
+
+### Lo que se revisó y no cambia
+
+- **Frustum de sombras (±8 u):** parece grande para el escritorio (~4,5 u), pero también cubre la planta (x = −5,5) y las sombras sobre la pared del fondo (z = −5) y el suelo. Reducirlo las cortaría, y el coste es el mismo (el mapa sigue siendo de 1024).
+- **Orbes de interacción:** material básico sin luces, una sola `pointLight` compartida y 10 `Box3.setFromObject` por fotograma (pocas mallas cada uno). Coste despreciable.
+- **Zoom al monitor:** ya es proporcional a la ventana (FOV + aspecto). Las pulgadas del monitor no influyen, solo los px CSS.
+
 ## Cómo iterar
 
 ### Medir antes/después

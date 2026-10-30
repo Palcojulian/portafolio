@@ -72,6 +72,19 @@ export type IntensidadColor = 100 | 200 | 300 | 400 | 500;
 | `azulOscuro` | `#277DA1` | Azul profesional. |
 | `azulClaro` | `#54B0D6` | Claros, cielo. |
 
+## Colores de la interfaz HTML
+
+Los overlays (pantalla de carga y panel de controles) no usan la paleta directamente, sino `coloresUI` de `src/helpers/colores-ui.ts`, que elige los tonos una sola vez para que ambos encajen con la escena:
+
+| Clave | Tono | Uso |
+|---|---|---|
+| `background` | `azulGrisOscuro[100]` | Fondo de la pantalla de carga y del panel |
+| `surface` | `azulGrisOscuro[300]` | Teclas, barra, cajas internas |
+| `border` | `azulGrisClaro[400]` | Bordes |
+| `accent` | `amarillos[500]` | Logo, relleno de barra, letras de teclas, títulos de sección |
+| `muted` | `azulGrisClaro[100]` | Texto secundario |
+| `ok` / `danger` | `verdes[500]` / `rojos[500]` | Estado del sonido (activado / silenciado) |
+
 ## Diagrama visual de las gamas
 
 ```mermaid

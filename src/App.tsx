@@ -1,14 +1,19 @@
-import { Suspense, lazy, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { KeyboardControls, Preload, useProgress } from '@react-three/drei';
 
 // Entorno de escena (luces, cámara, controles)
 import Controls from './components/scene-environment/Controls';
-import { CAMERA_POSITION } from './components/scene-environment/camera';
+import { CAMERA_POSITION } from './helpers/camera';
 import Light from './components/scene-environment/Light';
 import Loader from './components/scene-environment/Loader';
 import ControlsHelp from './components/scene-environment/ControlsHelp';
-import { keyboardMap } from './components/player/keyboardMap';
+import InteractionManager from './components/interaction/InteractionManager';
+import InteractionPrompt from './components/interaction/InteractionPrompt';
+import ContactoModal from './components/contacto/ContactoModal';
+import CreditosModal from './components/creditos/CreditosModal';
+import { getFocus, subscribe as subscribeFocus } from './helpers/vista';
+import { keyboardMap } from './helpers/keyboardMap';
 
 // Environment visual (habitación, decoraciones — sin físicas)
 import Room from './components/environment/Room';
@@ -111,6 +116,12 @@ const PhysicsScene = () => {
 
       {/* Personaje controlable con el teclado */}
       <DrivableVehicle />
+
+      {/* Objeto del escritorio más cercano al vehículo + Enter */}
+      <InteractionManager />
+
+      {/* Modal "Contáctame" (lo abre el portalápices) */}
+      <ContactoModal />
     </>
   );
 };
@@ -156,22 +167,52 @@ const PhysicsStage = () => {
 const ProgressBridge = ({ children }: { children: React.ReactNode }) => {
   const { progress, total } = useProgress();
   const isLoading = progress < 100 || total === 0;
+  // Mirando el monitor se ocultan los overlays de la escena.
+  const focus = useSyncExternalStore(subscribeFocus, getFocus);
+  const hideHud = isLoading || focus !== 'scene';
   return (
     <>
       <Loader active={isLoading} />
-      <ControlsHelp hidden={isLoading} />
+      <ControlsHelp hidden={hideHud} />
+      <InteractionPrompt hidden={hideHud} />
+      {/* Ventana de créditos (la abre la taza). Fuera del Canvas: tiene
+          su propio Canvas para el carrusel de modelos. */}
+      <CreditosModal />
       {import.meta.env.DEV && <StatsOverlay />}
       {children}
     </>
   );
 };
 
+/**
+ * Suelta todas las teclas del mapa al perder el foco la ventana.
+ *
+ * `KeyboardControls` de drei solo escucha `keydown`/`keyup`. Si se
+ * cambia de pestaña con una tecla pulsada (p. ej. Enter en un logo, que
+ * abre otra pestaña, mientras se mantiene W), el `keyup` llega a la otra
+ * pestaña y al volver el coche seguiría acelerando solo.
+ */
+const useReleaseKeysOnBlur = () => {
+  useEffect(() => {
+    const release = () => {
+      for (const { keys } of keyboardMap) {
+        for (const code of keys) window.dispatchEvent(new KeyboardEvent('keyup', { code }));
+      }
+    };
+    window.addEventListener('blur', release);
+    return () => window.removeEventListener('blur', release);
+  }, []);
+};
+
 const App = () => {
+  useReleaseKeysOnBlur();
   return (
     <ProgressBridge>
       <div id="canvas-container">
         <KeyboardControls map={keyboardMap}>
-          <Canvas shadows camera={{ position: CAMERA_POSITION }}>
+          {/* dpr hasta 1,5: en pantallas con escalado ≥ 2 evita renderizar
+              ~4× los píxeles por poca diferencia visual. */}
+          <Canvas shadows dpr={[1, 1.5]} camera={{ position: CAMERA_POSITION }}>
             {/* Fase 1: escena estática (sin esperar a Rapier) */}
             <SceneBase />
 

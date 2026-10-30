@@ -67,3 +67,9 @@ export const keyLabels: Record<string, string> = {
   ShiftLeft: 'Shift',
   ShiftRight: 'Shift',
 };
+
+/** Teclas (sin duplicados de etiqueta) asignadas a una acción del mapa. */
+export const keysFor = (action: Control): string[] => {
+  const entry = keyboardMap.find((e) => e.name === action);
+  return [...new Set((entry?.keys ?? []).map((k) => keyLabels[k] ?? k))];
+};

@@ -1,6 +1,6 @@
 import AutoGLTF from '../physics/AutoGLTF';
 import RigidObject from '../physics/RigidObject';
-import { BULKY_DENSITY } from '../physics/density';
+import { BULKY_DENSITY } from '../../helpers/density';
 import { useGLTF } from '@react-three/drei';
 
 /**

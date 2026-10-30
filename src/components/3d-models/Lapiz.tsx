@@ -13,7 +13,7 @@ import {
   PENCIL_RADIUS,
   PENCIL_SCALE,
   PENCIL_SOLVER_ITERATIONS,
-} from './lapizShape';
+} from '../../helpers/lapizShape';
 
 type Vec3 = [number, number, number];
 

@@ -47,8 +47,7 @@ portafolio/
 │   │   │   ├── PortaLapiceros.tsx         #   dinámico
 │   │   │   ├── PortaVasos.tsx             #   FIJO
 │   │   │   ├── RoboticHand.tsx            #   dinámico
-│   │   │   ├── Taza.tsx                   #   dinámico, rompible
-│   │   │   └── TazaRota.tsx               #   fragmentos de la taza rota
+│   │   │   ├── Taza.tsx                   #   dinámico
 │   │   │
 │   │   ├── player/                        # Personaje controlable
 │   │   │   ├── DrivableVehicle.tsx        # Coche conducible (el que se monta)
@@ -74,10 +73,9 @@ portafolio/
 │   │       └── RigidObject.tsx            # HOC: RigidBody + sonido de impacto
 │   │
 │   ├── audio/                             # Sonido sintetizado (Web Audio)
-│   │   └── sound.ts                       # playImpact, playShatter, silencio
+│   │   └── sound.ts                       # playImpact, silencio
 │   │
 │   ├── helpers/                           # Utilidades compartidas
-│   │   ├── fracturar.ts                   # Trocea un modelo en fragmentos convexos
 │   │   └── paleta-colores.ts              # Paleta de colores tipada
 │   │
 │   ├── hooks/                             # Hooks personalizados

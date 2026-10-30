@@ -10,7 +10,9 @@ import {
   useRapier,
   type RapierRigidBody,
 } from '@react-three/rapier';
-import type { Control } from './keyboardMap';
+import type { Control } from '../../helpers/keyboardMap';
+import { playerPosition } from '../../helpers/interaccion';
+import { getFocus } from '../../helpers/vista';
 import type { PlayerUserData } from './Player';
 
 const MODEL_URL = '/3d-models/vehicle.glb';
@@ -25,6 +27,21 @@ const S = 0.1275;
 /** Pose inicial (la que tenía el coche decorativo). */
 const SPAWN_POSITION = new THREE.Vector3(-2, 1.5, 0.2);
 const SPAWN_YAW = 1;
+
+/** Estado de teclado "nada pulsado" (mientras la cámara mira el monitor). */
+const NO_KEYS: Record<Control, boolean> = {
+  forward: false,
+  back: false,
+  left: false,
+  right: false,
+  jump: false,
+  run: false,
+  reset: false,
+  headlights: false,
+  signalLeft: false,
+  signalRight: false,
+  hazards: false,
+};
 /** Por debajo de esta altura se considera que se cayó del escritorio (superficie en y ≈ 1.48). */
 const FALL_LIMIT_Y = 1.0;
 
@@ -309,8 +326,11 @@ const DrivableVehicle = () => {
     const body = bodyRef.current;
     if (!body) return;
     const delta = physicsWorld.timestep;
-    const keys = getKeys();
+    // Mirando el monitor, el teclado no conduce: teclas como sueltas.
+    const keys = getFocus() === 'scene' ? getKeys() : NO_KEYS;
     const pos = body.translation();
+    // Para `InteractionManager`: qué objeto del escritorio está cerca.
+    playerPosition.set(pos.x, pos.y, pos.z);
 
     if (keys.reset || pos.y < FALL_LIMIT_Y) {
       body.setTranslation(SPAWN_POSITION, true);
@@ -410,7 +430,7 @@ const DrivableVehicle = () => {
       subscribeKeys(
         (state) => state[control],
         (down) => {
-          if (down) toggle();
+          if (down && getFocus() === 'scene') toggle();
         }
       );
     const unsubscribe = [

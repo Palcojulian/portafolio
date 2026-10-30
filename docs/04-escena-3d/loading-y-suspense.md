@@ -80,12 +80,12 @@ Componente HTML a pantalla completa:
 <Loader active={isLoading} />
 ```
 
-Cuando `active` es `false` devuelve `null` (no renderiza nada). Cuando es `true`:
+Sigue el wireframe de Figma de la pantalla de carga. Mientras `active` es `true` muestra, con los colores de los overlays (`coloresUI` de `src/helpers/colores-ui.ts`, ver [Sistema de colores](../05-estilos/sistema-de-colores.md)): fondo `azulGrisOscuro[100]`, superficies `azulGrisOscuro[300]`, bordes `azulGrisClaro[400]` y acento `amarillos[500]` en el logo y la barra:
 
-- Fondo oscuro semitransparente (`rgba(10, 10, 16, 0.95)`).
-- Spinner circular con borde amarillo (`#F9C74F`) animado.
-- Texto "Cargando escena…".
-- Porcentaje real de carga (de `useProgress`).
+- Logo "3D", nombre (`OWNER_NAME`, provisional "John Doe") y subtítulo (`OWNER_TAGLINE`).
+- **Barra de progreso (HU-17)** ligada a `useProgress`, con el estado a la izquierda ("Cargando modelos 3D…", "Cargando texturas…" o "Preparando escena…", según el `item` que se esté descargando) y el porcentaje a la derecha. La barra guarda el máximo alcanzado: cuando el chunk lazy de físicas encola más modelos, `progress` baja, pero la barra no retrocede.
+
+Cuando `active` pasa a `false`, la pantalla se desvanece (`FADE_OUT_MS`) y después devuelve `null`.
 
 Usa `useProgress` de `@react-three/drei`, que internamente se suscribe al `GLTFLoader` y reporta el porcentaje total de assets descargados, **incluso si está fuera del `<Canvas>`**.
 
@@ -129,10 +129,9 @@ Los `.glb` se descargan en paralelo (no en serie). El progreso global es la suma
 
 | Cambio | Dónde |
 |---|---|
-| Color del spinner | `borderTopColor: '#F9C74F'` |
-| Texto | "Cargando escena…" |
-| Fondo | `background: 'rgba(10, 10, 16, 0.95)'` |
-| Velocidad del spinner | `animation: 'loader-spin 1s linear infinite'` |
+| Nombre y subtítulo | `OWNER_NAME`, `OWNER_TAGLINE` |
+| Colores (fondo, bordes, acento, texto) | `coloresUI` en `src/helpers/colores-ui.ts` (compartido con `ControlsHelp`) |
+| Duración del fundido de salida | `FADE_OUT_MS` |
 
 ## Limitaciones
 

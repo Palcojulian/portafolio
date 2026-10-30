@@ -9,3 +9,19 @@ body,
 #canvas-container {
   height: 100%;
 }
+
+/* Fondo oscuro (el de la pantalla apagada del monitor): la escena cubre
+   todo el canvas, pero por los bordes sub-píxel del HTML 3D del monitor
+   se veía el blanco por defecto de la página. */
+html,
+body,
+#canvas-container {
+  background: #0b1015;
+}
+
+/* Contexto de apilamiento propio: los z-index del canvas y de la
+   pantalla del monitor (drei Html) no compiten con los overlays. */
+#canvas-container {
+  position: relative;
+  isolation: isolate;
+}

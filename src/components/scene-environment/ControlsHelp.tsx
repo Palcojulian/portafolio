@@ -1,6 +1,7 @@
-import { useEffect, useState, type CSSProperties } from 'react';
-import { Controls, keyLabels, keyboardMap, type Control } from '../player/keyboardMap';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { Controls, keysFor } from '../../helpers/keyboardMap';
 import { isMuted, onMutedChange, setMuted } from '../../audio/sound';
+import { coloresUI as COLORS } from '../../helpers/colores-ui';
 
 const STORAGE_KEY = 'controls-help-collapsed';
 
@@ -20,24 +21,20 @@ const writeCollapsed = (value: boolean): void => {
   }
 };
 
-/** Teclas (sin duplicados de etiqueta) asignadas a una acción del mapa. */
-const keysFor = (action: Control): string[] => {
-  const entry = keyboardMap.find((e) => e.name === action);
-  return [...new Set((entry?.keys ?? []).map((k) => keyLabels[k] ?? k))];
-};
-
 const kbdStyle: CSSProperties = {
   display: 'inline-block',
-  minWidth: 22,
-  padding: '2px 6px',
+  minWidth: 24,
+  padding: '3px 6px',
   margin: '0 2px',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
-  borderBottomWidth: 2,
-  borderRadius: 4,
-  fontFamily: 'inherit',
+  border: `1px solid ${COLORS.border}`,
+  borderBottomWidth: 3,
+  borderRadius: 5,
+  background: COLORS.surface,
+  color: COLORS.accent,
+  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
   fontSize: 12,
+  lineHeight: 1,
   textAlign: 'center',
-  background: 'rgba(255, 255, 255, 0.08)',
 };
 
 const Keys = ({ keys }: { keys: string[] }) => (
@@ -50,11 +47,13 @@ const Keys = ({ keys }: { keys: string[] }) => (
   </>
 );
 
+const Sep = () => <span style={{ color: COLORS.muted }}> / </span>;
+
 /** Letras primero y flechas después, separadas por "/". */
 const KeyGroup = ({ keys }: { keys: string[] }) => (
   <span>
     <Keys keys={keys.filter((k) => /^[A-Z]$/.test(k))} />
-    <span style={{ opacity: 0.6 }}> / </span>
+    <Sep />
     <Keys keys={keys.filter((k) => !/^[A-Z]$/.test(k))} />
   </span>
 );
@@ -66,6 +65,32 @@ const rowStyle: CSSProperties = {
   gap: 16,
   padding: '4px 0',
 };
+
+const Row = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
+  <div style={rowStyle}>
+    <span>{label}</span>
+    <span style={{ whiteSpace: 'nowrap' }}>{children}</span>
+  </div>
+);
+
+/** Bloque de controles con un título pequeño en el color de acento. */
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+  <section style={{ marginTop: 12 }}>
+    <h3
+      style={{
+        marginBottom: 2,
+        color: COLORS.accent,
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
+      }}
+    >
+      {title}
+    </h3>
+    {children}
+  </section>
+);
 
 /**
  * Panel con las instrucciones de control del personaje.
@@ -91,6 +116,10 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat) return;
+      // Escribiendo en un campo (p. ej. el formulario de contacto), H y M
+      // son letras, no atajos.
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
       if (e.code === 'KeyH') setCollapsed((c) => !c);
       if (e.code === 'KeyM') setMuted(!isMuted());
     };
@@ -109,11 +138,16 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
         position: 'fixed',
         left: 16,
         bottom: 16,
+        width: collapsed ? 'auto' : 320,
         maxWidth: 'calc(100vw - 32px)',
-        background: 'rgba(10, 10, 16, 0.85)',
-        color: '#ffffff',
-        padding: collapsed ? '8px 12px' : '12px 16px',
-        borderRadius: 8,
+        // Fondo de la paleta con ~92 % de opacidad (sufijo alfa "EB").
+        background: `${COLORS.background}EB`,
+        border: `1px solid ${COLORS.surface}`,
+        borderTop: `3px solid ${COLORS.accent}`,
+        color: COLORS.text,
+        padding: collapsed ? '8px 12px' : '12px 16px 14px',
+        borderRadius: 10,
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         fontSize: 13,
         lineHeight: 1.4,
@@ -132,9 +166,12 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
           }}
           aria-expanded={!collapsed}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
             background: 'none',
             border: 'none',
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: COLORS.muted,
             cursor: 'pointer',
             fontSize: 12,
             padding: 0,
@@ -145,63 +182,83 @@ const ControlsHelp = ({ hidden }: ControlsHelpProps) => {
       </div>
 
       {!collapsed && (
-        <div style={{ marginTop: 8 }}>
-          <div style={rowStyle}>
-            <span>Acelerar / frenar y marcha atrás</span>
-            <KeyGroup keys={throttleKeys} />
-          </div>
-          <div style={rowStyle}>
-            <span>Girar</span>
-            <KeyGroup keys={steerKeys} />
-          </div>
-          <div style={rowStyle}>
-            <span>Turbo</span>
-            <span>
-              <Keys keys={keysFor(Controls.run)} /> + acelerar
-            </span>
-          </div>
-          <div style={rowStyle}>
-            <span>Freno de mano</span>
-            <Keys keys={keysFor(Controls.jump)} />
-          </div>
-          <div style={rowStyle}>
-            <span>Faros</span>
-            <Keys keys={keysFor(Controls.headlights)} />
-          </div>
-          <div style={rowStyle}>
-            <span>Direccionales izq. / der.</span>
-            <span>
+        <>
+          <Section title="Conducción">
+            <Row label="Acelerar / frenar y marcha atrás">
+              <KeyGroup keys={throttleKeys} />
+            </Row>
+            <Row label="Girar">
+              <KeyGroup keys={steerKeys} />
+            </Row>
+            <Row label="Turbo">
+              <Keys keys={keysFor(Controls.run)} />
+              <span style={{ color: COLORS.muted }}> + acelerar</span>
+            </Row>
+            <Row label="Freno de mano">
+              <Keys keys={keysFor(Controls.jump)} />
+            </Row>
+          </Section>
+
+          <Section title="Luces">
+            <Row label="Faros">
+              <Keys keys={keysFor(Controls.headlights)} />
+            </Row>
+            <Row label="Direccionales izq. / der.">
               <Keys keys={keysFor(Controls.signalLeft)} />
-              <span style={{ opacity: 0.6 }}> / </span>
+              <Sep />
               <Keys keys={keysFor(Controls.signalRight)} />
-            </span>
-          </div>
-          <div style={rowStyle}>
-            <span>Estacionarias</span>
-            <Keys keys={keysFor(Controls.hazards)} />
-          </div>
-          <div style={rowStyle}>
-            <span>Volver al escritorio</span>
-            <Keys keys={keysFor(Controls.reset)} />
-          </div>
-          <div style={rowStyle}>
-            <span>Sonido {muted ? '🔇 silenciado' : '🔊 activado'}</span>
-            <Keys keys={['M']} />
-          </div>
+            </Row>
+            <Row label="Estacionarias">
+              <Keys keys={keysFor(Controls.hazards)} />
+            </Row>
+          </Section>
+
+          <Section title="General">
+            <Row label="Interactuar con el objeto cercano">
+              <Keys keys={['Enter']} />
+            </Row>
+            <Row label="Volver al escritorio">
+              <Keys keys={keysFor(Controls.reset)} />
+            </Row>
+            <Row
+              label={
+                <>
+                  Sonido{' '}
+                  <span
+                    style={{
+                      marginLeft: 4,
+                      padding: '1px 6px',
+                      borderRadius: 999,
+                      fontSize: 11,
+                      color: COLORS.background,
+                      background: muted ? COLORS.danger : COLORS.ok,
+                    }}
+                  >
+                    {muted ? 'silenciado' : 'activado'}
+                  </span>
+                </>
+              }
+            >
+              <Keys keys={['M']} />
+            </Row>
+          </Section>
+
           <div
             style={{
-              marginTop: 8,
-              paddingTop: 8,
-              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-              color: 'rgba(255, 255, 255, 0.7)',
+              marginTop: 12,
+              padding: '8px 10px',
+              borderLeft: `3px solid ${COLORS.accent}`,
+              borderRadius: 4,
+              background: COLORS.surface,
+              color: COLORS.muted,
               fontSize: 12,
             }}
           >
             🚗 Empuja los objetos ligeros con el coche
             <br />
-            ☕ Cuidado con la taza: se rompe si cae al suelo
+            ☕ Tira la taza del escritorio y escucha cómo suena
           </div>
-        </div>
+        </>
       )}
     </div>
   );

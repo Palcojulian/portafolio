@@ -4,7 +4,7 @@
  * Todos los sonidos se **sintetizan** con Web Audio (no hay archivos):
  * cada material combina tonos y ruido filtrado con envolventes cortas.
  * Para pasar a archivos de audio bastaría con reemplazar el cuerpo de
- * `playImpact` / `playShatter` por la reproducción de un `AudioBuffer`.
+ * `playImpact` por la reproducción de un `AudioBuffer`.
  *
  * Los navegadores bloquean el audio hasta la primera interacción del
  * usuario: `installAudioUnlock()` reanuda el `AudioContext` en el primer
@@ -168,20 +168,4 @@ export const playImpact = (material: SoundMaterial, intensity: number): void => 
   if (!c) return;
   const v = Math.min(1, Math.max(0.05, intensity));
   recipes[material](c, c.currentTime, v);
-};
-
-/** Cerámica haciéndose añicos: ruido agudo + varios tintineos. */
-export const playShatter = (intensity = 1): void => {
-  const c = ready();
-  if (!c) return;
-  const v = Math.min(1, Math.max(0.3, intensity));
-  const t = c.currentTime;
-  noise(c, t, 'highpass', 2500, 0.5, 0.6 * v, 0.25);
-  noise(c, t, 'bandpass', 900, 0.8, 0.4 * v, 0.08);
-  const shards = 6 + Math.floor(Math.random() * 5);
-  for (let i = 0; i < shards; i++) {
-    const at = t + Math.random() * 0.25;
-    tone(c, at, vary(2600, 0.35), 0.12 * v, vary(0.1, 0.4));
-    noise(c, at, 'highpass', 5000, 1, 0.12 * v, 0.02);
-  }
 };

@@ -11,7 +11,7 @@ import { RigidBody } from '@react-three/rapier';
  * contexto y lanza `useRapier must be used within <Physics />`.
  *
  * `userData.surface = 'floor'` permite a `useFloorImpact` reconocerlo
- * para reproducir sonidos y romper la taza.
+ * para reproducir sonidos y reaccionar a las caídas.
  */
 const Floor = () => {
   return (
